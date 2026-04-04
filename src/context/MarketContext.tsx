@@ -134,6 +134,53 @@ const SEED_MARKETS: Market[] = [
     resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
     createdAt: new Date().toISOString(),
   },
+  {
+    id: "m6", title: "NBA MVP Award", league: "NBA", sport: "Basketball",
+    status: "open", startTime: "Jun 2026",
+    description: "Who will be named the 2025-26 NBA Most Valuable Player?",
+    outcomes: [
+      { id: "m6-o1", name: "Luka Dončić", price: 0.28 },
+      { id: "m6-o2", name: "Nikola Jokić", price: 0.24 },
+      { id: "m6-o3", name: "Jayson Tatum", price: 0.18 },
+      { id: "m6-o4", name: "Giannis Antetokounmpo", price: 0.15 },
+      { id: "m6-o5", name: "Shai Gilgeous-Alexander", price: 0.15 },
+    ],
+    liquidityParameter: 180, config: defaultConfig(180),
+    resolvedOutcomeId: null, settlementResult: null,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "m7", title: "Champions League Winner", league: "UEFA", sport: "Soccer",
+    status: "open", startTime: "May 31, 2026",
+    description: "Which club will lift the Champions League trophy?",
+    outcomes: [
+      { id: "m7-o1", name: "Real Madrid", price: 0.22 },
+      { id: "m7-o2", name: "Man City", price: 0.18 },
+      { id: "m7-o3", name: "Bayern Munich", price: 0.15 },
+      { id: "m7-o4", name: "Arsenal", price: 0.13 },
+      { id: "m7-o5", name: "Barcelona", price: 0.12 },
+      { id: "m7-o6", name: "PSG", price: 0.10 },
+      { id: "m7-o7", name: "Field", price: 0.10 },
+    ],
+    liquidityParameter: 200, config: defaultConfig(200),
+    resolvedOutcomeId: null, settlementResult: null,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "m8", title: "First Scorer — Lakers vs Celtics", league: "NBA", sport: "Basketball",
+    status: "open", startTime: "Tonight, 8:00 PM ET",
+    description: "Which player will score the first basket tonight?",
+    outcomes: [
+      { id: "m8-o1", name: "LeBron James", price: 0.22 },
+      { id: "m8-o2", name: "Anthony Davis", price: 0.20 },
+      { id: "m8-o3", name: "Jaylen Brown", price: 0.18 },
+      { id: "m8-o4", name: "Derrick White", price: 0.15 },
+      { id: "m8-o5", name: "Other", price: 0.25 },
+    ],
+    liquidityParameter: 120, config: defaultConfig(120),
+    resolvedOutcomeId: null, settlementResult: null,
+    createdAt: new Date().toISOString(),
+  },
 ];
 
 // Simulated students for classroom demo
