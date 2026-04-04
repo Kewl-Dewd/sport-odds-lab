@@ -23,6 +23,8 @@ export interface MarketConfig {
   maxTradeSize: number;
   priceFloor: number;
   priceCeiling: number;
+  transactionFeePct: number;
+  spread: number;
 }
 
 export interface Market {
