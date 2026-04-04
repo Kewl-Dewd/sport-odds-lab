@@ -105,6 +105,8 @@ export function marketToEngineConfig(market: Market): PricingEngineConfig {
     maxTradeSize: market.config.maxTradeSize,
     priceFloor: market.config.priceFloor,
     priceCeiling: market.config.priceCeiling,
+    transactionFeePct: market.config.transactionFeePct,
+    spread: market.config.spread,
   };
 }
 
