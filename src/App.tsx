@@ -15,6 +15,7 @@ import Portfolio from "./pages/Portfolio.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import HowItWorks from "./pages/HowItWorks.tsx";
 import Glossary from "./pages/Glossary.tsx";
+import TradeReview from "./pages/TradeReview.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
