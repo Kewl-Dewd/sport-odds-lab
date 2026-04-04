@@ -48,6 +48,9 @@ const App = () => (
                 <Route path="/instructor" element={<InstructorDashboard />} />
                 <Route path="/instructor/review" element={<TradeReview />} />
                 <Route path="/instructor/reports" element={<Reports />} />
+                <Route path="/experiments" element={<Experiments />} />
+                <Route path="/experiments/:id" element={<ExperimentView />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/auth" element={<Auth />} />
               </Route>
               {/* Presentation mode — no navbar/footer */}
