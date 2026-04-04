@@ -4,6 +4,7 @@ import {
   type MarketConfig,
   type MarketMetadata,
   type MarketCategory,
+  type MarketStatus,
   type DifficultyLevel,
   type Trade,
   type UserPortfolio,
@@ -15,6 +16,8 @@ import {
   calculatePortfolioValue,
   calculateRealizedPnL,
   settleMarketForPortfolios,
+  voidMarketForPortfolios,
+  cancelMarketForPortfolios,
   defaultMarketConfig,
   evenPriceDistribution,
   DEFAULT_STARTING_CASH,
@@ -237,6 +240,11 @@ interface MarketContextValue {
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
   settleMarket: (marketId: string, winningOutcomeId: string) => void;
+  voidMarket: (marketId: string, rule?: "return-cost" | "return-current-value") => void;
+  cancelMarket: (marketId: string) => void;
+  postponeMarket: (marketId: string) => void;
+  scheduleMarket: (marketId: string) => void;
+  editMarket: (marketId: string, updates: Partial<Pick<Market, "title" | "league" | "sport" | "startTime" | "closeTime" | "description">>) => void;
   deleteMarket: (marketId: string) => void;
 
   // Batch operations
@@ -544,6 +552,43 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const deleteMarket = useCallback((marketId: string) => {
     setMarkets((prev) => prev.filter((m) => m.id !== marketId));
     logAction("Delete market", marketId);
+  }, [logAction]);
+
+  const voidMarket = useCallback((marketId: string, rule: "return-cost" | "return-current-value" = "return-cost") => {
+    const market = markets.find((m) => m.id === marketId);
+    if (!market) return;
+    const { voidedMarket, updatedPortfolios } = voidMarketForPortfolios(market, students, rule);
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? voidedMarket : m));
+    setStudents(updatedPortfolios);
+    const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Void market", `${market.title} (${rule})`);
+  }, [markets, students, portfolio.userId, logAction]);
+
+  const cancelMarket = useCallback((marketId: string) => {
+    const market = markets.find((m) => m.id === marketId);
+    if (!market) return;
+    const { cancelledMarket, updatedPortfolios } = cancelMarketForPortfolios(market, students);
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? cancelledMarket : m));
+    setStudents(updatedPortfolios);
+    const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Cancel market", market.title);
+  }, [markets, students, portfolio.userId, logAction]);
+
+  const postponeMarket = useCallback((marketId: string) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "postponed" as const } : m));
+    logAction("Postpone market", marketId);
+  }, [logAction]);
+
+  const scheduleMarket = useCallback((marketId: string) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "scheduled" as const } : m));
+    logAction("Schedule market", marketId);
+  }, [logAction]);
+
+  const editMarket = useCallback((marketId: string, updates: Partial<Pick<Market, "title" | "league" | "sport" | "startTime" | "closeTime" | "description">>) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, ...updates } : m));
+    logAction("Edit market", `${marketId}: ${Object.keys(updates).join(", ")}`);
   }, [logAction]);
 
   // ── Batch operations ─────────────────────────────────────────────
@@ -910,7 +955,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         trade: doTrade, portfolioStats, realizedPnL, getHolding, recentTrades, topMovers,
         classrooms, activeClassroom: classroom, setActiveClassroom, createClassroom, deleteClassroom,
         classroom, students, adminActions, updateClassroom, addStudent, removeStudent,
-        createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
+        createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket,
+        voidMarket, cancelMarket, postponeMarket, scheduleMarket, editMarket, deleteMarket,
         bulkCreateMarkets, savedTemplates, saveTemplate, deleteTemplate,
         openAllMarkets, closeAllMarkets, pauseAllTrading, resumeAllTrading, batchSettleMarkets,
         adjustBankroll, reverseTrade, recalculateAll, duplicateClassroom,

@@ -64,7 +64,12 @@ export interface Market {
   metadata: MarketMetadata;
 }
 
-export type MarketStatus = "open" | "suspended" | "closed" | "settled";
+export type MarketStatus = "open" | "scheduled" | "suspended" | "closed" | "settled" | "void" | "cancelled" | "postponed";
+
+/** Statuses where trading is allowed */
+export const TRADEABLE_STATUSES: MarketStatus[] = ["open"];
+/** Statuses considered terminal (no further status changes expected) */
+export const TERMINAL_STATUSES: MarketStatus[] = ["settled", "void", "cancelled"];
 
 export interface Trade {
   id: string;
@@ -376,6 +381,66 @@ export function settleMarketForPortfolios(
   });
 
   return { settledMarket, updatedPortfolios, payouts };
+}
+
+/**
+ * Void a market — return all capital at cost basis.
+ * Each student gets back what they spent on their current holdings.
+ */
+export function voidMarketForPortfolios(
+  market: Market,
+  portfolios: UserPortfolio[],
+  rule: "return-cost" | "return-current-value" = "return-cost",
+): {
+  voidedMarket: Market;
+  updatedPortfolios: UserPortfolio[];
+} {
+  const voidedMarket: Market = {
+    ...market,
+    status: "void" as MarketStatus,
+    resolvedOutcomeId: null,
+    settlementResult: "VOID",
+  };
+
+  const updatedPortfolios = portfolios.map((portfolio) => {
+    const relevantHoldings = portfolio.holdings.filter((h) => h.marketId === market.id);
+    if (relevantHoldings.length === 0) return portfolio;
+
+    let cashReturn = 0;
+    for (const h of relevantHoldings) {
+      if (rule === "return-cost") {
+        cashReturn += h.shares * h.avgCostPerShare;
+      } else {
+        const outcome = market.outcomes.find((o) => o.id === h.outcomeId);
+        cashReturn += h.shares * (outcome?.price ?? h.avgCostPerShare);
+      }
+    }
+
+    return {
+      ...portfolio,
+      cash: round4(portfolio.cash + cashReturn),
+      holdings: portfolio.holdings.filter((h) => h.marketId !== market.id),
+    };
+  });
+
+  return { voidedMarket, updatedPortfolios };
+}
+
+/**
+ * Cancel a market — identical to void with return-cost rule.
+ */
+export function cancelMarketForPortfolios(
+  market: Market,
+  portfolios: UserPortfolio[],
+): {
+  cancelledMarket: Market;
+  updatedPortfolios: UserPortfolio[];
+} {
+  const { voidedMarket, updatedPortfolios } = voidMarketForPortfolios(market, portfolios, "return-cost");
+  return {
+    cancelledMarket: { ...voidedMarket, status: "cancelled" as MarketStatus, settlementResult: "CANCELLED" },
+    updatedPortfolios,
+  };
 }
 
 // ── Portfolio Calculations ─────────────────────────────────────────

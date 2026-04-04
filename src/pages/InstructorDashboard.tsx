@@ -6,7 +6,7 @@ import {
   Users, BarChart3, Trophy, Activity, Zap, TrendingUp, TrendingDown,
   AlertTriangle, Settings, Copy, Trash2, Clock, FileText, UserPlus,
   X, DollarSign, Undo2, Calculator, MonitorPlay, ChevronRight,
-  LayoutGrid, GraduationCap, Eye,
+  LayoutGrid, GraduationCap, Eye, Ban, CalendarOff, Pencil, MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
 import { MarketCreator } from "@/components/admin/MarketCreator";
 import { SettlementModal } from "@/components/admin/SettlementModal";
@@ -25,9 +26,13 @@ import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   open: "bg-success/15 text-success",
+  scheduled: "bg-info/15 text-info",
   suspended: "bg-warning/15 text-warning",
   settled: "bg-muted text-muted-foreground",
   closed: "bg-destructive/15 text-destructive",
+  void: "bg-muted text-muted-foreground",
+  cancelled: "bg-destructive/10 text-destructive",
+  postponed: "bg-warning/10 text-warning",
 };
 
 export default function InstructorDashboard() {
@@ -35,6 +40,7 @@ export default function InstructorDashboard() {
     markets, trades, students, classroom, classrooms, activeClassroom,
     adminActions, setActiveClassroom, createClassroom, deleteClassroom,
     suspendMarket, resumeMarket, duplicateMarket, deleteMarket,
+    voidMarket, cancelMarket, postponeMarket, editMarket,
     addStudent, removeStudent, updateStartingBalance, resetClassroom,
     updateClassroom, exportTradeHistory, exportLeaderboard, getLeaderboard,
     seedDemoData, openAllMarkets, closeAllMarkets, pauseAllTrading,
@@ -351,24 +357,49 @@ export default function InstructorDashboard() {
                                   <Pause className="h-3.5 w-3.5" />
                                 </Button>
                               )}
-                              {m.status === "suspended" && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { resumeMarket(m.id); toast.success("Market resumed"); }} title="Resume">
+                              {(m.status === "suspended" || m.status === "postponed" || m.status === "scheduled") && (
+                                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { resumeMarket(m.id); toast.success("Market opened"); }} title="Open">
                                   <Play className="h-3.5 w-3.5" />
                                 </Button>
                               )}
-                              {(m.status === "open" || m.status === "suspended") && (
+                              {(m.status === "open" || m.status === "suspended" || m.status === "closed") && (
                                 <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setSettlingMarket(m)} title="Settle">
                                   <Trophy className="h-3.5 w-3.5" />
                                 </Button>
                               )}
-                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => { duplicateMarket(m.id); toast.success("Market duplicated"); }} title="Duplicate">
-                                <Copy className="h-3.5 w-3.5" />
-                              </Button>
-                              {m.status !== "open" && (
-                                <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => { deleteMarket(m.id); toast.success("Market deleted"); }} title="Delete">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="h-3.5 w-3.5" /></Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => { duplicateMarket(m.id); toast.success("Market duplicated"); }}>
+                                    <Copy className="h-3.5 w-3.5 mr-2" />Duplicate
+                                  </DropdownMenuItem>
+                                  {m.status !== "settled" && m.status !== "void" && m.status !== "cancelled" && (
+                                    <DropdownMenuItem onClick={() => { editMarket(m.id, { title: prompt("New title:", m.title) || m.title }); toast.success("Market updated"); }}>
+                                      <Pencil className="h-3.5 w-3.5 mr-2" />Edit Title
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                  {m.status !== "settled" && m.status !== "void" && m.status !== "cancelled" && (
+                                    <>
+                                      <DropdownMenuItem onClick={() => { postponeMarket(m.id); toast.success("Market postponed"); }}>
+                                        <CalendarOff className="h-3.5 w-3.5 mr-2" />Postpone
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => { voidMarket(m.id); toast.success("Market voided — capital returned at cost"); }}>
+                                        <Ban className="h-3.5 w-3.5 mr-2" />Void (return cost)
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => { cancelMarket(m.id); toast.success("Market cancelled — capital returned"); }}>
+                                        <X className="h-3.5 w-3.5 mr-2" />Cancel
+                                      </DropdownMenuItem>
+                                    </>
+                                  )}
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-destructive" onClick={() => { deleteMarket(m.id); toast.success("Market deleted"); }}>
+                                    <Trash2 className="h-3.5 w-3.5 mr-2" />Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </div>
                           </td>
                         </tr>

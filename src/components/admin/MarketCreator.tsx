@@ -195,10 +195,13 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
     toast.success("Saved as template!");
   };
 
-  const handleBulkImport = () => {
+  const [bulkParsed, setBulkParsed] = useState<Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[] }>>([]);
+  const [bulkStep, setBulkStep] = useState<"paste" | "review">("paste");
+
+  const parseBulkText = () => {
     try {
       const lines = bulkText.trim().split("\n").filter((l) => l.trim());
-      const configs = lines.map((line) => {
+      const parsed = lines.map((line) => {
         const parts = line.split("|").map((p) => p.trim());
         if (parts.length < 4) throw new Error("Each line needs: Title | League | Sport | Outcome1, Outcome2, ...");
         const [t, l, s, outcomesStr, ...rest] = parts;
@@ -209,17 +212,34 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
           startTime: rest[0] || "TBD",
           description: rest[1] || "",
           outcomes: outcomesStr.split(",").map((o) => o.trim()),
-          liquidity: DEFAULT_LIQUIDITY,
-          metadata: { category: "custom" as MarketCategory },
         };
       });
-      bulkCreateMarkets(configs);
-      toast.success(`${configs.length} markets created!`);
-      setShowBulkImport(false);
-      onClose();
+      setBulkParsed(parsed);
+      setBulkStep("review");
     } catch (e: any) {
       toast.error(e.message || "Invalid format");
     }
+  };
+
+  const removeBulkItem = (idx: number) => {
+    setBulkParsed((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const updateBulkItem = (idx: number, field: string, value: string) => {
+    setBulkParsed((prev) => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  };
+
+  const handleBulkImport = () => {
+    if (bulkParsed.length === 0) return;
+    const configs = bulkParsed.map((item) => ({
+      ...item,
+      liquidity: DEFAULT_LIQUIDITY,
+      metadata: { category: "custom" as MarketCategory },
+    }));
+    bulkCreateMarkets(configs);
+    toast.success(`${configs.length} markets created!`);
+    setShowBulkImport(false);
+    onClose();
   };
 
   if (showTemplateManager) {
@@ -230,31 +250,76 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-foreground/40 backdrop-blur-sm" onClick={() => setShowBulkImport(false)} />
-        <Card className="relative w-full max-w-xl animate-slide-up">
+        <Card className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto animate-slide-up">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2"><Upload className="h-5 w-5" />Bulk Import Markets</CardTitle>
-            <button onClick={() => setShowBulkImport(false)} className="p-1.5 rounded-md hover:bg-muted"><X className="h-5 w-5" /></button>
+            <button onClick={() => { setShowBulkImport(false); setBulkStep("paste"); }} className="p-1.5 rounded-md hover:bg-muted"><X className="h-5 w-5" /></button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Paste one market per line. Format: <code className="text-xs bg-muted px-1 py-0.5 rounded">Title | League | Sport | Outcome1, Outcome2 | StartTime | Description</code>
-            </p>
-            <textarea
-              value={bulkText}
-              onChange={(e) => setBulkText(e.target.value)}
-              rows={8}
-              placeholder={`Lakers vs Celtics | NBA | Basketball | Lakers Win, Celtics Win | Tonight 8PM | Regular season game\nChiefs vs Bills | NFL | Football | Chiefs Win, Bills Win | Sunday 4PM | AFC Championship`}
-              className="w-full rounded-lg border bg-background p-3 text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-xs text-muted-foreground">
-              {bulkText.trim().split("\n").filter((l) => l.trim()).length} market(s) detected
-            </p>
-            <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" onClick={() => setShowBulkImport(false)}>Cancel</Button>
-              <Button className="flex-1" onClick={handleBulkImport} disabled={!bulkText.trim()}>
-                Import All
-              </Button>
-            </div>
+            {bulkStep === "paste" && (
+              <>
+                <p className="text-sm text-muted-foreground">
+                  Paste one market per line. Format: <code className="text-xs bg-muted px-1 py-0.5 rounded">Title | League | Sport | Outcome1, Outcome2 | StartTime | Description</code>
+                </p>
+                <textarea
+                  value={bulkText}
+                  onChange={(e) => setBulkText(e.target.value)}
+                  rows={8}
+                  placeholder={`Lakers vs Celtics | NBA | Basketball | Lakers Win, Celtics Win | Tonight 8PM | Regular season game\nChiefs vs Bills | NFL | Football | Chiefs Win, Bills Win | Sunday 4PM | AFC Championship`}
+                  className="w-full rounded-lg border bg-background p-3 text-sm font-mono resize-y focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <p className="text-xs text-muted-foreground">
+                  {bulkText.trim().split("\n").filter((l) => l.trim()).length} market(s) detected
+                </p>
+                <div className="flex gap-3">
+                  <Button variant="outline" className="flex-1" onClick={() => setShowBulkImport(false)}>Cancel</Button>
+                  <Button className="flex-1" onClick={parseBulkText} disabled={!bulkText.trim()}>
+                    Review Markets →
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {bulkStep === "review" && (
+              <>
+                <p className="text-sm text-muted-foreground">Review and edit before importing. Remove any you don't want.</p>
+                <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+                  {bulkParsed.map((item, idx) => (
+                    <div key={idx} className="rounded-lg border p-3 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <Input
+                          value={item.title}
+                          onChange={(e) => updateBulkItem(idx, "title", e.target.value)}
+                          className="font-semibold h-8"
+                        />
+                        <button onClick={() => removeBulkItem(idx)} className="p-1 rounded hover:bg-muted shrink-0">
+                          <X className="h-4 w-4 text-destructive" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <Input value={item.league} onChange={(e) => updateBulkItem(idx, "league", e.target.value)} placeholder="League" className="h-7 text-xs" />
+                        <Input value={item.sport} onChange={(e) => updateBulkItem(idx, "sport", e.target.value)} placeholder="Sport" className="h-7 text-xs" />
+                        <Input value={item.startTime} onChange={(e) => updateBulkItem(idx, "startTime", e.target.value)} placeholder="Start time" className="h-7 text-xs" />
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {item.outcomes.map((o, oi) => (
+                          <Badge key={oi} variant="secondary" className="text-[10px]">{o}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {bulkParsed.length === 0 && (
+                  <p className="text-sm text-muted-foreground text-center py-4">All markets removed.</p>
+                )}
+                <div className="flex gap-3">
+                  <Button variant="outline" className="flex-1" onClick={() => setBulkStep("paste")}>← Back</Button>
+                  <Button className="flex-1" onClick={handleBulkImport} disabled={bulkParsed.length === 0}>
+                    Import {bulkParsed.length} Market{bulkParsed.length !== 1 ? "s" : ""}
+                  </Button>
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
