@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import {
   TrendingUp, TrendingDown, PieChart as PieIcon, BarChart3,
   Brain, Shield, Clock, CheckCircle, XCircle, AlertTriangle,
-  Activity, Target, Zap,
+  Activity, Target, Zap, Download, Printer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
