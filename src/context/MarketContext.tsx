@@ -65,6 +65,22 @@ export interface LeaderboardEntry {
   worstTradePnL: number;
 }
 
+export interface SavedTemplate {
+  id: string;
+  name: string;
+  category: MarketCategory;
+  sport: string;
+  league: string;
+  description: string;
+  outcomes: string[];
+  liquidity: number;
+  settlementRules?: string;
+  instructionalNotes?: string;
+  difficultyLevel: DifficultyLevel;
+  isArchived: boolean;
+  createdAt: string;
+}
+
 // ── Seed Data ──────────────────────────────────────────────────────
 
 const CLASSROOM_ID = "class-1";
