@@ -235,6 +235,9 @@ interface MarketContextValue {
   // Export
   exportTradeHistory: () => string;
   exportLeaderboard: () => string;
+
+  // Demo
+  seedDemoData: (studentCount: number, tradesPerStudent: number) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
