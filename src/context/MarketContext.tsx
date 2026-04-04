@@ -302,9 +302,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Admin market actions ─────────────────────────────────────────
 
   const createMarket = useCallback(
-    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number) => {
+    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
       const evenPrice = Math.round((1 / outcomes.length) * 100) / 100;
+      const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling };
       const newMarket: Market = {
         id, title, league, sport, status: "open", startTime, description,
         outcomes: outcomes.map((name, i) => ({
@@ -313,11 +314,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
           price: i === 0 ? +(1 - evenPrice * (outcomes.length - 1)).toFixed(2) : evenPrice,
         })),
         liquidityParameter: liquidity,
+        config,
         resolvedOutcomeId: null, settlementResult: null,
         createdAt: new Date().toISOString(),
       };
       setMarkets((prev) => [newMarket, ...prev]);
-      logAction("Create market", title);
+      logAction("Create market", `${title} [${engineType}]`);
     },
     [logAction]
   );
