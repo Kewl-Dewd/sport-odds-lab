@@ -134,7 +134,7 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
     if (!canSubmit) return;
     createMarket(
       title, league, sport || league, startTime || "TBD", description,
-      outcomes.filter((o) => o.trim()), liquidity, engineType, maxTradeSize, priceFloor, priceCeiling
+      outcomes.filter((o) => o.trim()), liquidity, engineType, maxTradeSize, priceFloor, priceCeiling, transactionFeePct / 100, spread
     );
     onClose();
   };
