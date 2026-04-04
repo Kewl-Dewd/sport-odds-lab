@@ -12,7 +12,8 @@ import MarketDetail from "./pages/MarketDetail.tsx";
 import Portfolio from "./pages/Portfolio.tsx";
 import Leaderboard from "./pages/Leaderboard.tsx";
 import HowItWorks from "./pages/HowItWorks.tsx";
-import Admin from "./pages/Admin.tsx";
+import InstructorDashboard from "./pages/InstructorDashboard.tsx";
+import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -34,9 +35,11 @@ const App = () => (
               <Route path="/portfolio" element={<Portfolio />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/how-it-works" element={<HowItWorks />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/instructor" element={<InstructorDashboard />} />
               <Route path="/auth" element={<Auth />} />
             </Route>
+            {/* Presentation mode — no navbar/footer */}
+            <Route path="/instructor/present/:view" element={<PresentationMode />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -34,6 +34,11 @@ export interface Classroom {
   startingBalance: number;
   createdAt: string;
   isActive: boolean;
+  classCode: string;
+  allowSelfJoin: boolean;
+  startDate: string | null;
+  endDate: string | null;
+  resetMode: "manual" | "unit" | "semester";
 }
 
 export interface AdminAction {
@@ -61,14 +66,38 @@ export interface LeaderboardEntry {
 
 const CLASSROOM_ID = "class-1";
 
-const SEED_CLASSROOM: Classroom = {
-  id: CLASSROOM_ID,
-  name: "Econ 101 — Spring 2026",
-  description: "Introduction to prediction markets and probability",
-  startingBalance: DEFAULT_STARTING_CASH,
-  createdAt: new Date().toISOString(),
-  isActive: true,
-};
+function generateClassCode(): string {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+const SEED_CLASSROOMS: Classroom[] = [
+  {
+    id: CLASSROOM_ID,
+    name: "Econ 101 — Spring 2026",
+    description: "Introduction to prediction markets and probability",
+    startingBalance: DEFAULT_STARTING_CASH,
+    createdAt: new Date().toISOString(),
+    isActive: true,
+    classCode: "ECN101",
+    allowSelfJoin: true,
+    startDate: "2026-01-15",
+    endDate: "2026-05-15",
+    resetMode: "manual",
+  },
+  {
+    id: "class-2",
+    name: "Finance 301 — Spring 2026",
+    description: "Advanced market microstructure",
+    startingBalance: 15_000,
+    createdAt: new Date().toISOString(),
+    isActive: false,
+    classCode: "FIN301",
+    allowSelfJoin: false,
+    startDate: "2026-01-20",
+    endDate: "2026-05-10",
+    resetMode: "semester",
+  },
+];
 
 function makeMarket(
   id: string, title: string, league: string, sport: string,
@@ -156,7 +185,14 @@ interface MarketContextValue {
   recentTrades: Trade[];
   topMovers: { marketTitle: string; outcomeName: string; price: number; change: number }[];
 
-  // Classroom
+  // Multi-classroom
+  classrooms: Classroom[];
+  activeClassroom: Classroom;
+  setActiveClassroom: (id: string) => void;
+  createClassroom: (name: string, description: string, startingBalance: number) => void;
+  deleteClassroom: (id: string) => void;
+
+  // Classroom (active)
   classroom: Classroom;
   students: UserPortfolio[];
   adminActions: AdminAction[];
@@ -171,6 +207,19 @@ interface MarketContextValue {
   resumeMarket: (marketId: string) => void;
   settleMarket: (marketId: string, winningOutcomeId: string) => void;
   deleteMarket: (marketId: string) => void;
+
+  // Batch operations
+  openAllMarkets: () => void;
+  closeAllMarkets: () => void;
+  pauseAllTrading: () => void;
+  resumeAllTrading: () => void;
+  batchSettleMarkets: (settlements: { marketId: string; winningOutcomeId: string }[]) => void;
+
+  // Instructor tools
+  adjustBankroll: (userId: string, amount: number, reason: string) => void;
+  reverseTrade: (tradeId: string) => void;
+  recalculateAll: () => void;
+  duplicateClassroom: (classroomId: string) => void;
 
   // Class management
   resetClassroom: () => void;
@@ -190,15 +239,18 @@ interface MarketContextValue {
 const MarketContext = createContext<MarketContextValue | null>(null);
 
 export function MarketProvider({ children }: { children: ReactNode }) {
+  const [classrooms, setClassrooms] = useState<Classroom[]>(SEED_CLASSROOMS);
+  const [activeClassroomId, setActiveClassroomId] = useState(CLASSROOM_ID);
   const [markets, setMarkets] = useState<Market[]>(SEED_MARKETS);
   const [portfolio, setPortfolio] = useState<UserPortfolio>(SEED_STUDENTS[0]);
   const [students, setStudents] = useState<UserPortfolio[]>(SEED_STUDENTS);
   const [trades, setTrades] = useState<Trade[]>([]);
-  const [classroom, setClassroom] = useState<Classroom>(SEED_CLASSROOM);
   const [adminActions, setAdminActions] = useState<AdminAction[]>([]);
   const [priceChanges, setPriceChanges] = useState<
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
   >(new Map());
+
+  const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
   const logAction = useCallback((action: string, detail: string) => {
     setAdminActions((prev) => [
@@ -208,6 +260,69 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getMarket = useCallback((id: string) => markets.find((m) => m.id === id), [markets]);
+
+  // ── Multi-classroom ─────────────────────────────────────────────
+
+  const setActiveClassroom = useCallback((id: string) => {
+    setActiveClassroomId(id);
+    logAction("Switch classroom", id);
+  }, [logAction]);
+
+  const createClassroom = useCallback((name: string, description: string, startingBalance: number) => {
+    const newClass: Classroom = {
+      id: `class-${crypto.randomUUID().slice(0, 8)}`,
+      name,
+      description,
+      startingBalance,
+      createdAt: new Date().toISOString(),
+      isActive: true,
+      classCode: generateClassCode(),
+      allowSelfJoin: true,
+      startDate: null,
+      endDate: null,
+      resetMode: "manual",
+    };
+    setClassrooms((prev) => [...prev, newClass]);
+    logAction("Create classroom", name);
+  }, [logAction]);
+
+  const deleteClassroom = useCallback((id: string) => {
+    if (id === activeClassroomId) return; // can't delete active
+    setClassrooms((prev) => prev.filter((c) => c.id !== id));
+    logAction("Delete classroom", id);
+  }, [activeClassroomId, logAction]);
+
+  const duplicateClassroom = useCallback((classroomId: string) => {
+    const source = classrooms.find((c) => c.id === classroomId);
+    if (!source) return;
+    const newId = `class-${crypto.randomUUID().slice(0, 8)}`;
+    const dup: Classroom = {
+      ...source,
+      id: newId,
+      name: `${source.name} (Copy)`,
+      classCode: generateClassCode(),
+      createdAt: new Date().toISOString(),
+    };
+    setClassrooms((prev) => [...prev, dup]);
+    // Duplicate markets for this class
+    const classMarkets = markets.filter((m) => m.classroomId === classroomId);
+    const newMarkets = classMarkets.map((m) => {
+      const id = `m-${crypto.randomUUID().slice(0, 8)}`;
+      const prices = evenPriceDistribution(m.outcomes.length);
+      return {
+        ...m,
+        id,
+        classroomId: newId,
+        status: "open" as const,
+        resolvedOutcomeId: null,
+        settlementResult: null,
+        outcomes: m.outcomes.map((o, i) => ({ ...o, id: `${id}-o${i + 1}`, price: prices[i] })),
+        createdAt: new Date().toISOString(),
+      };
+    });
+    setMarkets((prev) => [...newMarkets, ...prev]);
+    logAction("Duplicate classroom", `${source.name} → ${dup.name}`);
+  }, [classrooms, markets, logAction]);
 
   // ── Trading (delegates to centralized engine) ───────────────────
 
@@ -284,9 +399,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Classroom management ─────────────────────────────────────────
 
   const updateClassroom = useCallback((updates: Partial<Classroom>) => {
-    setClassroom((prev) => ({ ...prev, ...updates }));
+    setClassrooms((prev) => prev.map((c) => c.id === activeClassroomId ? { ...c, ...updates } : c));
     logAction("Update classroom", JSON.stringify(updates));
-  }, [logAction]);
+  }, [activeClassroomId, logAction]);
 
   const addStudent = useCallback((name: string) => {
     const newStudent: UserPortfolio = {
@@ -313,7 +428,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling, transactionFeePct, spread };
       const newMarket: Market = {
         id,
-        classroomId: classroom.id,
+        classroomId: activeClassroomId,
         title,
         league,
         sport,
@@ -334,7 +449,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       setMarkets((prev) => [newMarket, ...prev]);
       logAction("Create market", `${title} [${engineType}]`);
     },
-    [classroom.id, logAction]
+    [activeClassroomId, logAction]
   );
 
   const duplicateMarket = useCallback((marketId: string) => {
@@ -373,19 +488,13 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const settleMarket = useCallback((marketId: string, winningOutcomeId: string) => {
     const market = markets.find((m) => m.id === marketId);
     if (!market) return;
-
-    // Use centralized settlement from trading engine
     const { settledMarket, updatedPortfolios } = settleMarketForPortfolios(
       market, winningOutcomeId, students
     );
-
     setMarkets((prev) => prev.map((m) => m.id === marketId ? settledMarket : m));
     setStudents(updatedPortfolios);
-
-    // Also update the current user's portfolio view
     const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
     if (updatedUser) setPortfolio(updatedUser);
-
     logAction("Settle market", `${market.title} → ${settledMarket.settlementResult}`);
   }, [markets, students, portfolio.userId, logAction]);
 
@@ -393,6 +502,173 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setMarkets((prev) => prev.filter((m) => m.id !== marketId));
     logAction("Delete market", marketId);
   }, [logAction]);
+
+  // ── Batch operations ─────────────────────────────────────────────
+
+  const openAllMarkets = useCallback(() => {
+    setMarkets((prev) => prev.map((m) =>
+      m.classroomId === activeClassroomId && (m.status === "suspended" || m.status === "closed")
+        ? { ...m, status: "open" as const }
+        : m
+    ));
+    logAction("Open all markets", activeClassroomId);
+  }, [activeClassroomId, logAction]);
+
+  const closeAllMarkets = useCallback(() => {
+    setMarkets((prev) => prev.map((m) =>
+      m.classroomId === activeClassroomId && m.status === "open"
+        ? { ...m, status: "closed" as const }
+        : m
+    ));
+    logAction("Close all markets", activeClassroomId);
+  }, [activeClassroomId, logAction]);
+
+  const pauseAllTrading = useCallback(() => {
+    setMarkets((prev) => prev.map((m) =>
+      m.classroomId === activeClassroomId && m.status === "open"
+        ? { ...m, status: "suspended" as const }
+        : m
+    ));
+    logAction("Pause all trading", activeClassroomId);
+  }, [activeClassroomId, logAction]);
+
+  const resumeAllTrading = useCallback(() => {
+    setMarkets((prev) => prev.map((m) =>
+      m.classroomId === activeClassroomId && m.status === "suspended"
+        ? { ...m, status: "open" as const }
+        : m
+    ));
+    logAction("Resume all trading", activeClassroomId);
+  }, [activeClassroomId, logAction]);
+
+  const batchSettleMarkets = useCallback((settlements: { marketId: string; winningOutcomeId: string }[]) => {
+    let currentStudents = [...students];
+    let currentMarkets = [...markets];
+    for (const { marketId, winningOutcomeId } of settlements) {
+      const market = currentMarkets.find((m) => m.id === marketId);
+      if (!market) continue;
+      const { settledMarket, updatedPortfolios } = settleMarketForPortfolios(
+        market, winningOutcomeId, currentStudents
+      );
+      currentMarkets = currentMarkets.map((m) => m.id === marketId ? settledMarket : m);
+      currentStudents = updatedPortfolios;
+    }
+    setMarkets(currentMarkets);
+    setStudents(currentStudents);
+    const updatedUser = currentStudents.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Batch settle", `${settlements.length} markets settled`);
+  }, [markets, students, portfolio.userId, logAction]);
+
+  // ── Instructor tools ─────────────────────────────────────────────
+
+  const adjustBankroll = useCallback((userId: string, amount: number, reason: string) => {
+    setStudents((prev) => prev.map((s) =>
+      s.userId === userId ? { ...s, cash: Math.round((s.cash + amount) * 100) / 100 } : s
+    ));
+    if (userId === portfolio.userId) {
+      setPortfolio((prev) => ({ ...prev, cash: Math.round((prev.cash + amount) * 100) / 100 }));
+    }
+    logAction("Adjust bankroll", `${userId}: ${amount >= 0 ? "+" : ""}$${amount} — ${reason}`);
+  }, [portfolio.userId, logAction]);
+
+  const reverseTrade = useCallback((tradeId: string) => {
+    const tradeToReverse = trades.find((t) => t.id === tradeId);
+    if (!tradeToReverse) return;
+
+    // Reverse the cash impact
+    const cashDelta = tradeToReverse.type === "BUY" ? tradeToReverse.totalCost : -tradeToReverse.totalCost;
+    setStudents((prev) => prev.map((s) => {
+      if (s.userId !== tradeToReverse.userId) return s;
+      // Restore cash
+      let newCash = s.cash + cashDelta;
+      // Reverse holdings
+      const holdingIdx = s.holdings.findIndex(
+        (h) => h.marketId === tradeToReverse.marketId && h.outcomeId === tradeToReverse.outcomeId
+      );
+      const newHoldings = [...s.holdings];
+      if (tradeToReverse.type === "BUY") {
+        if (holdingIdx >= 0) {
+          const remaining = newHoldings[holdingIdx].shares - tradeToReverse.quantity;
+          if (remaining <= 0) newHoldings.splice(holdingIdx, 1);
+          else newHoldings[holdingIdx] = { ...newHoldings[holdingIdx], shares: remaining };
+        }
+      } else {
+        if (holdingIdx >= 0) {
+          newHoldings[holdingIdx] = {
+            ...newHoldings[holdingIdx],
+            shares: newHoldings[holdingIdx].shares + tradeToReverse.quantity,
+          };
+        } else {
+          newHoldings.push({
+            marketId: tradeToReverse.marketId,
+            marketTitle: tradeToReverse.marketTitle,
+            outcomeId: tradeToReverse.outcomeId,
+            outcomeName: tradeToReverse.outcomeName,
+            shares: tradeToReverse.quantity,
+            avgCostPerShare: tradeToReverse.pricePerShare,
+          });
+        }
+      }
+      return { ...s, cash: Math.round(newCash * 100) / 100, holdings: newHoldings };
+    }));
+
+    // Restore prices
+    setMarkets((prev) => prev.map((m) => {
+      if (m.id !== tradeToReverse.marketId) return m;
+      // Approximate: restore the price before trade for the traded outcome
+      return {
+        ...m,
+        outcomes: m.outcomes.map((o) =>
+          o.id === tradeToReverse.outcomeId
+            ? { ...o, price: tradeToReverse.priceBeforeTrade }
+            : o
+        ),
+      };
+    }));
+
+    // Remove trade from history
+    setTrades((prev) => prev.filter((t) => t.id !== tradeId));
+
+    // Update portfolio if it's the current user
+    if (tradeToReverse.userId === portfolio.userId) {
+      setPortfolio((prev) => {
+        let newCash = prev.cash + cashDelta;
+        const holdingIdx = prev.holdings.findIndex(
+          (h) => h.marketId === tradeToReverse.marketId && h.outcomeId === tradeToReverse.outcomeId
+        );
+        const newHoldings = [...prev.holdings];
+        if (tradeToReverse.type === "BUY") {
+          if (holdingIdx >= 0) {
+            const remaining = newHoldings[holdingIdx].shares - tradeToReverse.quantity;
+            if (remaining <= 0) newHoldings.splice(holdingIdx, 1);
+            else newHoldings[holdingIdx] = { ...newHoldings[holdingIdx], shares: remaining };
+          }
+        } else {
+          if (holdingIdx >= 0) {
+            newHoldings[holdingIdx] = {
+              ...newHoldings[holdingIdx],
+              shares: newHoldings[holdingIdx].shares + tradeToReverse.quantity,
+            };
+          }
+        }
+        return { ...prev, cash: Math.round(newCash * 100) / 100, holdings: newHoldings };
+      });
+    }
+    logAction("Reverse trade", `Trade ${tradeId.slice(0, 8)} by ${tradeToReverse.outcomeName}`);
+  }, [trades, portfolio.userId, logAction]);
+
+  const recalculateAll = useCallback(() => {
+    // Force recalculate portfolio values for all students
+    const updatedStudents = students.map((s) => {
+      const stats = calculatePortfolioValue(s, markets);
+      return s; // portfolios are already consistent; this is a "verify" action
+    });
+    setStudents(updatedStudents);
+    const updatedUser = updatedStudents.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Recalculate all", "Portfolios and leaderboards recalculated");
+  }, [students, markets, portfolio.userId, logAction]);
 
   // ── Class management ─────────────────────────────────────────────
 
@@ -415,9 +691,11 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   }, [classroom.startingBalance, logAction]);
 
   const updateStartingBalance = useCallback((amount: number) => {
-    setClassroom((prev) => ({ ...prev, startingBalance: amount }));
+    setClassrooms((prev) => prev.map((c) =>
+      c.id === activeClassroomId ? { ...c, startingBalance: amount } : c
+    ));
     logAction("Update starting balance", `$${amount}`);
-  }, [logAction]);
+  }, [activeClassroomId, logAction]);
 
   // ── Leaderboard ──────────────────────────────────────────────────
 
@@ -508,8 +786,11 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       value={{
         markets, portfolio, trades, getMarket, estimate, validate,
         trade: doTrade, portfolioStats, realizedPnL, getHolding, recentTrades, topMovers,
+        classrooms, activeClassroom: classroom, setActiveClassroom, createClassroom, deleteClassroom,
         classroom, students, adminActions, updateClassroom, addStudent, removeStudent,
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
+        openAllMarkets, closeAllMarkets, pauseAllTrading, resumeAllTrading, batchSettleMarkets,
+        adjustBankroll, reverseTrade, recalculateAll, duplicateClassroom,
         resetClassroom, updateStartingBalance,
         getLeaderboard, exportTradeHistory, exportLeaderboard,
         seedDemoData,

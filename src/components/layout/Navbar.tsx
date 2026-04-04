@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
-  Briefcase, Trophy, BookOpen, Shield,
+  Briefcase, Trophy, BookOpen, GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,6 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const isAdmin = true; // demo mode
 
   return (
     <header className="sticky top-0 z-50 border-b glass">
@@ -45,19 +44,18 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
-          {isAdmin && (
-            <Link
-              to="/admin"
-              className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                location.pathname.startsWith("/admin")
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              )}
-            >
-              Admin
-            </Link>
-          )}
+          <Link
+            to="/instructor"
+            className={cn(
+              "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+              location.pathname.startsWith("/instructor")
+                ? "bg-primary/10 text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            <GraduationCap className="h-4 w-4" />
+            Instructor
+          </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
@@ -96,21 +94,19 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
-                  location.pathname.startsWith("/admin")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:bg-muted"
-                )}
-              >
-                <Shield className="h-4 w-4" />
-                Admin
-              </Link>
-            )}
+            <Link
+              to="/instructor"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                location.pathname.startsWith("/instructor")
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <GraduationCap className="h-4 w-4" />
+              Instructor
+            </Link>
           </nav>
         </div>
       )}
