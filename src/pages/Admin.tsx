@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  Plus, Settings, Users, BarChart3, RefreshCw, Eye, Edit, Pause, Play,
-  Trophy, Copy, Trash2, Download, Clock, UserPlus, X, FileText
+  Plus, Settings, Users, BarChart3, RefreshCw, Pause, Play,
+  Trophy, Copy, Trash2, Download, Clock, UserPlus, X, FileText, Wand2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { useMarket } from "@/context/MarketContext";
 import { MarketCreator } from "@/components/admin/MarketCreator";
 import { SettlementModal } from "@/components/admin/SettlementModal";
 import type { Market } from "@/lib/tradingEngine";
+import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   open: "bg-success/15 text-success",
