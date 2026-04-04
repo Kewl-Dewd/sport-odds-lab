@@ -10,7 +10,10 @@ import {
   estimateTrade,
   validateTrade,
   calculatePortfolioValue,
-  marketToEngineConfig,
+  calculateRealizedPnL,
+  settleMarketForPortfolios,
+  defaultMarketConfig,
+  evenPriceDistribution,
   DEFAULT_STARTING_CASH,
   DEFAULT_LIQUIDITY,
   DEFAULT_MAX_TRADE_SIZE,
@@ -56,16 +59,10 @@ export interface LeaderboardEntry {
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
-const defaultConfig = (liq: number): MarketConfig => ({
-  engineType: "linear-impact",
-  liquidityParameter: liq,
-  maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
-  priceFloor: PRICE_FLOOR,
-  priceCeiling: PRICE_CEILING,
-});
+const CLASSROOM_ID = "class-1";
 
 const SEED_CLASSROOM: Classroom = {
-  id: "class-1",
+  id: CLASSROOM_ID,
   name: "Econ 101 — Spring 2026",
   description: "Introduction to prediction markets and probability",
   startingBalance: DEFAULT_STARTING_CASH,
@@ -73,118 +70,66 @@ const SEED_CLASSROOM: Classroom = {
   isActive: true,
 };
 
+function makeMarket(
+  id: string, title: string, league: string, sport: string,
+  startTime: string, description: string, outcomes: string[],
+  liquidity: number, status: "open" | "settled" = "open",
+  resolvedOutcomeId: string | null = null, settlementResult: string | null = null
+): Market {
+  const prices = evenPriceDistribution(outcomes.length);
+  const finalPrices = resolvedOutcomeId
+    ? outcomes.map((_, i) => outcomes[i] === settlementResult ? 1.0 : 0.0)
+    : prices;
+
+  return {
+    id,
+    classroomId: CLASSROOM_ID,
+    title,
+    league,
+    sport,
+    status,
+    startTime,
+    closeTime: null,
+    description,
+    outcomes: outcomes.map((name, i) => ({
+      id: `${id}-o${i + 1}`,
+      name,
+      price: resolvedOutcomeId ? finalPrices[i] : prices[i],
+    })),
+    config: defaultMarketConfig(liquidity),
+    resolvedOutcomeId,
+    settlementResult,
+    createdAt: new Date().toISOString(),
+  };
+}
+
 const SEED_MARKETS: Market[] = [
-  {
-    id: "m1", title: "Lakers vs Celtics", league: "NBA", sport: "Basketball",
-    status: "open", startTime: "Tonight, 8:00 PM ET",
-    description: "Regular season matchup. Trade on who you think will win.",
-    outcomes: [
-      { id: "m1-o1", name: "Lakers Win", price: 0.55 },
-      { id: "m1-o2", name: "Celtics Win", price: 0.45 },
-    ],
-    liquidityParameter: 100, config: defaultConfig(100),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m2", title: "Super Bowl LIX", league: "NFL", sport: "Football",
-    status: "open", startTime: "Feb 9, 7:30 PM ET",
-    description: "Championship game. Will the Chiefs three-peat?",
-    outcomes: [
-      { id: "m2-o1", name: "Chiefs Win", price: 0.52 },
-      { id: "m2-o2", name: "49ers Win", price: 0.48 },
-    ],
-    liquidityParameter: 150, config: defaultConfig(150),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m3", title: "Man City vs Arsenal", league: "Premier League", sport: "Soccer",
-    status: "open", startTime: "Sat, 3:00 PM GMT",
-    description: "Top of the table clash in the Premier League.",
-    outcomes: [
-      { id: "m3-o1", name: "Man City", price: 0.42 },
-      { id: "m3-o2", name: "Draw", price: 0.26 },
-      { id: "m3-o3", name: "Arsenal", price: 0.32 },
-    ],
-    liquidityParameter: 120, config: defaultConfig(120),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m4", title: "Wimbledon Final", league: "ATP", sport: "Tennis",
-    status: "open", startTime: "Jul 14, 2:00 PM BST",
-    description: "Men's singles final at the All England Club.",
-    outcomes: [
-      { id: "m4-o1", name: "Djokovic", price: 0.53 },
-      { id: "m4-o2", name: "Alcaraz", price: 0.47 },
-    ],
-    liquidityParameter: 80, config: defaultConfig(80),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m5", title: "World Series Game 7", league: "MLB", sport: "Baseball",
-    status: "settled", startTime: "Settled",
-    description: "The deciding game of the Fall Classic.",
-    outcomes: [
-      { id: "m5-o1", name: "Yankees", price: 1.0 },
-      { id: "m5-o2", name: "Dodgers", price: 0.0 },
-    ],
-    liquidityParameter: 100, config: defaultConfig(100),
-    resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m6", title: "NBA MVP Award", league: "NBA", sport: "Basketball",
-    status: "open", startTime: "Jun 2026",
-    description: "Who will be named the 2025-26 NBA Most Valuable Player?",
-    outcomes: [
-      { id: "m6-o1", name: "Luka Dončić", price: 0.28 },
-      { id: "m6-o2", name: "Nikola Jokić", price: 0.24 },
-      { id: "m6-o3", name: "Jayson Tatum", price: 0.18 },
-      { id: "m6-o4", name: "Giannis Antetokounmpo", price: 0.15 },
-      { id: "m6-o5", name: "Shai Gilgeous-Alexander", price: 0.15 },
-    ],
-    liquidityParameter: 180, config: defaultConfig(180),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m7", title: "Champions League Winner", league: "UEFA", sport: "Soccer",
-    status: "open", startTime: "May 31, 2026",
-    description: "Which club will lift the Champions League trophy?",
-    outcomes: [
-      { id: "m7-o1", name: "Real Madrid", price: 0.22 },
-      { id: "m7-o2", name: "Man City", price: 0.18 },
-      { id: "m7-o3", name: "Bayern Munich", price: 0.15 },
-      { id: "m7-o4", name: "Arsenal", price: 0.13 },
-      { id: "m7-o5", name: "Barcelona", price: 0.12 },
-      { id: "m7-o6", name: "PSG", price: 0.10 },
-      { id: "m7-o7", name: "Field", price: 0.10 },
-    ],
-    liquidityParameter: 200, config: defaultConfig(200),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "m8", title: "First Scorer — Lakers vs Celtics", league: "NBA", sport: "Basketball",
-    status: "open", startTime: "Tonight, 8:00 PM ET",
-    description: "Which player will score the first basket tonight?",
-    outcomes: [
-      { id: "m8-o1", name: "LeBron James", price: 0.22 },
-      { id: "m8-o2", name: "Anthony Davis", price: 0.20 },
-      { id: "m8-o3", name: "Jaylen Brown", price: 0.18 },
-      { id: "m8-o4", name: "Derrick White", price: 0.15 },
-      { id: "m8-o5", name: "Other", price: 0.25 },
-    ],
-    liquidityParameter: 120, config: defaultConfig(120),
-    resolvedOutcomeId: null, settlementResult: null,
-    createdAt: new Date().toISOString(),
-  },
+  makeMarket("m1", "Lakers vs Celtics", "NBA", "Basketball",
+    "Tonight, 8:00 PM ET", "Regular season matchup. Trade on who you think will win.",
+    ["Lakers Win", "Celtics Win"], 100),
+  makeMarket("m2", "Super Bowl LIX", "NFL", "Football",
+    "Feb 9, 7:30 PM ET", "Championship game. Will the Chiefs three-peat?",
+    ["Chiefs Win", "49ers Win"], 150),
+  makeMarket("m3", "Man City vs Arsenal", "Premier League", "Soccer",
+    "Sat, 3:00 PM GMT", "Top of the table clash in the Premier League.",
+    ["Man City", "Draw", "Arsenal"], 120),
+  makeMarket("m4", "Wimbledon Final", "ATP", "Tennis",
+    "Jul 14, 2:00 PM BST", "Men's singles final at the All England Club.",
+    ["Djokovic", "Alcaraz"], 80),
+  makeMarket("m5", "World Series Game 7", "MLB", "Baseball",
+    "Settled", "The deciding game of the Fall Classic.",
+    ["Yankees", "Dodgers"], 100, "settled", "m5-o1", "Yankees"),
+  makeMarket("m6", "NBA MVP Award", "NBA", "Basketball",
+    "Jun 2026", "Who will be named the 2025-26 NBA Most Valuable Player?",
+    ["Luka Dončić", "Nikola Jokić", "Jayson Tatum", "Giannis Antetokounmpo", "Shai Gilgeous-Alexander"], 180),
+  makeMarket("m7", "Champions League Winner", "UEFA", "Soccer",
+    "May 31, 2026", "Which club will lift the Champions League trophy?",
+    ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "PSG", "Field"], 200),
+  makeMarket("m8", "First Scorer — Lakers vs Celtics", "NBA", "Basketball",
+    "Tonight, 8:00 PM ET", "Which player will score the first basket tonight?",
+    ["LeBron James", "Anthony Davis", "Jaylen Brown", "Derrick White", "Other"], 120),
 ];
 
-// Simulated students for classroom demo
 const SEED_STUDENTS: UserPortfolio[] = [
   { userId: "user-1", displayName: "You (Demo)", cash: DEFAULT_STARTING_CASH, holdings: [] },
   { userId: "s-alice", displayName: "Alice Chen", cash: 8_500, holdings: [] },
@@ -206,6 +151,7 @@ interface MarketContextValue {
   validate: (marketId: string, outcomeId: string, quantity: number, type: "BUY" | "SELL") => TradeValidation;
   trade: (marketId: string, outcomeId: string, quantity: number, type: "BUY" | "SELL") => Trade | null;
   portfolioStats: ReturnType<typeof calculatePortfolioValue>;
+  realizedPnL: number;
   getHolding: (marketId: string, outcomeId: string) => Holding | undefined;
   recentTrades: Trade[];
   topMovers: { marketTitle: string; outcomeName: string; price: number; change: number }[];
@@ -263,12 +209,14 @@ export function MarketProvider({ children }: { children: ReactNode }) {
 
   const getMarket = useCallback((id: string) => markets.find((m) => m.id === id), [markets]);
 
+  // ── Trading (delegates to centralized engine) ───────────────────
+
   const estimate = useCallback(
     (marketId: string, outcomeId: string, quantity: number, type: "BUY" | "SELL") => {
       const market = markets.find((m) => m.id === marketId);
       if (!market || quantity <= 0) return null;
       try {
-        return estimateTrade(market.outcomes, outcomeId, quantity, type, market.liquidityParameter);
+        return estimateTrade(market, outcomeId, quantity, type);
       } catch { return null; }
     },
     [markets]
@@ -316,6 +264,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
 
   const portfolioStats = calculatePortfolioValue(portfolio, markets);
 
+  const userTrades = useMemo(
+    () => trades.filter((t) => t.userId === portfolio.userId),
+    [trades, portfolio.userId]
+  );
+  const realizedPnL = useMemo(() => calculateRealizedPnL(userTrades), [userTrades]);
+
   const getHolding = useCallback(
     (marketId: string, outcomeId: string) =>
       portfolio.holdings.find((h) => h.marketId === marketId && h.outcomeId === outcomeId),
@@ -355,31 +309,39 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const createMarket = useCallback(
     (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
-      const evenPrice = Math.round((1 / outcomes.length) * 100) / 100;
+      const prices = evenPriceDistribution(outcomes.length);
       const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling };
       const newMarket: Market = {
-        id, title, league, sport, status: "open", startTime, description,
+        id,
+        classroomId: classroom.id,
+        title,
+        league,
+        sport,
+        status: "open",
+        startTime,
+        closeTime: null,
+        description,
         outcomes: outcomes.map((name, i) => ({
           id: `${id}-o${i + 1}`,
           name,
-          price: i === 0 ? +(1 - evenPrice * (outcomes.length - 1)).toFixed(2) : evenPrice,
+          price: prices[i],
         })),
-        liquidityParameter: liquidity,
         config,
-        resolvedOutcomeId: null, settlementResult: null,
+        resolvedOutcomeId: null,
+        settlementResult: null,
         createdAt: new Date().toISOString(),
       };
       setMarkets((prev) => [newMarket, ...prev]);
       logAction("Create market", `${title} [${engineType}]`);
     },
-    [logAction]
+    [classroom.id, logAction]
   );
 
   const duplicateMarket = useCallback((marketId: string) => {
     const source = markets.find((m) => m.id === marketId);
     if (!source) return;
     const id = `m-${crypto.randomUUID().slice(0, 8)}`;
-    const evenPrice = Math.round((1 / source.outcomes.length) * 100) / 100;
+    const prices = evenPriceDistribution(source.outcomes.length);
     const dup: Market = {
       ...source,
       id,
@@ -390,7 +352,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       outcomes: source.outcomes.map((o, i) => ({
         ...o,
         id: `${id}-o${i + 1}`,
-        price: i === 0 ? +(1 - evenPrice * (source.outcomes.length - 1)).toFixed(2) : evenPrice,
+        price: prices[i],
       })),
       createdAt: new Date().toISOString(),
     };
@@ -411,61 +373,21 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const settleMarket = useCallback((marketId: string, winningOutcomeId: string) => {
     const market = markets.find((m) => m.id === marketId);
     if (!market) return;
-    const winner = market.outcomes.find((o) => o.id === winningOutcomeId);
-    if (!winner) return;
 
-    // Update market status and prices
-    setMarkets((prev) => prev.map((m) => {
-      if (m.id !== marketId) return m;
-      return {
-        ...m,
-        status: "settled" as const,
-        resolvedOutcomeId: winningOutcomeId,
-        settlementResult: winner.name,
-        outcomes: m.outcomes.map((o) => ({
-          ...o,
-          price: o.id === winningOutcomeId ? 1.0 : 0.0,
-        })),
-      };
-    }));
+    // Use centralized settlement from trading engine
+    const { settledMarket, updatedPortfolios } = settleMarketForPortfolios(
+      market, winningOutcomeId, students
+    );
 
-    // Settle portfolios for all students
-    setStudents((prev) => prev.map((student) => {
-      const relevantHoldings = student.holdings.filter((h) => h.marketId === marketId);
-      if (relevantHoldings.length === 0) return student;
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? settledMarket : m));
+    setStudents(updatedPortfolios);
 
-      let cashDelta = 0;
-      for (const h of relevantHoldings) {
-        if (h.outcomeId === winningOutcomeId) {
-          cashDelta += h.shares * 1.0; // Winners pay $1/share
-        }
-        // Losers pay $0
-      }
+    // Also update the current user's portfolio view
+    const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
 
-      return {
-        ...student,
-        cash: Math.round((student.cash + cashDelta) * 10000) / 10000,
-        holdings: student.holdings.filter((h) => h.marketId !== marketId),
-      };
-    }));
-
-    // Also update the current user portfolio
-    setPortfolio((prev) => {
-      const relevantHoldings = prev.holdings.filter((h) => h.marketId === marketId);
-      if (relevantHoldings.length === 0) return prev;
-      let cashDelta = 0;
-      for (const h of relevantHoldings) {
-        if (h.outcomeId === winningOutcomeId) cashDelta += h.shares * 1.0;
-      }
-      return {
-        ...prev,
-        cash: Math.round((prev.cash + cashDelta) * 10000) / 10000,
-        holdings: prev.holdings.filter((h) => h.marketId !== marketId),
-      };
-    });
-
-    logAction("Settle market", `${market.title} → ${winner.name}`);
-  }, [markets, logAction]);
+    logAction("Settle market", `${market.title} → ${settledMarket.settlementResult}`);
+  }, [markets, students, portfolio.userId, logAction]);
 
   const deleteMarket = useCallback((marketId: string) => {
     setMarkets((prev) => prev.filter((m) => m.id !== marketId));
@@ -480,17 +402,13 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setPortfolio((prev) => ({ ...prev, cash: balance, holdings: [] }));
     setTrades([]);
     setPriceChanges(new Map());
-    // Reset non-settled markets to even prices
     setMarkets((prev) => prev.map((m) => {
       if (m.status === "settled") return m;
-      const evenPrice = Math.round((1 / m.outcomes.length) * 100) / 100;
+      const prices = evenPriceDistribution(m.outcomes.length);
       return {
         ...m,
-        status: "open",
-        outcomes: m.outcomes.map((o, i) => ({
-          ...o,
-          price: i === 0 ? +(1 - evenPrice * (m.outcomes.length - 1)).toFixed(2) : evenPrice,
-        })),
+        status: "open" as const,
+        outcomes: m.outcomes.map((o, i) => ({ ...o, price: prices[i] })),
       };
     }));
     logAction("Reset classroom", `All data reset, balance: $${balance}`);
@@ -506,14 +424,13 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const getLeaderboard = useCallback((mode: LeaderboardMode): LeaderboardEntry[] => {
     const entries: LeaderboardEntry[] = students.map((s) => {
       const stats = calculatePortfolioValue(s, markets);
-      const userTrades = trades.filter((t) => t.userId === s.userId);
+      const stuTrades = trades.filter((t) => t.userId === s.userId);
       const startBal = classroom.startingBalance;
 
-      // Count "wins" — trades where the user bought and the price went up
       let winCount = 0;
       let bestPnL = 0;
       let worstPnL = 0;
-      for (const t of userTrades) {
+      for (const t of stuTrades) {
         const pnl = t.type === "BUY"
           ? (t.priceAfterTrade - t.pricePerShare) * t.quantity
           : (t.pricePerShare - t.priceBeforeTrade) * t.quantity;
@@ -528,7 +445,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         portfolioValue: stats.totalValue,
         cash: stats.cash,
         returnPct: startBal > 0 ? ((stats.totalValue - startBal) / startBal) * 100 : 0,
-        tradeCount: userTrades.length,
+        tradeCount: stuTrades.length,
         winCount,
         bestTradePnL: Math.round(bestPnL * 100) / 100,
         worstTradePnL: Math.round(worstPnL * 100) / 100,
@@ -590,7 +507,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     <MarketContext.Provider
       value={{
         markets, portfolio, trades, getMarket, estimate, validate,
-        trade: doTrade, portfolioStats, getHolding, recentTrades, topMovers,
+        trade: doTrade, portfolioStats, realizedPnL, getHolding, recentTrades, topMovers,
         classroom, students, adminActions, updateClassroom, addStudent, removeStudent,
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
         resetClassroom, updateStartingBalance,

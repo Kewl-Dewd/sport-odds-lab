@@ -40,7 +40,6 @@ export default function MarketDetail() {
     [market, trades]
   );
 
-  // Sort outcomes — must be before early return
   const sortedOutcomes = useMemo(() => {
     if (!market) return [];
     const items = [...market.outcomes];
@@ -97,7 +96,7 @@ export default function MarketDetail() {
     return null;
   };
 
-  const engineLabel = market.config?.engineType === "lmsr" ? "LMSR" : "Linear Impact";
+  const engineLabel = market.config.engineType === "lmsr" ? "LMSR" : "Linear Impact";
 
   return (
     <div className="container py-8 animate-slide-up">
@@ -433,9 +432,9 @@ export default function MarketDetail() {
                 <div><span className="text-muted-foreground">Sport:</span> {market.sport}</div>
                 <div><span className="text-muted-foreground">League:</span> {market.league}</div>
                 <div><span className="text-muted-foreground">Engine:</span> {engineLabel}</div>
-                <div><span className="text-muted-foreground">Liquidity:</span> {market.config?.liquidityParameter ?? market.liquidityParameter}</div>
+                <div><span className="text-muted-foreground">Liquidity:</span> {market.config.liquidityParameter}</div>
                 <div><span className="text-muted-foreground">Outcomes:</span> {market.outcomes.length}</div>
-                <div><span className="text-muted-foreground">Max Trade:</span> {market.config?.maxTradeSize ?? "500"}</div>
+                <div><span className="text-muted-foreground">Max Trade:</span> {market.config.maxTradeSize}</div>
               </div>
             </CardContent>
           </Card>
@@ -476,7 +475,7 @@ export default function MarketDetail() {
           <EducationalSidebar
             price={firstOutcome?.price ?? 0.5}
             outcomeName={firstOutcome?.name ?? ""}
-            liquidityParameter={market.config?.liquidityParameter ?? market.liquidityParameter}
+            liquidityParameter={market.config.liquidityParameter}
           />
         </div>
       </div>
