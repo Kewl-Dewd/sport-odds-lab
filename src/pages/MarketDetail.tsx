@@ -40,23 +40,9 @@ export default function MarketDetail() {
     [market, trades]
   );
 
-  if (!market) {
-    return (
-      <div className="container py-16 text-center">
-        <p className="text-muted-foreground">Market not found.</p>
-        <Link to="/markets" className="text-primary underline text-sm mt-2 inline-block">Back to Markets</Link>
-      </div>
-    );
-  }
-
-  const marketTrades = trades.filter((t) => t.marketId === market.id).slice(0, 15);
-  const isOpen = market.status === "open";
-  const firstOutcome = market.outcomes[0];
-  const isMulti = market.outcomes.length > 2;
-  const priceSum = market.outcomes.reduce((s, o) => s + o.price, 0);
-
-  // Sort outcomes
+  // Sort outcomes — must be before early return
   const sortedOutcomes = useMemo(() => {
+    if (!market) return [];
     const items = [...market.outcomes];
     switch (outcomeSort) {
       case "price-desc": return items.sort((a, b) => b.price - a.price);
@@ -71,7 +57,22 @@ export default function MarketDetail() {
       }
       default: return items;
     }
-  }, [market.outcomes, outcomeSort, analytics]);
+  }, [market, outcomeSort, analytics]);
+
+  if (!market) {
+    return (
+      <div className="container py-16 text-center">
+        <p className="text-muted-foreground">Market not found.</p>
+        <Link to="/markets" className="text-primary underline text-sm mt-2 inline-block">Back to Markets</Link>
+      </div>
+    );
+  }
+
+  const marketTrades = trades.filter((t) => t.marketId === market.id).slice(0, 15);
+  const isOpen = market.status === "open";
+  const firstOutcome = market.outcomes[0];
+  const isMulti = market.outcomes.length > 2;
+  const priceSum = market.outcomes.reduce((s, o) => s + o.price, 0);
 
   const statusBadge = () => {
     switch (market.status) {
