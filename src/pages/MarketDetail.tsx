@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, Clock, BarChart3, TrendingUp, TrendingDown,
   Activity, Users as UsersIcon, Gauge, ArrowUpDown, Settings2,
+  Droplets, Zap, ShieldCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
