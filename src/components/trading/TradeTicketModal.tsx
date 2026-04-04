@@ -3,6 +3,9 @@ import { X, TrendingUp, TrendingDown, ArrowRight, Check, AlertCircle, AlertTrian
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMarket } from "@/context/MarketContext";
+import { useEducation } from "@/context/EducationContext";
+import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
+import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
