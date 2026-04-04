@@ -1,9 +1,10 @@
 /**
- * Sports Market Lab — Trading Engine v2
+ * Sports Market Lab — Trading Engine
  *
- * Delegates all pricing math to pluggable PricingEngine implementations.
- * This module handles trade validation, execution, and portfolio math.
- * The pricing model itself is swappable per market.
+ * Single source of truth for all trade validation, execution,
+ * portfolio math, and settlement logic.
+ *
+ * Delegates pricing math to pluggable PricingEngine implementations.
  */
 
 import { getEngine, type PricingEngineConfig, type TradeEstimateResult, type PricingEngineType, DEFAULT_ENGINE_CONFIG } from "./pricing";
@@ -26,15 +27,15 @@ export interface MarketConfig {
 
 export interface Market {
   id: string;
+  classroomId: string;
   title: string;
   league: string;
   sport: string;
   status: MarketStatus;
   startTime: string;
+  closeTime: string | null;
   description: string;
   outcomes: Outcome[];
-  /** @deprecated Use config.liquidityParameter — kept for backward compat */
-  liquidityParameter: number;
   config: MarketConfig;
   resolvedOutcomeId: string | null;
   settlementResult: string | null;
@@ -94,21 +95,25 @@ function round4(n: number): number {
   return Math.round(n * 10_000) / 10_000;
 }
 
-/** Build a PricingEngineConfig from a Market */
+/** Build a PricingEngineConfig from a Market's config */
 export function marketToEngineConfig(market: Market): PricingEngineConfig {
-  if (market.config) {
-    return {
-      type: market.config.engineType,
-      liquidityParameter: market.config.liquidityParameter,
-      maxTradeSize: market.config.maxTradeSize,
-      priceFloor: market.config.priceFloor,
-      priceCeiling: market.config.priceCeiling,
-    };
-  }
-  // Backward compat for markets without config
   return {
-    ...DEFAULT_ENGINE_CONFIG,
-    liquidityParameter: market.liquidityParameter,
+    type: market.config.engineType,
+    liquidityParameter: market.config.liquidityParameter,
+    maxTradeSize: market.config.maxTradeSize,
+    priceFloor: market.config.priceFloor,
+    priceCeiling: market.config.priceCeiling,
+  };
+}
+
+/** Default MarketConfig factory */
+export function defaultMarketConfig(liquidity: number = DEFAULT_LIQUIDITY): MarketConfig {
+  return {
+    engineType: "linear-impact",
+    liquidityParameter: liquidity,
+    maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
+    priceFloor: PRICE_FLOOR,
+    priceCeiling: PRICE_CEILING,
   };
 }
 
@@ -119,23 +124,16 @@ export type { TradeEstimateResult as TradeEstimate };
 // ── Price Estimation (delegates to engine) ────────────────────────
 
 export function estimateTrade(
-  outcomes: Outcome[],
+  market: Market,
   outcomeId: string,
   quantity: number,
-  type: "BUY" | "SELL",
-  liquidity: number,
-  engineType: PricingEngineType = "linear-impact",
-  config?: PricingEngineConfig
+  type: "BUY" | "SELL"
 ): TradeEstimateResult {
-  const engine = getEngine(engineType);
-  const engineConfig: PricingEngineConfig = config ?? {
-    ...DEFAULT_ENGINE_CONFIG,
-    type: engineType,
-    liquidityParameter: liquidity,
-  };
+  const engineConfig = marketToEngineConfig(market);
+  const engine = getEngine(engineConfig.type);
 
   return engine.estimateTrade(
-    outcomes.map((o) => ({ id: o.id, name: o.name, price: o.price })),
+    market.outcomes.map((o) => ({ id: o.id, name: o.name, price: o.price })),
     { outcomeId, quantity, type },
     engineConfig
   );
@@ -170,14 +168,11 @@ export function validateTrade(
   if (!sizeCheck.valid) return sizeCheck;
 
   if (type === "BUY") {
-    const estimate = estimateTrade(
-      market.outcomes, outcomeId, quantity, "BUY",
-      engineConfig.liquidityParameter, engineConfig.type, engineConfig
-    );
-    if (estimate.totalCost > portfolio.cash) {
+    const est = estimateTrade(market, outcomeId, quantity, "BUY");
+    if (est.totalCost > portfolio.cash) {
       return {
         valid: false,
-        error: `Insufficient cash. Need $${estimate.totalCost.toFixed(2)}, have $${portfolio.cash.toFixed(2)}`,
+        error: `Insufficient cash. Need $${est.totalCost.toFixed(2)}, have $${portfolio.cash.toFixed(2)}`,
       };
     }
   }
@@ -213,11 +208,7 @@ export function executeTrade(
   const validation = validateTrade(market, portfolio, outcomeId, quantity, type);
   if (!validation.valid) throw new Error(validation.error);
 
-  const engineConfig = marketToEngineConfig(market);
-  const estimate = estimateTrade(
-    market.outcomes, outcomeId, quantity, type,
-    engineConfig.liquidityParameter, engineConfig.type, engineConfig
-  );
+  const estimate = estimateTrade(market, outcomeId, quantity, type);
 
   const updatedOutcomes: Outcome[] = market.outcomes.map((o) => {
     const np = estimate.newPrices.find((p) => p.outcomeId === o.id);
@@ -270,6 +261,8 @@ export function executeTrade(
     }
   }
 
+  const engineConfig = marketToEngineConfig(market);
+
   const trade: Trade = {
     id: crypto.randomUUID(),
     userId: portfolio.userId,
@@ -292,6 +285,71 @@ export function executeTrade(
     updatedOutcomes,
     updatedPortfolio: { ...portfolio, cash: newCash, holdings: newHoldings },
   };
+}
+
+// ── Settlement ─────────────────────────────────────────────────────
+
+export interface SettlementPayout {
+  userId: string;
+  cashDelta: number;
+}
+
+/**
+ * Settle a market: uses the engine's settleMarket for price finalization,
+ * then calculates payouts for all affected portfolios.
+ */
+export function settleMarketForPortfolios(
+  market: Market,
+  winningOutcomeId: string,
+  portfolios: UserPortfolio[]
+): {
+  settledMarket: Market;
+  updatedPortfolios: UserPortfolio[];
+  payouts: SettlementPayout[];
+} {
+  const engineConfig = marketToEngineConfig(market);
+  const engine = getEngine(engineConfig.type);
+  const result = engine.settleMarket(
+    market.outcomes.map((o) => ({ id: o.id, name: o.name, price: o.price })),
+    winningOutcomeId,
+    engineConfig
+  );
+
+  const winner = market.outcomes.find((o) => o.id === winningOutcomeId);
+
+  const settledMarket: Market = {
+    ...market,
+    status: "settled",
+    resolvedOutcomeId: winningOutcomeId,
+    settlementResult: winner?.name ?? null,
+    outcomes: market.outcomes.map((o) => {
+      const fp = result.finalPrices.find((p) => p.outcomeId === o.id);
+      return { ...o, price: fp?.price ?? o.price };
+    }),
+  };
+
+  const payouts: SettlementPayout[] = [];
+  const updatedPortfolios = portfolios.map((portfolio) => {
+    const relevantHoldings = portfolio.holdings.filter((h) => h.marketId === market.id);
+    if (relevantHoldings.length === 0) return portfolio;
+
+    let cashDelta = 0;
+    for (const h of relevantHoldings) {
+      if (h.outcomeId === winningOutcomeId) {
+        cashDelta += h.shares * result.payoutPerShare;
+      }
+    }
+
+    payouts.push({ userId: portfolio.userId, cashDelta });
+
+    return {
+      ...portfolio,
+      cash: round4(portfolio.cash + cashDelta),
+      holdings: portfolio.holdings.filter((h) => h.marketId !== market.id),
+    };
+  });
+
+  return { settledMarket, updatedPortfolios, payouts };
 }
 
 // ── Portfolio Calculations ─────────────────────────────────────────
@@ -326,10 +384,25 @@ export function calculatePortfolioValue(
   };
 }
 
-export function calculateRealizedPnL(trades: Trade[], _holdings: Holding[]): number {
+/**
+ * Calculate realized P&L from sell trades.
+ * Realized = sum of (sell price - avg cost) × quantity for all sells.
+ */
+export function calculateRealizedPnL(trades: Trade[]): number {
   return round4(
     trades
       .filter((t) => t.type === "SELL")
-      .reduce((sum, t) => sum + (t.pricePerShare - t.priceBeforeTrade) * t.quantity * -1 + t.totalCost, 0)
+      .reduce((sum, t) => sum + t.totalCost - t.quantity * t.priceBeforeTrade, 0)
+  );
+}
+
+/**
+ * Even price distribution for N outcomes, ensuring sum ≈ 1.0.
+ * First outcome absorbs rounding remainder.
+ */
+export function evenPriceDistribution(outcomeCount: number): number[] {
+  const evenPrice = Math.round((1 / outcomeCount) * 100) / 100;
+  return Array.from({ length: outcomeCount }, (_, i) =>
+    i === 0 ? +(1 - evenPrice * (outcomeCount - 1)).toFixed(2) : evenPrice
   );
 }

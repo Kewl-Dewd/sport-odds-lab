@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { TrendingUp, TrendingDown, PieChart as PieIcon, DollarSign, Wallet } from "lucide-react";
+import { TrendingUp, TrendingDown, PieChart as PieIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 import { PortfolioPerformanceChart, HoldingsDistribution } from "@/components/charts/AnalyticsCharts";
@@ -8,17 +8,10 @@ import { buildPortfolioHistory, analyzePositions } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
 export default function Portfolio() {
-  const { portfolio, portfolioStats, markets, trades, classroom } = useMarket();
+  const { portfolio, portfolioStats, realizedPnL, markets, trades, classroom } = useMarket();
   const { cash, holdingsValue, totalValue, unrealizedPnL } = portfolioStats;
 
   const userTrades = useMemo(() => trades.filter((t) => t.userId === portfolio.userId), [trades, portfolio.userId]);
-
-  const realizedPnL = useMemo(() =>
-    userTrades
-      .filter((t) => t.type === "SELL")
-      .reduce((sum, t) => sum + t.totalCost - t.quantity * t.priceBeforeTrade, 0),
-    [userTrades]
-  );
 
   const portfolioHistory = useMemo(
     () => buildPortfolioHistory(userTrades, classroom.startingBalance),
