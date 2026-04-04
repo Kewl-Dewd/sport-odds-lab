@@ -3,6 +3,9 @@ import { X, TrendingUp, TrendingDown, ArrowRight, Check, AlertCircle, AlertTrian
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMarket } from "@/context/MarketContext";
+import { useEducation } from "@/context/EducationContext";
+import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
+import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -22,6 +25,7 @@ export function TradeTicketModal({
   open, onClose, marketId, outcomeId, outcomeName, initialType = "BUY",
 }: TradeTicketModalProps) {
   const { estimate, validate, trade, getMarket, getHolding, portfolio } = useMarket();
+  const { pushNudge, educationEnabled } = useEducation();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   const [quantity, setQuantity] = useState("");
   const [step, setStep] = useState<Step>("entry");
@@ -65,6 +69,16 @@ export function TradeTicketModal({
       toast.success(`${type} ${qty} shares of ${outcomeName}`, {
         description: `Executed at ${(result.pricePerShare * 100).toFixed(1)}¢ avg · Total: $${result.totalCost.toFixed(2)}`,
       });
+
+      // Educational nudges after trade
+      if (educationEnabled) {
+        // High slippage nudge
+        if (slippagePct > 5) pushNudge(NUDGE_CONTENT.slippage);
+        // Concentrated position nudge
+        if (result.totalCost > portfolio.cash * 0.4) pushNudge(NUDGE_CONTENT.concentration);
+        // Overconfident nudge
+        if (type === "BUY" && result.priceBeforeTrade > 0.8) pushNudge(NUDGE_CONTENT.overconfident);
+      }
     } else {
       toast.error("Trade failed", { description: "Something went wrong. Please try again." });
     }
@@ -135,6 +149,11 @@ export function TradeTicketModal({
             {tradeEstimate && qty > 0 && (
               <div className="rounded-lg bg-muted p-4 space-y-2.5 text-sm">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Trade Impact Preview</p>
+                {educationEnabled && (
+                  <p className="text-xs text-muted-foreground -mt-1 mb-1">
+                    Each share costs slightly more than the last because your trade moves the price. This is normal.
+                  </p>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Current Price</span>
                   <span className="font-mono font-semibold">{(currentOutcome.price * 100).toFixed(1)}¢</span>

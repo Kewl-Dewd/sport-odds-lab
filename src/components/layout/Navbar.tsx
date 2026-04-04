@@ -5,6 +5,7 @@ import {
   Briefcase, Trophy, BookOpen, GraduationCap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -13,6 +14,7 @@ const navLinks = [
   { label: "Portfolio", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { label: "How It Works", href: "/how-it-works", icon: BookOpen },
+  { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
 export function Navbar() {
@@ -58,7 +60,8 @@ export function Navbar() {
           </Link>
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
+          <EducationModeToggle />
           <Button variant="outline" size="sm" asChild>
             <Link to="/dashboard">Demo Mode</Link>
           </Button>
@@ -107,6 +110,9 @@ export function Navbar() {
               <GraduationCap className="h-4 w-4" />
               Instructor
             </Link>
+            <div className="px-3 py-2">
+              <EducationModeToggle />
+            </div>
           </nav>
         </div>
       )}

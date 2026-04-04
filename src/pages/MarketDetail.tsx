@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, Clock, BarChart3, TrendingUp, TrendingDown,
@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useMarket } from "@/context/MarketContext";
+import { useEducation } from "@/context/EducationContext";
+import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
+import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
@@ -20,6 +23,7 @@ type OutcomeSort = "price-desc" | "price-asc" | "name" | "change";
 export default function MarketDetail() {
   const { id } = useParams<{ id: string }>();
   const { getMarket, getHolding, trades } = useMarket();
+  const { educationEnabled, mode, pushNudge } = useEducation();
   const market = getMarket(id ?? "");
 
   const [tradeModal, setTradeModal] = useState<{
@@ -89,11 +93,15 @@ export default function MarketDetail() {
         ⏸ Trading is temporarily suspended by the instructor.
       </div>
     );
-    if (market.status === "settled") return (
-      <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-center">
-        ✓ This market has been settled. Winner: <strong>{market.settlementResult}</strong>
-      </div>
-    );
+    if (market.status === "settled") {
+      // Push settlement nudge
+      if (educationEnabled) pushNudge(NUDGE_CONTENT.settlement);
+      return (
+        <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-center">
+          ✓ This market has been settled. Winner: <strong>{market.settlementResult}</strong>
+        </div>
+      );
+    }
     return null;
   };
 
@@ -507,11 +515,13 @@ export default function MarketDetail() {
             </Card>
           )}
 
-          <EducationalSidebar
-            price={firstOutcome?.price ?? 0.5}
-            outcomeName={firstOutcome?.name ?? ""}
-            liquidityParameter={market.config.liquidityParameter}
-          />
+          {educationEnabled && (
+            <EducationalSidebar
+              price={firstOutcome?.price ?? 0.5}
+              outcomeName={firstOutcome?.name ?? ""}
+              liquidityParameter={market.config.liquidityParameter}
+            />
+          )}
         </div>
       </div>
 
