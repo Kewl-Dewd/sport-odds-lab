@@ -277,6 +277,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [priceChanges, setPriceChanges] = useState<
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
   >(new Map());
+  const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
