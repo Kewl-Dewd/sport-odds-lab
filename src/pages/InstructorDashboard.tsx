@@ -547,7 +547,7 @@ export default function InstructorDashboard() {
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Presentation Mode</CardTitle></CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-xs text-muted-foreground">Full-screen views optimized for classroom projection.</p>
+                <p className="text-xs text-muted-foreground">Full-screen views for classroom projection. Use arrow keys, Space, or F for fullscreen.</p>
                 <div className="space-y-1.5">
                   <Button variant="outline" size="sm" className="w-full justify-between" asChild>
                     <Link to="/instructor/present/board">Market Board<ChevronRight className="h-3.5 w-3.5" /></Link>
@@ -562,7 +562,13 @@ export default function InstructorDashboard() {
                     <Link to="/instructor/present/movers">Top Movers<ChevronRight className="h-3.5 w-3.5" /></Link>
                   </Button>
                   <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/review">Trade Review & Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    <Link to="/instructor/present/settlement">Settlement Board<ChevronRight className="h-3.5 w-3.5" /></Link>
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                    <Link to="/instructor/present/replay">Market Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                    <Link to="/instructor/review">Trade Review<ChevronRight className="h-3.5 w-3.5" /></Link>
                   </Button>
                   <Button variant="outline" size="sm" className="w-full justify-between" asChild>
                     <Link to="/instructor/reports">Reports & Grading<ChevronRight className="h-3.5 w-3.5" /></Link>
