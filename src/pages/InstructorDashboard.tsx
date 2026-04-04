@@ -6,7 +6,7 @@ import {
   Users, BarChart3, Trophy, Activity, Zap, TrendingUp, TrendingDown,
   AlertTriangle, Settings, Copy, Trash2, Clock, FileText, UserPlus,
   X, DollarSign, Undo2, Calculator, MonitorPlay, ChevronRight,
-  LayoutGrid, GraduationCap, Eye,
+  LayoutGrid, GraduationCap, Eye, Ban, CalendarOff, Pencil, MoreHorizontal,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
