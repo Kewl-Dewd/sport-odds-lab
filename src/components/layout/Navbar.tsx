@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
-  Briefcase, Trophy, BookOpen, GraduationCap,
+  Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
