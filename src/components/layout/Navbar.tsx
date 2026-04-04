@@ -15,8 +15,8 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const isLoggedIn = false; // placeholder
-  const isAdmin = false; // placeholder
+  const isLoggedIn = true; // demo mode
+  const isAdmin = true; // demo mode
 
   return (
     <header className="sticky top-0 z-50 border-b glass">
