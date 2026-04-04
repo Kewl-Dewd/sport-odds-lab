@@ -39,6 +39,7 @@ export default function InstructorDashboard() {
     markets, trades, students, classroom, classrooms, activeClassroom,
     adminActions, setActiveClassroom, createClassroom, deleteClassroom,
     suspendMarket, resumeMarket, duplicateMarket, deleteMarket,
+    voidMarket, cancelMarket, postponeMarket, editMarket,
     addStudent, removeStudent, updateStartingBalance, resetClassroom,
     updateClassroom, exportTradeHistory, exportLeaderboard, getLeaderboard,
     seedDemoData, openAllMarkets, closeAllMarkets, pauseAllTrading,
