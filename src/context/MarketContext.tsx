@@ -55,6 +55,14 @@ export interface LeaderboardEntry {
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
+const defaultConfig = (liq: number): MarketConfig => ({
+  engineType: "linear-impact",
+  liquidityParameter: liq,
+  maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
+  priceFloor: PRICE_FLOOR,
+  priceCeiling: PRICE_CEILING,
+});
+
 const SEED_CLASSROOM: Classroom = {
   id: "class-1",
   name: "Econ 101 — Spring 2026",
@@ -73,7 +81,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m1-o1", name: "Lakers Win", price: 0.55 },
       { id: "m1-o2", name: "Celtics Win", price: 0.45 },
     ],
-    liquidityParameter: 100, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 100, config: defaultConfig(100),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -84,7 +93,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m2-o1", name: "Chiefs Win", price: 0.52 },
       { id: "m2-o2", name: "49ers Win", price: 0.48 },
     ],
-    liquidityParameter: 150, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 150, config: defaultConfig(150),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -96,7 +106,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m3-o2", name: "Draw", price: 0.26 },
       { id: "m3-o3", name: "Arsenal", price: 0.32 },
     ],
-    liquidityParameter: 120, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 120, config: defaultConfig(120),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -107,7 +118,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m4-o1", name: "Djokovic", price: 0.53 },
       { id: "m4-o2", name: "Alcaraz", price: 0.47 },
     ],
-    liquidityParameter: 80, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 80, config: defaultConfig(80),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -118,7 +130,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m5-o1", name: "Yankees", price: 1.0 },
       { id: "m5-o2", name: "Dodgers", price: 0.0 },
     ],
-    liquidityParameter: 100, resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
+    liquidityParameter: 100, config: defaultConfig(100),
+    resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
     createdAt: new Date().toISOString(),
   },
 ];
