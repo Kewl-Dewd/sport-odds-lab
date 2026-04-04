@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, Clock, BarChart3, TrendingUp, TrendingDown,
@@ -9,6 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useMarket } from "@/context/MarketContext";
+import { useEducation } from "@/context/EducationContext";
+import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
+import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
