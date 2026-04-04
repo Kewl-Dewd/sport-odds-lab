@@ -50,11 +50,7 @@ export function generateSampleTrades(
       const quantity = Math.floor(Math.random() * 30) + 5;
 
       try {
-        const config = marketToEngineConfig(mkt);
-        const est = estimateTrade(
-          mkt.outcomes, outcome.id, quantity, "BUY",
-          config.liquidityParameter, config.type, config
-        );
+        const est = estimateTrade(mkt, outcome.id, quantity, "BUY");
 
         if (est.totalCost > stu.cash) continue;
 
