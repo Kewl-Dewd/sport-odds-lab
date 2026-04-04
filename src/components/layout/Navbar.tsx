@@ -47,6 +47,18 @@ export function Navbar() {
             </Link>
           ))}
           <Link
+            to="/experiments"
+            className={cn(
+              "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+              location.pathname.startsWith("/experiments")
+                ? "bg-primary/10 text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            <FlaskConical className="h-4 w-4" />
+            Experiments
+          </Link>
+          <Link
             to="/instructor"
             className={cn(
               "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
