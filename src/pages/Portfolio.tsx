@@ -42,6 +42,14 @@ function StatRow({ label, value, icon, className }: { label: string; value: stri
 export default function Portfolio() {
   const { portfolio, portfolioStats, realizedPnL, markets, trades, classroom, students } = useMarket();
   const { cash, holdingsValue, totalValue, unrealizedPnL } = portfolioStats;
+  const { educationEnabled, pushNudge } = useEducation();
+
+  // Nudge for unrealized P&L on first portfolio view with holdings
+  useMemo(() => {
+    if (educationEnabled && portfolio.holdings.length > 0 && unrealizedPnL !== 0) {
+      pushNudge(NUDGE_CONTENT.unrealized);
+    }
+  }, [educationEnabled, portfolio.holdings.length > 0]); // eslint-disable-line
 
   const userTrades = useMemo(() => trades.filter((t) => t.userId === portfolio.userId), [trades, portfolio.userId]);
 
