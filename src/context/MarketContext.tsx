@@ -1018,6 +1018,63 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     logAction("Delete template", id);
   }, [logAction]);
 
+  // ── Experiments ─────────────────────────────────────────────────
+
+  const activeExperiment = useMemo(() => experiments.find((e) => e.id === activeExperimentId) ?? null, [experiments, activeExperimentId]);
+
+  const createExperiment = useCallback((data: Omit<Experiment, "id" | "createdAt" | "status">): Experiment => {
+    const exp: Experiment = { ...data, id: `exp-${crypto.randomUUID().slice(0, 8)}`, createdAt: new Date().toISOString(), status: "draft" };
+    setExperiments((prev) => [...prev, exp]);
+    logAction("Create experiment", exp.title);
+    return exp;
+  }, [logAction]);
+
+  const updateExperiment = useCallback((id: string, updates: Partial<Experiment>) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, ...updates } : e));
+    logAction("Update experiment", id);
+  }, [logAction]);
+
+  const deleteExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.filter((e) => e.id !== id));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("Delete experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const duplicateExperiment = useCallback((id: string) => {
+    const src = experiments.find((e) => e.id === id);
+    if (!src) return;
+    const dup: Experiment = { ...src, id: `exp-${crypto.randomUUID().slice(0, 8)}`, title: `${src.title} (Copy)`, status: "draft", createdAt: new Date().toISOString() };
+    setExperiments((prev) => [...prev, dup]);
+    logAction("Duplicate experiment", src.title);
+  }, [experiments, logAction]);
+
+  const activateExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "active" as const } : e));
+    setActiveExperimentId(id);
+    logAction("Activate experiment", id);
+  }, [logAction]);
+
+  const pauseExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "paused" as const } : e));
+    logAction("Pause experiment", id);
+  }, [logAction]);
+
+  const endExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "ended" as const } : e));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("End experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const archiveExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "archived" as const } : e));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("Archive experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const setActiveExperiment = useCallback((id: string | null) => {
+    setActiveExperimentId(id);
+  }, []);
+
   return (
     <MarketContext.Provider
       value={{
@@ -1033,6 +1090,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         resetClassroom, updateStartingBalance,
         getLeaderboard, exportTradeHistory, exportLeaderboard,
         seedDemoData,
+        experiments, activeExperiment, createExperiment, updateExperiment, deleteExperiment,
+        duplicateExperiment, activateExperiment, pauseExperiment, endExperiment, archiveExperiment,
+        setActiveExperiment,
       }}
     >
       {children}
