@@ -120,7 +120,8 @@ const SEED_CLASSROOMS: Classroom[] = [
 function makeMarket(
   id: string, title: string, league: string, sport: string,
   startTime: string, description: string, outcomes: string[],
-  liquidity: number, status: "open" | "settled" = "open",
+  liquidity: number, category: MarketCategory = "game-winner",
+  status: "open" | "settled" = "open",
   resolvedOutcomeId: string | null = null, settlementResult: string | null = null
 ): Market {
   const prices = evenPriceDistribution(outcomes.length);
@@ -147,6 +148,10 @@ function makeMarket(
     resolvedOutcomeId,
     settlementResult,
     createdAt: new Date().toISOString(),
+    metadata: {
+      category,
+      difficultyLevel: "beginner",
+    },
   };
 }
 
