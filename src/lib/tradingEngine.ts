@@ -64,7 +64,12 @@ export interface Market {
   metadata: MarketMetadata;
 }
 
-export type MarketStatus = "open" | "suspended" | "closed" | "settled";
+export type MarketStatus = "open" | "scheduled" | "suspended" | "closed" | "settled" | "void" | "cancelled" | "postponed";
+
+/** Statuses where trading is allowed */
+export const TRADEABLE_STATUSES: MarketStatus[] = ["open"];
+/** Statuses considered terminal (no further status changes expected) */
+export const TERMINAL_STATUSES: MarketStatus[] = ["settled", "void", "cancelled"];
 
 export interface Trade {
   id: string;
