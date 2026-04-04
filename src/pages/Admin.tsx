@@ -62,6 +62,7 @@ export default function Admin() {
   const handleAddStudent = () => {
     if (!newStudentName.trim()) return;
     addStudent(newStudentName.trim());
+    toast.success(`Student "${newStudentName.trim()}" added`);
     setNewStudentName("");
   };
 
