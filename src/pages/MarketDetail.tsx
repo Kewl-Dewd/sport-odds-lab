@@ -126,6 +126,40 @@ export default function MarketDetail() {
 
           {statusMessage()}
 
+          {/* Market Info Bar — liquidity, engine, fees */}
+          <div className="flex flex-wrap gap-2 text-xs">
+            <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+              <Droplets className="h-3 w-3 text-muted-foreground" />
+              <span className="text-muted-foreground">Liquidity:</span>
+              <span className="font-mono font-medium">{market.config.liquidityParameter}</span>
+            </div>
+            {market.config.transactionFeePct > 0 && (
+              <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+                <ShieldCheck className="h-3 w-3 text-muted-foreground" />
+                <span className="text-muted-foreground">Fee:</span>
+                <span className="font-mono font-medium">{(market.config.transactionFeePct * 100).toFixed(1)}%</span>
+              </div>
+            )}
+            {market.config.spread > 0 && (
+              <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+                <span className="text-muted-foreground">Spread:</span>
+                <span className="font-mono font-medium">{(market.config.spread * 100).toFixed(1)}¢</span>
+              </div>
+            )}
+            {analytics && analytics.tradeCount >= 2 && (() => {
+              const avgVol = analytics.outcomeAnalytics.reduce((s, o) => s + o.volatility, 0) / analytics.outcomeAnalytics.length;
+              const volLabel = avgVol < 0.02 ? "Low" : avgVol < 0.06 ? "Medium" : "High";
+              const volColor = avgVol < 0.02 ? "text-success" : avgVol < 0.06 ? "text-warning" : "text-destructive";
+              return (
+                <div className="flex items-center gap-1 rounded-md border px-2 py-1">
+                  <Zap className={cn("h-3 w-3", volColor)} />
+                  <span className="text-muted-foreground">Volatility:</span>
+                  <span className={cn("font-medium", volColor)}>{volLabel}</span>
+                </div>
+              );
+            })()}
+          </div>
+
           {/* Market Analytics Bar */}
           {analytics && (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
