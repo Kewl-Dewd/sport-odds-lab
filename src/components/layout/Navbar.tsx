@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
-  Briefcase, Trophy, BookOpen, GraduationCap,
+  Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
@@ -46,6 +46,18 @@ export function Navbar() {
               {link.label}
             </Link>
           ))}
+          <Link
+            to="/experiments"
+            className={cn(
+              "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+              location.pathname.startsWith("/experiments")
+                ? "bg-primary/10 text-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            )}
+          >
+            <FlaskConical className="h-4 w-4" />
+            Experiments
+          </Link>
           <Link
             to="/instructor"
             className={cn(
@@ -97,6 +109,19 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              to="/experiments"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                location.pathname.startsWith("/experiments")
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <FlaskConical className="h-4 w-4" />
+              Experiments
+            </Link>
             <Link
               to="/instructor"
               onClick={() => setMobileOpen(false)}

@@ -87,6 +87,61 @@ export interface SavedTemplate {
   createdAt: string;
 }
 
+// ── Experiment Types ───────────────────────────────────────────────
+
+export type ExperimentType =
+  | "open-simulation"
+  | "information-asymmetry"
+  | "behavioral-bias"
+  | "market-manipulation"
+  | "shock-event"
+  | "prediction-accuracy"
+  | "risk-management"
+  | "diversification-challenge";
+
+export type ExperimentStatus = "draft" | "active" | "paused" | "ended" | "archived";
+
+export type ExperimentScoringMode = "portfolio-return" | "prediction-accuracy" | "decision-quality" | "risk-adjusted" | "participation" | "custom";
+
+export type ExperimentNameVisibility = "public" | "anonymized" | "alias";
+
+export interface ExperimentRule {
+  id: string;
+  label: string;
+  description: string;
+  enabled: boolean;
+}
+
+export const EXPERIMENT_RULE_PRESETS: Omit<ExperimentRule, "enabled">[] = [
+  { id: "restrict-markets", label: "Restrict to experiment markets", description: "Students can only trade in markets linked to this experiment" },
+  { id: "no-sell", label: "Buy only (no selling)", description: "Students cannot sell positions during the experiment" },
+  { id: "max-position", label: "Max position per market", description: "Limit how many shares a student can hold in one outcome" },
+  { id: "blind-prices", label: "Hide other traders' activity", description: "Students cannot see volume or trade count" },
+  { id: "info-advantage", label: "Staggered information release", description: "Some students receive information earlier than others" },
+  { id: "shock-inject", label: "Mid-experiment price shock", description: "Instructor can inject a sudden price change" },
+  { id: "time-pressure", label: "Time-limited trading window", description: "Trading is only open during specific intervals" },
+  { id: "concentration-limit", label: "Diversification requirement", description: "Must hold positions in at least N different markets" },
+];
+
+export interface Experiment {
+  id: string;
+  classroomId: string;
+  title: string;
+  type: ExperimentType;
+  status: ExperimentStatus;
+  objective: string;
+  instructorNotes: string;
+  studentInstructions: string;
+  scoringMode: ExperimentScoringMode;
+  leaderboardVisible: boolean;
+  nameVisibility: ExperimentNameVisibility;
+  linkedMarketIds: string[];
+  rules: ExperimentRule[];
+  startDate: string | null;
+  endDate: string | null;
+  createdAt: string;
+}
+
 // ── Seed Data ──────────────────────────────────────────────────────
 
 const CLASSROOM_ID = "class-1";
@@ -273,6 +328,19 @@ interface MarketContextValue {
 
   // Demo
   seedDemoData: (studentCount: number, tradesPerStudent: number) => void;
+
+  // Experiments
+  experiments: Experiment[];
+  activeExperiment: Experiment | null;
+  createExperiment: (exp: Omit<Experiment, "id" | "createdAt" | "status">) => Experiment;
+  updateExperiment: (id: string, updates: Partial<Experiment>) => void;
+  deleteExperiment: (id: string) => void;
+  duplicateExperiment: (id: string) => void;
+  activateExperiment: (id: string) => void;
+  pauseExperiment: (id: string) => void;
+  endExperiment: (id: string) => void;
+  archiveExperiment: (id: string) => void;
+  setActiveExperiment: (id: string | null) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -289,6 +357,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
   >(new Map());
   const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
+  const [experiments, setExperiments] = useState<Experiment[]>([]);
+  const [activeExperimentId, setActiveExperimentId] = useState<string | null>(null);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -948,6 +1018,63 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     logAction("Delete template", id);
   }, [logAction]);
 
+  // ── Experiments ─────────────────────────────────────────────────
+
+  const activeExperiment = useMemo(() => experiments.find((e) => e.id === activeExperimentId) ?? null, [experiments, activeExperimentId]);
+
+  const createExperiment = useCallback((data: Omit<Experiment, "id" | "createdAt" | "status">): Experiment => {
+    const exp: Experiment = { ...data, id: `exp-${crypto.randomUUID().slice(0, 8)}`, createdAt: new Date().toISOString(), status: "draft" };
+    setExperiments((prev) => [...prev, exp]);
+    logAction("Create experiment", exp.title);
+    return exp;
+  }, [logAction]);
+
+  const updateExperiment = useCallback((id: string, updates: Partial<Experiment>) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, ...updates } : e));
+    logAction("Update experiment", id);
+  }, [logAction]);
+
+  const deleteExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.filter((e) => e.id !== id));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("Delete experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const duplicateExperiment = useCallback((id: string) => {
+    const src = experiments.find((e) => e.id === id);
+    if (!src) return;
+    const dup: Experiment = { ...src, id: `exp-${crypto.randomUUID().slice(0, 8)}`, title: `${src.title} (Copy)`, status: "draft", createdAt: new Date().toISOString() };
+    setExperiments((prev) => [...prev, dup]);
+    logAction("Duplicate experiment", src.title);
+  }, [experiments, logAction]);
+
+  const activateExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "active" as const } : e));
+    setActiveExperimentId(id);
+    logAction("Activate experiment", id);
+  }, [logAction]);
+
+  const pauseExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "paused" as const } : e));
+    logAction("Pause experiment", id);
+  }, [logAction]);
+
+  const endExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "ended" as const } : e));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("End experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const archiveExperiment = useCallback((id: string) => {
+    setExperiments((prev) => prev.map((e) => e.id === id ? { ...e, status: "archived" as const } : e));
+    if (activeExperimentId === id) setActiveExperimentId(null);
+    logAction("Archive experiment", id);
+  }, [activeExperimentId, logAction]);
+
+  const setActiveExperiment = useCallback((id: string | null) => {
+    setActiveExperimentId(id);
+  }, []);
+
   return (
     <MarketContext.Provider
       value={{
@@ -963,6 +1090,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         resetClassroom, updateStartingBalance,
         getLeaderboard, exportTradeHistory, exportLeaderboard,
         seedDemoData,
+        experiments, activeExperiment, createExperiment, updateExperiment, deleteExperiment,
+        duplicateExperiment, activateExperiment, pauseExperiment, endExperiment, archiveExperiment,
+        setActiveExperiment,
       }}
     >
       {children}

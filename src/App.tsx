@@ -18,6 +18,8 @@ import Glossary from "./pages/Glossary.tsx";
 import TradeReview from "./pages/TradeReview.tsx";
 import Reports from "./pages/Reports.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
+import Experiments from "./pages/Experiments.tsx";
+import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -46,6 +48,9 @@ const App = () => (
                 <Route path="/instructor" element={<InstructorDashboard />} />
                 <Route path="/instructor/review" element={<TradeReview />} />
                 <Route path="/instructor/reports" element={<Reports />} />
+                <Route path="/experiments" element={<Experiments />} />
+                <Route path="/experiments/:id" element={<ExperimentView />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/auth" element={<Auth />} />
               </Route>
               {/* Presentation mode — no navbar/footer */}
