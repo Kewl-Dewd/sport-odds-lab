@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 import {
   type Market,
+  type MarketConfig,
   type Trade,
   type UserPortfolio,
   type Holding,
@@ -9,11 +10,16 @@ import {
   estimateTrade,
   validateTrade,
   calculatePortfolioValue,
+  marketToEngineConfig,
   DEFAULT_STARTING_CASH,
   DEFAULT_LIQUIDITY,
+  DEFAULT_MAX_TRADE_SIZE,
+  PRICE_FLOOR,
+  PRICE_CEILING,
   type TradeEstimate,
   type TradeValidation,
 } from "@/lib/tradingEngine";
+import type { PricingEngineType } from "@/lib/pricing";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
@@ -49,6 +55,14 @@ export interface LeaderboardEntry {
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
+const defaultConfig = (liq: number): MarketConfig => ({
+  engineType: "linear-impact",
+  liquidityParameter: liq,
+  maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
+  priceFloor: PRICE_FLOOR,
+  priceCeiling: PRICE_CEILING,
+});
+
 const SEED_CLASSROOM: Classroom = {
   id: "class-1",
   name: "Econ 101 — Spring 2026",
@@ -67,7 +81,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m1-o1", name: "Lakers Win", price: 0.55 },
       { id: "m1-o2", name: "Celtics Win", price: 0.45 },
     ],
-    liquidityParameter: 100, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 100, config: defaultConfig(100),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -78,7 +93,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m2-o1", name: "Chiefs Win", price: 0.52 },
       { id: "m2-o2", name: "49ers Win", price: 0.48 },
     ],
-    liquidityParameter: 150, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 150, config: defaultConfig(150),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -90,7 +106,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m3-o2", name: "Draw", price: 0.26 },
       { id: "m3-o3", name: "Arsenal", price: 0.32 },
     ],
-    liquidityParameter: 120, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 120, config: defaultConfig(120),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -101,7 +118,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m4-o1", name: "Djokovic", price: 0.53 },
       { id: "m4-o2", name: "Alcaraz", price: 0.47 },
     ],
-    liquidityParameter: 80, resolvedOutcomeId: null, settlementResult: null,
+    liquidityParameter: 80, config: defaultConfig(80),
+    resolvedOutcomeId: null, settlementResult: null,
     createdAt: new Date().toISOString(),
   },
   {
@@ -112,7 +130,8 @@ const SEED_MARKETS: Market[] = [
       { id: "m5-o1", name: "Yankees", price: 1.0 },
       { id: "m5-o2", name: "Dodgers", price: 0.0 },
     ],
-    liquidityParameter: 100, resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
+    liquidityParameter: 100, config: defaultConfig(100),
+    resolvedOutcomeId: "m5-o1", settlementResult: "Yankees Win",
     createdAt: new Date().toISOString(),
   },
 ];
@@ -152,7 +171,7 @@ interface MarketContextValue {
   removeStudent: (userId: string) => void;
 
   // Admin market actions
-  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number) => void;
+  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number) => void;
   duplicateMarket: (marketId: string) => void;
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
@@ -283,9 +302,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Admin market actions ─────────────────────────────────────────
 
   const createMarket = useCallback(
-    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number) => {
+    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
       const evenPrice = Math.round((1 / outcomes.length) * 100) / 100;
+      const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling };
       const newMarket: Market = {
         id, title, league, sport, status: "open", startTime, description,
         outcomes: outcomes.map((name, i) => ({
@@ -294,11 +314,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
           price: i === 0 ? +(1 - evenPrice * (outcomes.length - 1)).toFixed(2) : evenPrice,
         })),
         liquidityParameter: liquidity,
+        config,
         resolvedOutcomeId: null, settlementResult: null,
         createdAt: new Date().toISOString(),
       };
       setMarkets((prev) => [newMarket, ...prev]);
-      logAction("Create market", title);
+      logAction("Create market", `${title} [${engineType}]`);
     },
     [logAction]
   );

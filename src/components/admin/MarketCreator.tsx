@@ -3,8 +3,10 @@ import { Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useMarket } from "@/context/MarketContext";
-import { DEFAULT_LIQUIDITY } from "@/lib/tradingEngine";
+import { DEFAULT_LIQUIDITY, DEFAULT_MAX_TRADE_SIZE, PRICE_FLOOR, PRICE_CEILING } from "@/lib/tradingEngine";
+import { getEngineOptions, type PricingEngineType } from "@/lib/pricing";
 
 export function MarketCreator({ onClose }: { onClose: () => void }) {
   const { createMarket } = useMarket();
@@ -15,6 +17,12 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
   const [description, setDescription] = useState("");
   const [outcomes, setOutcomes] = useState(["", ""]);
   const [liquidity, setLiquidity] = useState(DEFAULT_LIQUIDITY);
+  const [engineType, setEngineType] = useState<PricingEngineType>("linear-impact");
+  const [maxTradeSize, setMaxTradeSize] = useState(DEFAULT_MAX_TRADE_SIZE);
+  const [priceFloor, setPriceFloor] = useState(PRICE_FLOOR);
+  const [priceCeiling, setPriceCeiling] = useState(PRICE_CEILING);
+
+  const engineOptions = getEngineOptions();
 
   const addOutcome = () => setOutcomes([...outcomes, ""]);
   const removeOutcome = (i: number) => {
@@ -31,9 +39,14 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
 
   const handleSubmit = () => {
     if (!canSubmit) return;
-    createMarket(title, league, sport || league, startTime || "TBD", description, outcomes.filter((o) => o.trim()), liquidity);
+    createMarket(
+      title, league, sport || league, startTime || "TBD", description,
+      outcomes.filter((o) => o.trim()), liquidity, engineType, maxTradeSize, priceFloor, priceCeiling
+    );
     onClose();
   };
+
+  const selectedEngine = engineOptions.find((e) => e.value === engineType);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -66,11 +79,51 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
             <label className="text-sm font-medium">Description</label>
             <Input value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Brief market description" />
           </div>
+
+          {/* Pricing Engine Selection */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Liquidity Parameter</label>
-            <Input type="number" value={liquidity} onChange={(e) => setLiquidity(Number(e.target.value))} min={10} max={1000} />
-            <p className="text-xs text-muted-foreground">Higher = less price movement per trade (default: 100)</p>
+            <label className="text-sm font-medium">Pricing Engine</label>
+            <Select value={engineType} onValueChange={(v) => setEngineType(v as PricingEngineType)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {engineOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedEngine && (
+              <p className="text-xs text-muted-foreground">{selectedEngine.description}</p>
+            )}
           </div>
+
+          {/* Market Configuration */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Liquidity Parameter</label>
+              <Input type="number" value={liquidity} onChange={(e) => setLiquidity(Number(e.target.value))} min={10} max={1000} />
+              <p className="text-xs text-muted-foreground">Higher = less price movement</p>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Max Trade Size</label>
+              <Input type="number" value={maxTradeSize} onChange={(e) => setMaxTradeSize(Number(e.target.value))} min={1} max={10000} />
+              <p className="text-xs text-muted-foreground">Max shares per trade</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Price Floor</label>
+              <Input type="number" value={priceFloor} onChange={(e) => setPriceFloor(Number(e.target.value))} min={0.01} max={0.49} step={0.01} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium">Price Ceiling</label>
+              <Input type="number" value={priceCeiling} onChange={(e) => setPriceCeiling(Number(e.target.value))} min={0.51} max={0.99} step={0.01} />
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium">Outcomes *</label>
             {outcomes.map((o, i) => (
