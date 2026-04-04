@@ -25,21 +25,6 @@ import {
   type TradeEstimate,
   type TradeValidation,
 } from "@/lib/tradingEngine";
-  estimateTrade,
-  validateTrade,
-  calculatePortfolioValue,
-  calculateRealizedPnL,
-  settleMarketForPortfolios,
-  defaultMarketConfig,
-  evenPriceDistribution,
-  DEFAULT_STARTING_CASH,
-  DEFAULT_LIQUIDITY,
-  DEFAULT_MAX_TRADE_SIZE,
-  PRICE_FLOOR,
-  PRICE_CEILING,
-  type TradeEstimate,
-  type TradeValidation,
-} from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
 import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
 
