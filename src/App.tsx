@@ -43,6 +43,7 @@ const App = () => (
                 <Route path="/how-it-works" element={<HowItWorks />} />
                 <Route path="/glossary" element={<Glossary />} />
                 <Route path="/instructor" element={<InstructorDashboard />} />
+                <Route path="/instructor/review" element={<TradeReview />} />
                 <Route path="/auth" element={<Auth />} />
               </Route>
               {/* Presentation mode — no navbar/footer */}
