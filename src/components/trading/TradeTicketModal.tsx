@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useMarket } from "@/context/MarketContext";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface TradeTicketModalProps {
   open: boolean;
