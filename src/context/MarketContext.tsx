@@ -63,6 +63,9 @@ export interface LeaderboardEntry {
   winCount: number;
   bestTradePnL: number;
   worstTradePnL: number;
+  decisionScore: number;
+  riskScore: number;
+  efficiency: number; // return per trade
 }
 
 export interface SavedTemplate {
