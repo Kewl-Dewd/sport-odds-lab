@@ -110,6 +110,19 @@ export function Navbar() {
               </Link>
             ))}
             <Link
+              to="/experiments"
+              onClick={() => setMobileOpen(false)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                location.pathname.startsWith("/experiments")
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:bg-muted"
+              )}
+            >
+              <FlaskConical className="h-4 w-4" />
+              Experiments
+            </Link>
+            <Link
               to="/instructor"
               onClick={() => setMobileOpen(false)}
               className={cn(
