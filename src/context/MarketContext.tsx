@@ -821,6 +821,50 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     logAction("Seed demo data", `${studentCount} students, ${tradesPerStudent} trades each`);
   }, [markets, students, classroom.startingBalance, logAction]);
 
+  const bulkCreateMarkets = useCallback((configs: Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[]; liquidity: number; metadata?: Partial<MarketMetadata> }>) => {
+    const newMarkets: Market[] = configs.map((c) => {
+      const id = `m-${crypto.randomUUID().slice(0, 8)}`;
+      const prices = evenPriceDistribution(c.outcomes.length);
+      return {
+        id,
+        classroomId: activeClassroomId,
+        title: c.title,
+        league: c.league,
+        sport: c.sport,
+        status: "open" as const,
+        startTime: c.startTime,
+        closeTime: null,
+        description: c.description,
+        outcomes: c.outcomes.map((name, i) => ({ id: `${id}-o${i + 1}`, name, price: prices[i] })),
+        config: defaultMarketConfig(c.liquidity),
+        resolvedOutcomeId: null,
+        settlementResult: null,
+        createdAt: new Date().toISOString(),
+        metadata: { category: (c.metadata?.category ?? "custom") as MarketCategory, difficultyLevel: (c.metadata?.difficultyLevel ?? "beginner") as DifficultyLevel, ...c.metadata },
+      };
+    });
+    setMarkets((prev) => [...newMarkets, ...prev]);
+    logAction("Bulk create markets", `${configs.length} markets created`);
+  }, [activeClassroomId, logAction]);
+
+  const saveTemplate = useCallback((template: SavedTemplate) => {
+    setSavedTemplates((prev) => {
+      const existing = prev.findIndex((t) => t.id === template.id);
+      if (existing >= 0) {
+        const next = [...prev];
+        next[existing] = template;
+        return next;
+      }
+      return [template, ...prev];
+    });
+    logAction("Save template", template.name);
+  }, [logAction]);
+
+  const deleteTemplate = useCallback((id: string) => {
+    setSavedTemplates((prev) => prev.filter((t) => t.id !== id));
+    logAction("Delete template", id);
+  }, [logAction]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -829,6 +873,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         classrooms, activeClassroom: classroom, setActiveClassroom, createClassroom, deleteClassroom,
         classroom, students, adminActions, updateClassroom, addStudent, removeStudent,
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
+        bulkCreateMarkets, savedTemplates, saveTemplate, deleteTemplate,
         openAllMarkets, closeAllMarkets, pauseAllTrading, resumeAllTrading, batchSettleMarkets,
         adjustBankroll, reverseTrade, recalculateAll, duplicateClassroom,
         resetClassroom, updateStartingBalance,
