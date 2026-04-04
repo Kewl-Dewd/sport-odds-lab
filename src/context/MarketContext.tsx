@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
 import {
   type Market,
+  type MarketConfig,
   type Trade,
   type UserPortfolio,
   type Holding,
@@ -9,11 +10,16 @@ import {
   estimateTrade,
   validateTrade,
   calculatePortfolioValue,
+  marketToEngineConfig,
   DEFAULT_STARTING_CASH,
   DEFAULT_LIQUIDITY,
+  DEFAULT_MAX_TRADE_SIZE,
+  PRICE_FLOOR,
+  PRICE_CEILING,
   type TradeEstimate,
   type TradeValidation,
 } from "@/lib/tradingEngine";
+import type { PricingEngineType } from "@/lib/pricing";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
