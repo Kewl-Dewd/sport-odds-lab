@@ -96,6 +96,8 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
   const [maxTradeSize, setMaxTradeSize] = useState(DEFAULT_MAX_TRADE_SIZE);
   const [priceFloor, setPriceFloor] = useState(PRICE_FLOOR);
   const [priceCeiling, setPriceCeiling] = useState(PRICE_CEILING);
+  const [transactionFeePct, setTransactionFeePct] = useState(0);
+  const [spread, setSpread] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
