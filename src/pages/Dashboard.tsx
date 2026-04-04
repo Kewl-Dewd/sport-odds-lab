@@ -1,23 +1,25 @@
-import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock } from "lucide-react";
+import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 
 export default function Dashboard() {
-  const { portfolio, portfolioStats, recentTrades, topMovers, trades } = useMarket();
+  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
+  const leaderboard = getLeaderboard("portfolio");
+  const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
   const stats = [
     { label: "Available Cash", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
     { label: "Portfolio Value", value: `$${portfolioStats.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: portfolioStats.unrealizedPnL !== 0 ? `${portfolioStats.unrealizedPnL >= 0 ? "+" : ""}$${portfolioStats.unrealizedPnL.toFixed(2)}` : null },
     { label: "Open Positions", value: String(portfolio.holdings.length), icon: TrendingUp, change: null },
-    { label: "Total Trades", value: String(trades.length), icon: ArrowUpRight, change: null },
+    { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null },
   ];
 
   return (
     <div className="container py-8 space-y-8 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back, {portfolio.displayName}</p>
+        <p className="text-muted-foreground">{classroom.name} · {portfolio.displayName}</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -34,11 +36,8 @@ export default function Dashboard() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Recent Trades */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Recent Trades</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-lg">Recent Trades</CardTitle></CardHeader>
           <CardContent>
             {recentTrades.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
@@ -67,16 +66,11 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        {/* Top Movers */}
         <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Top Movers</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-lg">Top Movers</CardTitle></CardHeader>
           <CardContent>
             {topMovers.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">
-                Prices will move as trades are placed.
-              </p>
+              <p className="text-sm text-muted-foreground py-4 text-center">Prices will move as trades are placed.</p>
             ) : (
               <div className="space-y-3">
                 {topMovers.map((m, i) => (
