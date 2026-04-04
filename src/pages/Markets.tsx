@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, Clock, ChevronRight, Filter, SlidersHorizontal } from "lucide-react";
+import { Search, Clock, ChevronRight, Filter, SlidersHorizontal, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useMarket } from "@/context/MarketContext";
 import type { MarketStatus } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
+import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 
 const statusBadge = (status: MarketStatus) => {
   switch (status) {
@@ -18,22 +19,56 @@ const statusBadge = (status: MarketStatus) => {
   }
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+  "game-winner": "Game Winner",
+  "series-winner": "Series",
+  "tournament-winner": "Tournament",
+  "division-winner": "Division",
+  "award-winner": "Award",
+  "first-scorer": "First Scorer",
+  "first-td-scorer": "First TD",
+  "playoff-qualification": "Playoff",
+  "over-under": "Over/Under",
+  "head-to-head": "H2H",
+  "prop": "Prop",
+  "custom": "Custom",
+};
+
+const diffBadgeStyle: Record<string, string> = {
+  beginner: "bg-success/15 text-success",
+  intermediate: "bg-warning/15 text-warning",
+  advanced: "bg-destructive/15 text-destructive",
+};
+
 export default function Markets() {
-  const { markets } = useMarket();
+  const { markets, trades } = useMarket();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketStatus | "all">("all");
   const [leagueFilter, setLeagueFilter] = useState<string>("all");
   const [sportFilter, setSportFilter] = useState<string>("all");
-  const [sortBy, setSortBy] = useState<"newest" | "outcomes" | "title">("newest");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
+  const [sortBy, setSortBy] = useState<"newest" | "outcomes" | "title" | "volume">("newest");
+  const [tradeModal, setTradeModal] = useState<{ marketId: string; outcomeId: string } | null>(null);
 
   const leagues = useMemo(() => [...new Set(markets.map((m) => m.league))].sort(), [markets]);
   const sports = useMemo(() => [...new Set(markets.map((m) => m.sport))].sort(), [markets]);
+  const categories = useMemo(() => [...new Set(markets.map((m) => m.metadata?.category).filter(Boolean))].sort(), [markets]);
+
+  const volumeByMarket = useMemo(() => {
+    const map = new Map<string, { volume: number; count: number }>();
+    for (const t of trades) {
+      const existing = map.get(t.marketId) ?? { volume: 0, count: 0 };
+      map.set(t.marketId, { volume: existing.volume + t.totalCost, count: existing.count + 1 });
+    }
+    return map;
+  }, [trades]);
 
   const filtered = useMemo(() => {
     let result = markets.filter((m) => {
       if (statusFilter !== "all" && m.status !== statusFilter) return false;
       if (leagueFilter !== "all" && m.league !== leagueFilter) return false;
       if (sportFilter !== "all" && m.sport !== sportFilter) return false;
+      if (categoryFilter !== "all" && m.metadata?.category !== categoryFilter) return false;
       if (search) {
         const q = search.toLowerCase();
         if (!m.title.toLowerCase().includes(q) &&
@@ -47,12 +82,13 @@ export default function Markets() {
     switch (sortBy) {
       case "outcomes": result.sort((a, b) => b.outcomes.length - a.outcomes.length); break;
       case "title": result.sort((a, b) => a.title.localeCompare(b.title)); break;
-      default: break; // already newest first
+      case "volume": result.sort((a, b) => (volumeByMarket.get(b.id)?.volume ?? 0) - (volumeByMarket.get(a.id)?.volume ?? 0)); break;
+      default: break;
     }
     return result;
-  }, [markets, statusFilter, leagueFilter, sportFilter, search, sortBy]);
+  }, [markets, statusFilter, leagueFilter, sportFilter, categoryFilter, search, sortBy, volumeByMarket]);
 
-  const activeFilters = [statusFilter !== "all", leagueFilter !== "all", sportFilter !== "all"].filter(Boolean).length;
+  const activeFilters = [statusFilter !== "all", leagueFilter !== "all", sportFilter !== "all", categoryFilter !== "all"].filter(Boolean).length;
 
   return (
     <div className="container py-8 space-y-6 animate-slide-up">
@@ -77,48 +113,49 @@ export default function Markets() {
           </div>
         </div>
 
-        {/* Advanced Filters */}
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Filter className="h-3.5 w-3.5" />Filters{activeFilters > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{activeFilters}</Badge>}
           </div>
           <Select value={leagueFilter} onValueChange={setLeagueFilter}>
-            <SelectTrigger className="w-32 h-8 text-xs">
-              <SelectValue placeholder="League" />
-            </SelectTrigger>
+            <SelectTrigger className="w-32 h-8 text-xs"><SelectValue placeholder="League" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Leagues</SelectItem>
               {leagues.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={sportFilter} onValueChange={setSportFilter}>
-            <SelectTrigger className="w-32 h-8 text-xs">
-              <SelectValue placeholder="Sport" />
-            </SelectTrigger>
+            <SelectTrigger className="w-32 h-8 text-xs"><SelectValue placeholder="Sport" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sports</SelectItem>
               {sports.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger className="w-36 h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map((c) => <SelectItem key={c!} value={c!}>{CATEGORY_LABELS[c!] ?? c}</SelectItem>)}
+            </SelectContent>
+          </Select>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
             <SelectTrigger className="w-32 h-8 text-xs">
-              <SlidersHorizontal className="h-3 w-3 mr-1" />
-              <SelectValue />
+              <SlidersHorizontal className="h-3 w-3 mr-1" /><SelectValue />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="newest">Newest</SelectItem>
+              <SelectItem value="volume">Most Volume</SelectItem>
               <SelectItem value="outcomes">Most Outcomes</SelectItem>
               <SelectItem value="title">A-Z</SelectItem>
             </SelectContent>
           </Select>
           {activeFilters > 0 && (
-            <button onClick={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); }}
+            <button onClick={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); setCategoryFilter("all"); }}
               className="text-xs text-muted-foreground hover:text-foreground underline">Clear filters</button>
           )}
         </div>
       </div>
 
-      {/* Results count */}
       <p className="text-xs text-muted-foreground">{filtered.length} market{filtered.length !== 1 ? "s" : ""}</p>
 
       {/* Market Cards */}
@@ -128,29 +165,39 @@ export default function Markets() {
           const sortedOutcomes = [...market.outcomes].sort((a, b) => b.price - a.price);
           const topOutcome = sortedOutcomes[0];
           const priceSum = market.outcomes.reduce((s, o) => s + o.price, 0);
+          const vol = volumeByMarket.get(market.id);
+          const catLabel = CATEGORY_LABELS[market.metadata?.category ?? "custom"] ?? market.metadata?.category;
+          const diff = market.metadata?.difficultyLevel;
 
           return (
-            <Link key={market.id} to={`/markets/${market.id}`} className="market-card block">
-              <div className="p-5">
+            <div key={market.id} className="market-card">
+              <Link to={`/markets/${market.id}`} className="block p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       {statusBadge(market.status)}
                       <Badge variant="outline" className="text-xs">{market.league}</Badge>
                       <Badge variant="outline" className="text-xs">{market.sport}</Badge>
-                      {isMulti && (
-                        <Badge variant="secondary" className="text-xs">{market.outcomes.length} outcomes</Badge>
-                      )}
+                      {catLabel && <Badge variant="secondary" className="text-[10px]">{catLabel}</Badge>}
+                      {diff && <Badge className={`text-[10px] border-0 ${diffBadgeStyle[diff] ?? ""}`}>{diff}</Badge>}
+                      {isMulti && <Badge variant="secondary" className="text-xs">{market.outcomes.length} outcomes</Badge>}
                     </div>
                     <h3 className="text-lg font-semibold">{market.title}</h3>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
-                      <Clock className="h-3.5 w-3.5" />{market.startTime}
-                    </p>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3.5 w-3.5" />{market.startTime}
+                      </p>
+                      {vol && (
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <BarChart3 className="h-3 w-3" />${vol.volume.toFixed(0)} vol · {vol.count} trades
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
                 </div>
 
-                {/* Outcome display: compact for many outcomes, full for binary */}
+                {/* Outcomes */}
                 {market.outcomes.length <= 3 ? (
                   <div className="flex gap-3 flex-wrap">
                     {market.outcomes.map((o) => (
@@ -160,10 +207,8 @@ export default function Markets() {
                           <span className="text-lg font-bold font-mono ml-2">{(o.price * 100).toFixed(1)}¢</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-primary transition-all duration-500"
-                            style={{ width: `${(o.price / Math.max(priceSum, 0.01)) * 100}%` }}
-                          />
+                          <div className="h-full rounded-full bg-primary transition-all duration-500"
+                            style={{ width: `${(o.price / Math.max(priceSum, 0.01)) * 100}%` }} />
                         </div>
                         <p className="text-xs text-muted-foreground text-right mt-1">
                           {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}%
@@ -180,13 +225,8 @@ export default function Markets() {
                           <span className="text-xs text-muted-foreground w-4 text-right">{i + 1}.</span>
                           <span className="flex-1 truncate font-medium">{o.name}</span>
                           <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
-                            <div
-                              className={cn(
-                                "h-full rounded-full transition-all duration-500",
-                                i === 0 ? "bg-primary" : "bg-primary/50"
-                              )}
-                              style={{ width: `${pct}%` }}
-                            />
+                            <div className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-primary" : "bg-primary/50")}
+                              style={{ width: `${pct}%` }} />
                           </div>
                           <span className="font-mono font-bold text-sm w-14 text-right">{(o.price * 100).toFixed(1)}¢</span>
                           <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
@@ -194,20 +234,50 @@ export default function Markets() {
                       );
                     })}
                     {market.outcomes.length > 4 && (
-                      <p className="text-xs text-muted-foreground pl-7">
-                        +{market.outcomes.length - 4} more outcome{market.outcomes.length - 4 > 1 ? "s" : ""}
-                      </p>
+                      <p className="text-xs text-muted-foreground pl-7">+{market.outcomes.length - 4} more</p>
                     )}
                   </div>
                 )}
-              </div>
-            </Link>
+              </Link>
+
+              {/* Quick Trade Buttons */}
+              {market.status === "open" && (
+                <div className="px-5 pb-4 pt-0">
+                  <div className="flex gap-2 flex-wrap">
+                    {market.outcomes.slice(0, 4).map((o) => (
+                      <Button
+                        key={o.id}
+                        variant="outline"
+                        size="sm"
+                        className="text-xs flex-1 min-w-[80px]"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setTradeModal({ marketId: market.id, outcomeId: o.id });
+                        }}
+                      >
+                        <TrendingUp className="mr-1 h-3 w-3" />
+                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {(o.price * 100).toFixed(0)}¢
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           );
         })}
         {filtered.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">No markets found.</div>
         )}
       </div>
+
+      {/* Trade Modal */}
+      {tradeModal && (
+        <TradeTicketModal
+          marketId={tradeModal.marketId}
+          initialOutcomeId={tradeModal.outcomeId}
+          onClose={() => setTradeModal(null)}
+        />
+      )}
     </div>
   );
 }
