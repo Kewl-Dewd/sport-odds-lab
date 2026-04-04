@@ -1,5 +1,6 @@
 import { Lightbulb, TrendingUp, BarChart3, Droplets, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
+import { useEducation } from "@/context/EducationContext";
 import { cn } from "@/lib/utils";
 
 interface PanelProps {
