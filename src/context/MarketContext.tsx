@@ -51,7 +51,7 @@ export interface AdminAction {
   timestamp: string;
 }
 
-export type LeaderboardMode = "portfolio" | "return" | "accuracy" | "activity";
+export type LeaderboardMode = "portfolio" | "return" | "accuracy" | "activity" | "decision" | "risk" | "efficiency";
 
 export interface LeaderboardEntry {
   userId: string;
