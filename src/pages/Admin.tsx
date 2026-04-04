@@ -51,6 +51,12 @@ export default function Admin() {
     a.download = `${type}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success(`${type === "trades" ? "Trade history" : "Leaderboard"} exported`);
+  };
+
+  const handleSeedDemo = () => {
+    seedDemoData(8, 5);
+    toast.success("Demo data seeded!", { description: "8 sample students with 5 trades each have been added." });
   };
 
   const handleAddStudent = () => {
