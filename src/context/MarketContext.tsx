@@ -51,7 +51,7 @@ export interface AdminAction {
   timestamp: string;
 }
 
-export type LeaderboardMode = "portfolio" | "return" | "accuracy" | "activity";
+export type LeaderboardMode = "portfolio" | "return" | "accuracy" | "activity" | "decision" | "risk" | "efficiency";
 
 export interface LeaderboardEntry {
   userId: string;
@@ -63,6 +63,9 @@ export interface LeaderboardEntry {
   winCount: number;
   bestTradePnL: number;
   worstTradePnL: number;
+  decisionScore: number;
+  riskScore: number;
+  efficiency: number; // return per trade
 }
 
 export interface SavedTemplate {
@@ -748,6 +751,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       let winCount = 0;
       let bestPnL = 0;
       let worstPnL = 0;
+      let earlyBuys = 0;
+      const buys = stuTrades.filter((t) => t.type === "BUY");
       for (const t of stuTrades) {
         const pnl = t.type === "BUY"
           ? (t.priceAfterTrade - t.pricePerShare) * t.quantity
@@ -756,17 +761,44 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         if (pnl > bestPnL) bestPnL = pnl;
         if (pnl < worstPnL) worstPnL = pnl;
       }
+      for (const t of buys) {
+        if (t.priceAfterTrade > t.pricePerShare) earlyBuys++;
+      }
+
+      const returnPct = startBal > 0 ? ((stats.totalValue - startBal) / startBal) * 100 : 0;
+      const totalReturn = stats.totalValue - startBal;
+
+      // Decision score (simplified composite)
+      const earlyBuyerScore = buys.length > 0 ? earlyBuys / buys.length : 0;
+      const chaseBuys = buys.filter((t) => t.priceBeforeTrade > 0.6).length;
+      const chaseBuyRate = buys.length > 0 ? chaseBuys / buys.length : 0;
+      const decisionScore = Math.round(Math.min(100, Math.max(0, earlyBuyerScore * 50 + (1 - chaseBuyRate) * 50)));
+
+      // Risk score
+      const holdingsByMkt = new Map<string, number>();
+      for (const h of s.holdings) {
+        const o = markets.find((m) => m.id === h.marketId)?.outcomes.find((o) => o.id === h.outcomeId);
+        holdingsByMkt.set(h.marketId, (holdingsByMkt.get(h.marketId) ?? 0) + h.shares * (o?.price ?? 0));
+      }
+      const maxConc = stats.totalValue > 0 ? Math.max(0, ...Array.from(holdingsByMkt.values())) / stats.totalValue : 0;
+      const divCount = holdingsByMkt.size;
+      const riskScore = Math.round(Math.min(100, Math.max(0, (1 - maxConc) * 50 + Math.min(1, divCount / 5) * 50)));
+
+      const efficiency = stuTrades.length > 0 ? Math.round((totalReturn / stuTrades.length) * 100) / 100 : 0;
 
       return {
         userId: s.userId,
         displayName: s.displayName,
         portfolioValue: stats.totalValue,
         cash: stats.cash,
-        returnPct: startBal > 0 ? ((stats.totalValue - startBal) / startBal) * 100 : 0,
+        returnPct: Math.round(returnPct * 10) / 10,
         tradeCount: stuTrades.length,
         winCount,
         bestTradePnL: Math.round(bestPnL * 100) / 100,
         worstTradePnL: Math.round(worstPnL * 100) / 100,
+        decisionScore,
+        riskScore,
+        efficiency,
       };
     });
 
@@ -783,6 +815,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         });
       case "activity":
         return entries.sort((a, b) => b.tradeCount - a.tradeCount);
+      case "decision":
+        return entries.sort((a, b) => b.decisionScore - a.decisionScore);
+      case "risk":
+        return entries.sort((a, b) => b.riskScore - a.riskScore);
+      case "efficiency":
+        return entries.sort((a, b) => b.efficiency - a.efficiency);
       default:
         return entries;
     }
