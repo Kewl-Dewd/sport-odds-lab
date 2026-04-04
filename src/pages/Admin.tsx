@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
-  Plus, Settings, Users, BarChart3, RefreshCw, Eye, Edit, Pause, Play,
-  Trophy, Copy, Trash2, Download, Clock, UserPlus, X, FileText
+  Plus, Settings, Users, BarChart3, RefreshCw, Pause, Play,
+  Trophy, Copy, Trash2, Download, Clock, UserPlus, X, FileText, Wand2
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { useMarket } from "@/context/MarketContext";
 import { MarketCreator } from "@/components/admin/MarketCreator";
 import { SettlementModal } from "@/components/admin/SettlementModal";
 import type { Market } from "@/lib/tradingEngine";
+import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   open: "bg-success/15 text-success",
@@ -27,6 +28,7 @@ export default function Admin() {
     suspendMarket, resumeMarket, duplicateMarket, deleteMarket,
     addStudent, removeStudent, updateStartingBalance, resetClassroom,
     updateClassroom, exportTradeHistory, exportLeaderboard, getLeaderboard,
+    seedDemoData,
   } = useMarket();
 
   const [showCreator, setShowCreator] = useState(false);
@@ -49,11 +51,18 @@ export default function Admin() {
     a.download = `${type}-${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success(`${type === "trades" ? "Trade history" : "Leaderboard"} exported`);
+  };
+
+  const handleSeedDemo = () => {
+    seedDemoData(8, 5);
+    toast.success("Demo data seeded!", { description: "8 sample students with 5 trades each have been added." });
   };
 
   const handleAddStudent = () => {
     if (!newStudentName.trim()) return;
     addStudent(newStudentName.trim());
+    toast.success(`Student "${newStudentName.trim()}" added`);
     setNewStudentName("");
   };
 
@@ -74,7 +83,10 @@ export default function Admin() {
           <h1 className="text-2xl md:text-3xl font-bold">Admin Panel</h1>
           <p className="text-muted-foreground">{classroom.name}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={handleSeedDemo}>
+            <Wand2 className="mr-1.5 h-4 w-4" />Demo Data
+          </Button>
           <Button variant="outline" size="sm" onClick={() => handleExport("trades")}>
             <Download className="mr-1.5 h-4 w-4" />Trades CSV
           </Button>

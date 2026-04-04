@@ -2,9 +2,11 @@ import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock, G
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
+import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
+  const { showOnboarding, completeOnboarding } = useOnboarding();
   const leaderboard = getLeaderboard("portfolio");
   const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
@@ -16,6 +18,8 @@ export default function Dashboard() {
   ];
 
   return (
+    <>
+      {showOnboarding && <OnboardingModal onComplete={completeOnboarding} />}
     <div className="container py-8 space-y-8 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
@@ -94,5 +98,6 @@ export default function Dashboard() {
         </Card>
       </div>
     </div>
+    </>
   );
 }

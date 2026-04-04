@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useMarket } from "@/context/MarketContext";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface TradeTicketModalProps {
   open: boolean;
@@ -58,7 +59,15 @@ export function TradeTicketModal({
 
   const handleConfirm = () => {
     const result = trade(marketId, outcomeId, qty, type);
-    if (result) { setLastTrade(result); setStep("success"); }
+    if (result) {
+      setLastTrade(result);
+      setStep("success");
+      toast.success(`${type} ${qty} shares of ${outcomeName}`, {
+        description: `Executed at ${(result.pricePerShare * 100).toFixed(1)}¢ avg · Total: $${result.totalCost.toFixed(2)}`,
+      });
+    } else {
+      toast.error("Trade failed", { description: "Something went wrong. Please try again." });
+    }
   };
 
   if (!open || !market || !currentOutcome) return null;

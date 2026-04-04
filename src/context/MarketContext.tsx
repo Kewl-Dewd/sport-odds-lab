@@ -20,6 +20,7 @@ import {
   type TradeValidation,
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
+import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
@@ -235,6 +236,9 @@ interface MarketContextValue {
   // Export
   exportTradeHistory: () => string;
   exportLeaderboard: () => string;
+
+  // Demo
+  seedDemoData: (studentCount: number, tradesPerStudent: number) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -569,6 +573,19 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return header + rows.join("\n");
   }, [getLeaderboard]);
 
+  // ── Demo Mode ───────────────────────────────────────────────────
+
+  const seedDemoData = useCallback((studentCount: number, tradesPerStudent: number) => {
+    const demoStudents = generateSampleStudents(studentCount, classroom.startingBalance);
+    const result = generateSampleTrades(markets, demoStudents, tradesPerStudent);
+    setMarkets(result.updatedMarkets);
+    const existingIds = new Set(students.map((s) => s.userId));
+    const newStudents = result.updatedStudents.filter((u) => !existingIds.has(u.userId));
+    setStudents((prev) => [...prev, ...newStudents]);
+    setTrades((prev) => [...result.trades, ...prev]);
+    logAction("Seed demo data", `${studentCount} students, ${tradesPerStudent} trades each`);
+  }, [markets, students, classroom.startingBalance, logAction]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -578,6 +595,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
         resetClassroom, updateStartingBalance,
         getLeaderboard, exportTradeHistory, exportLeaderboard,
+        seedDemoData,
       }}
     >
       {children}
