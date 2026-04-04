@@ -118,6 +118,8 @@ export function defaultMarketConfig(liquidity: number = DEFAULT_LIQUIDITY): Mark
     maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
     priceFloor: PRICE_FLOOR,
     priceCeiling: PRICE_CEILING,
+    transactionFeePct: 0,
+    spread: 0,
   };
 }
 

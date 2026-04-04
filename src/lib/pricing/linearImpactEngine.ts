@@ -36,7 +36,7 @@ export const linearImpactEngine: PricingEngine = {
     config: PricingEngineConfig
   ): TradeEstimateResult {
     const { outcomeId, quantity, type } = request;
-    const { liquidityParameter, priceFloor, priceCeiling } = config;
+    const { liquidityParameter, priceFloor, priceCeiling, transactionFeePct, spread: spreadCfg } = config;
     const direction = type === "BUY" ? 1 : -1;
 
     const targetIdx = outcomes.findIndex((o) => o.id === outcomeId);
@@ -76,14 +76,26 @@ export const linearImpactEngine: PricingEngine = {
     }
 
     const avgPrice = round4((oldPrice + newTargetPrice) / 2);
-    const totalCost = round4(quantity * avgPrice);
+    const rawCost = round4(quantity * avgPrice);
+    const fee = round4(Math.abs(rawCost) * transactionFeePct);
+    const spreadCost = round4(quantity * spreadCfg);
+    const totalCost = type === "BUY" ? rawCost + fee + spreadCost : -(Math.abs(rawCost) - fee - spreadCost);
+
+    // Implied probabilities
+    const priceSum = newPrices.reduce((s, p) => s + p.price, 0);
+    const impliedProbBefore = oldPrice / outcomes.reduce((s, o) => s + o.price, 0);
+    const impliedProbAfter = newTargetPrice / Math.max(priceSum, 0.01);
 
     return {
       avgPrice: Math.abs(avgPrice),
-      totalCost: type === "BUY" ? totalCost : -totalCost,
+      totalCost,
       newPrices,
       priceBefore: oldPrice,
       priceAfter: newTargetPrice,
+      fee,
+      spread: spreadCost,
+      impliedProbBefore: round4(impliedProbBefore),
+      impliedProbAfter: round4(impliedProbAfter),
     };
   },
 
