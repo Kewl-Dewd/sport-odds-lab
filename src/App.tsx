@@ -45,6 +45,7 @@ const App = () => (
                 <Route path="/glossary" element={<Glossary />} />
                 <Route path="/instructor" element={<InstructorDashboard />} />
                 <Route path="/instructor/review" element={<TradeReview />} />
+                <Route path="/instructor/reports" element={<Reports />} />
                 <Route path="/auth" element={<Auth />} />
               </Route>
               {/* Presentation mode — no navbar/footer */}
