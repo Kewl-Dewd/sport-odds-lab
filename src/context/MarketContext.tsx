@@ -240,6 +240,11 @@ interface MarketContextValue {
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
   settleMarket: (marketId: string, winningOutcomeId: string) => void;
+  voidMarket: (marketId: string, rule?: "return-cost" | "return-current-value") => void;
+  cancelMarket: (marketId: string) => void;
+  postponeMarket: (marketId: string) => void;
+  scheduleMarket: (marketId: string) => void;
+  editMarket: (marketId: string, updates: Partial<Pick<Market, "title" | "league" | "sport" | "startTime" | "closeTime" | "description">>) => void;
   deleteMarket: (marketId: string) => void;
 
   // Batch operations
