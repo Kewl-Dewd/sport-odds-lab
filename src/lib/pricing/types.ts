@@ -40,6 +40,10 @@ export interface TradeEstimateResult {
   newPrices: { outcomeId: string; price: number }[];
   priceBefore: number;
   priceAfter: number;
+  fee: number;
+  spread: number;
+  impliedProbBefore: number;
+  impliedProbAfter: number;
 }
 
 export interface SettlementResult {
