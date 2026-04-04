@@ -572,6 +572,22 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return header + rows.join("\n");
   }, [getLeaderboard]);
 
+  // ── Demo Mode ───────────────────────────────────────────────────
+
+  const seedDemoData = useCallback((studentCount: number, tradesPerStudent: number) => {
+    const { generateSampleStudents, generateSampleTrades } = require("@/lib/demoData");
+    const demoStudents = generateSampleStudents(studentCount, classroom.startingBalance);
+    const allStudents = [...students, ...demoStudents];
+    const result = generateSampleTrades(markets, demoStudents, tradesPerStudent);
+    setMarkets(result.updatedMarkets);
+    setStudents([...students.map((s) => {
+      const updated = result.updatedStudents.find((u: UserPortfolio) => u.userId === s.userId);
+      return updated ?? s;
+    }), ...result.updatedStudents.filter((u: UserPortfolio) => !students.some((s) => s.userId === u.userId))]);
+    setTrades((prev) => [...result.trades, ...prev]);
+    logAction("Seed demo data", `${studentCount} students, ${tradesPerStudent} trades each`);
+  }, [markets, students, classroom.startingBalance, logAction]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -581,6 +597,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
         resetClassroom, updateStartingBalance,
         getLeaderboard, exportTradeHistory, exportLeaderboard,
+        seedDemoData,
       }}
     >
       {children}
