@@ -16,6 +16,7 @@ import Leaderboard from "./pages/Leaderboard.tsx";
 import HowItWorks from "./pages/HowItWorks.tsx";
 import Glossary from "./pages/Glossary.tsx";
 import TradeReview from "./pages/TradeReview.tsx";
+import Reports from "./pages/Reports.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
@@ -44,6 +45,7 @@ const App = () => (
                 <Route path="/glossary" element={<Glossary />} />
                 <Route path="/instructor" element={<InstructorDashboard />} />
                 <Route path="/instructor/review" element={<TradeReview />} />
+                <Route path="/instructor/reports" element={<Reports />} />
                 <Route path="/auth" element={<Auth />} />
               </Route>
               {/* Presentation mode — no navbar/footer */}

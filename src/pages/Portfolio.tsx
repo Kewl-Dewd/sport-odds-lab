@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import {
   TrendingUp, TrendingDown, PieChart as PieIcon, BarChart3,
   Brain, Shield, Clock, CheckCircle, XCircle, AlertTriangle,
-  Activity, Target, Zap,
+  Activity, Target, Zap, Download, Printer,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarket } from "@/context/MarketContext";
@@ -90,11 +91,54 @@ export default function Portfolio() {
   const winners = positions.filter((p) => p.pnl > 0);
   const losers = positions.filter((p) => p.pnl < 0);
 
+  const handlePrintReport = () => window.print();
+
+  const handleExportPersonalCsv = () => {
+    if (!stats) return;
+    const lines = [
+      `Sports Market Lab — Personal Performance Report`,
+      `Student,${portfolio.displayName}`,
+      `Class,${classroom.name}`,
+      `Date,${new Date().toLocaleDateString()}`,
+      ``,
+      `Portfolio Value,$${totalValue.toFixed(2)}`,
+      `Return,${returnPct >= 0 ? "+" : ""}${returnPct.toFixed(1)}%`,
+      `Cash,$${cash.toFixed(2)}`,
+      `Holdings Value,$${holdingsValue.toFixed(2)}`,
+      `Realized P&L,$${realizedPnL.toFixed(2)}`,
+      `Unrealized P&L,$${unrealizedPnL.toFixed(2)}`,
+      ``,
+      `Trades,${stats.tradeCount}`,
+      `Markets Engaged,${stats.marketsTraded}`,
+      `Win Rate,${(stats.winRate * 100).toFixed(0)}%`,
+      `Decision Score,${stats.decisionQuality.compositeScore}/100`,
+      `Risk Score,${stats.riskMetrics.compositeScore}/100`,
+      ``,
+      `Strengths,"${stats.strengths.join("; ")}"`,
+      `Areas for Improvement,"${stats.weaknesses.join("; ")}"`,
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "my_performance.csv"; a.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="container py-8 space-y-8 animate-slide-up">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Portfolio</h1>
-        <p className="text-muted-foreground">Your holdings, performance, and decision analytics</p>
+    <div className="container py-8 space-y-8 animate-slide-up print:py-2 print:space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold">Portfolio</h1>
+          <p className="text-muted-foreground">Your holdings, performance, and decision analytics</p>
+        </div>
+        <div className="flex gap-2 print:hidden">
+          <Button variant="outline" size="sm" onClick={handleExportPersonalCsv} disabled={!stats}>
+            <Download className="h-3.5 w-3.5 mr-1" />Export
+          </Button>
+          <Button variant="outline" size="sm" onClick={handlePrintReport}>
+            <Printer className="h-3.5 w-3.5 mr-1" />Print
+          </Button>
+        </div>
       </div>
 
       {/* Summary Stats */}

@@ -533,6 +533,9 @@ export default function InstructorDashboard() {
                   <Button variant="outline" size="sm" className="w-full justify-between" asChild>
                     <Link to="/instructor/review">Trade Review & Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
                   </Button>
+                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                    <Link to="/instructor/reports">Reports & Grading<ChevronRight className="h-3.5 w-3.5" /></Link>
+                  </Button>
                 </div>
               </CardContent>
             </Card>
