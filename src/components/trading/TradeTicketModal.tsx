@@ -153,12 +153,30 @@ export function TradeTicketModal({
                     </span>
                   </span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Implied Probability</span>
+                  <span className="font-mono text-xs">
+                    {(tradeEstimate.impliedProbBefore * 100).toFixed(1)}% → {(tradeEstimate.impliedProbAfter * 100).toFixed(1)}%
+                  </span>
+                </div>
                 <div className="border-t pt-2 flex justify-between">
                   <span className="text-muted-foreground">Slippage</span>
                   <span className={cn("font-mono text-xs", highSlippage ? "text-warning font-semibold" : "")}>
                     {(slippage * 100).toFixed(1)}¢ ({slippagePct.toFixed(1)}%)
                   </span>
                 </div>
+                {tradeEstimate.fee > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Transaction Fee</span>
+                    <span className="font-mono text-xs">${tradeEstimate.fee.toFixed(2)}</span>
+                  </div>
+                )}
+                {tradeEstimate.spread > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Spread Cost</span>
+                    <span className="font-mono text-xs">${tradeEstimate.spread.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="border-t pt-2 flex justify-between font-medium">
                   <span>{type === "BUY" ? "Total Cost" : "Total Credit"}</span>
                   <span className="font-mono font-bold">${Math.abs(tradeEstimate.totalCost).toFixed(2)}</span>
