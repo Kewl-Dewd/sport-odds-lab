@@ -23,6 +23,7 @@ type OutcomeSort = "price-desc" | "price-asc" | "name" | "change";
 export default function MarketDetail() {
   const { id } = useParams<{ id: string }>();
   const { getMarket, getHolding, trades } = useMarket();
+  const { educationEnabled, mode, pushNudge } = useEducation();
   const market = getMarket(id ?? "");
 
   const [tradeModal, setTradeModal] = useState<{
