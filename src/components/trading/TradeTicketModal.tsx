@@ -25,6 +25,7 @@ export function TradeTicketModal({
   open, onClose, marketId, outcomeId, outcomeName, initialType = "BUY",
 }: TradeTicketModalProps) {
   const { estimate, validate, trade, getMarket, getHolding, portfolio } = useMarket();
+  const { pushNudge, educationEnabled } = useEducation();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   const [quantity, setQuantity] = useState("");
   const [step, setStep] = useState<Step>("entry");
