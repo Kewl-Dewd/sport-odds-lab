@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Clock, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft, Clock, BarChart3, TrendingUp, TrendingDown,
+  Activity, Users as UsersIcon, Droplets, Gauge,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useMarket } from "@/context/MarketContext";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 import { EducationalSidebar } from "@/components/education/EducationalPanels";
+import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
+import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
+import { cn } from "@/lib/utils";
 
 export default function MarketDetail() {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +25,16 @@ export default function MarketDetail() {
     outcomeName: string;
     type: "BUY" | "SELL";
   }>({ open: false, outcomeId: "", outcomeName: "", type: "BUY" });
+
+  const priceHistory = useMemo(
+    () => (market ? buildPriceHistory(market, trades) : []),
+    [market, trades]
+  );
+
+  const analytics = useMemo(
+    () => (market ? calculateMarketAnalytics(market, trades) : null),
+    [market, trades]
+  );
 
   if (!market) {
     return (
@@ -66,7 +82,7 @@ export default function MarketDetail() {
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
           <div>
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               {statusBadge()}
               <Badge variant="outline">{market.league}</Badge>
               <Badge variant="outline" className="text-xs">Liquidity: {market.liquidityParameter}</Badge>
@@ -79,47 +95,108 @@ export default function MarketDetail() {
 
           {statusMessage()}
 
-          {/* Outcomes */}
+          {/* Market Analytics Bar */}
+          {analytics && (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="stat-card !p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Volume</span>
+                </div>
+                <p className="font-bold font-mono text-sm">${analytics.totalVolume.toFixed(0)}</p>
+              </div>
+              <div className="stat-card !p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Activity className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Trades</span>
+                </div>
+                <p className="font-bold font-mono text-sm">{analytics.tradeCount}</p>
+              </div>
+              <div className="stat-card !p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <UsersIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Traders</span>
+                </div>
+                <p className="font-bold font-mono text-sm">{analytics.uniqueTraders}</p>
+              </div>
+              <div className="stat-card !p-3">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Gauge className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground">Activity</span>
+                </div>
+                <p className="font-bold font-mono text-sm">{analytics.activityScore}/min</p>
+              </div>
+            </div>
+          )}
+
+          {/* Buy/Sell Pressure */}
+          {analytics && analytics.tradeCount > 0 && (
+            <PressureIndicator buyPressure={analytics.buyPressure} />
+          )}
+
+          {/* Outcomes with per-outcome analytics */}
           <div className="grid sm:grid-cols-2 gap-4">
             {market.outcomes.map((o) => {
               const holding = getHolding(market.id, o.id);
+              const oAnalytics = analytics?.outcomeAnalytics.find((a) => a.outcomeId === o.id);
               return (
                 <Card key={o.id}>
-                  <CardContent className="p-5 space-y-4">
+                  <CardContent className="p-5 space-y-3">
                     <div className="flex items-center justify-between">
                       <h3 className="font-semibold text-lg">{o.name}</h3>
-                      <span className="text-2xl font-bold font-mono">{(o.price * 100).toFixed(1)}¢</span>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold font-mono">{(o.price * 100).toFixed(1)}¢</span>
+                        {oAnalytics && oAnalytics.priceChange !== 0 && (
+                          <div className={cn("text-xs font-mono flex items-center justify-end gap-0.5",
+                            oAnalytics.priceChange > 0 ? "price-up" : "price-down"
+                          )}>
+                            {oAnalytics.priceChange > 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                            {oAnalytics.priceChange > 0 ? "+" : ""}{(oAnalytics.priceChange * 100).toFixed(1)}¢
+                            ({oAnalytics.priceChangePct > 0 ? "+" : ""}{oAnalytics.priceChangePct.toFixed(1)}%)
+                          </div>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Probability bar */}
                     <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all duration-500"
-                        style={{ width: `${o.price * 100}%` }}
-                      />
+                      <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${o.price * 100}%` }} />
                     </div>
                     <p className="text-xs text-muted-foreground text-center">
                       {(o.price * 100).toFixed(0)}% implied probability
                     </p>
+
+                    {/* Outcome stats */}
+                    {oAnalytics && oAnalytics.tradeCount > 0 && (
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-center">
+                          <p className="text-muted-foreground">Open</p>
+                          <p className="font-mono font-medium">{(oAnalytics.openingPrice * 100).toFixed(0)}¢</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-muted-foreground">H / L</p>
+                          <p className="font-mono font-medium">{(oAnalytics.high * 100).toFixed(0)}¢ / {(oAnalytics.low * 100).toFixed(0)}¢</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-muted-foreground">Volatility</p>
+                          <p className="font-mono font-medium">{(oAnalytics.volatility * 100).toFixed(1)}¢</p>
+                        </div>
+                      </div>
+                    )}
+
                     {holding && (
                       <p className="text-sm text-muted-foreground">
                         You own <span className="font-mono font-medium text-foreground">{holding.shares}</span> shares
                         (avg {(holding.avgCostPerShare * 100).toFixed(1)}¢)
                       </p>
                     )}
+
                     {isOpen && (
                       <div className="flex gap-2">
-                        <Button
-                          variant="success"
-                          className="flex-1"
-                          onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "BUY" })}
-                        >
+                        <Button variant="success" className="flex-1" onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "BUY" })}>
                           Buy
                         </Button>
-                        <Button
-                          variant="destructive"
-                          className="flex-1"
-                          disabled={!holding || holding.shares === 0}
-                          onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}
-                        >
+                        <Button variant="destructive" className="flex-1" disabled={!holding || holding.shares === 0} onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}>
                           Sell
                         </Button>
                       </div>
@@ -133,7 +210,7 @@ export default function MarketDetail() {
             })}
           </div>
 
-          {/* Price Chart Placeholder */}
+          {/* Price History Chart */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -141,9 +218,17 @@ export default function MarketDetail() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-48 rounded-lg bg-muted flex items-center justify-center text-muted-foreground">
-                Price chart will be rendered here
-              </div>
+              <PriceHistoryChart priceHistory={priceHistory} outcomes={market.outcomes} />
+            </CardContent>
+          </Card>
+
+          {/* Volume Chart */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Trade Volume</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <VolumeChart priceHistory={priceHistory} />
             </CardContent>
           </Card>
 
@@ -155,13 +240,20 @@ export default function MarketDetail() {
                 <div className="space-y-2">
                   {marketTrades.map((t) => (
                     <div key={t.id} className="flex items-center justify-between py-2 border-b last:border-0 text-sm">
-                      <div>
-                        <span className={`font-semibold ${t.type === "BUY" ? "price-up" : "price-down"}`}>{t.type}</span>{" "}
-                        <span className="font-mono">{t.quantity}</span> × {t.outcomeName}
+                      <div className="space-y-0.5">
+                        <div>
+                          <span className={`font-semibold ${t.type === "BUY" ? "price-up" : "price-down"}`}>{t.type}</span>{" "}
+                          <span className="font-mono">{t.quantity}</span> × {t.outcomeName}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(t.timestamp).toLocaleTimeString()}
+                        </p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right space-y-0.5">
                         <span className="font-mono">${t.totalCost.toFixed(2)}</span>
-                        <span className="text-xs text-muted-foreground ml-2">@ {(t.pricePerShare * 100).toFixed(1)}¢</span>
+                        <p className="text-xs text-muted-foreground">
+                          {(t.priceBeforeTrade * 100).toFixed(1)}¢ → {(t.priceAfterTrade * 100).toFixed(1)}¢
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -175,17 +267,43 @@ export default function MarketDetail() {
             <CardHeader><CardTitle className="text-lg">Market Details</CardTitle></CardHeader>
             <CardContent className="text-sm text-muted-foreground space-y-2">
               <p>{market.description}</p>
-              <div className="flex gap-4 pt-2 text-xs">
-                <span>Sport: {market.sport}</span>
-                <span>League: {market.league}</span>
-                <span>Liquidity: {market.liquidityParameter}</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2 text-xs">
+                <div><span className="text-muted-foreground">Sport:</span> {market.sport}</div>
+                <div><span className="text-muted-foreground">League:</span> {market.league}</div>
+                <div><span className="text-muted-foreground">Liquidity:</span> {market.liquidityParameter}</div>
+                <div><span className="text-muted-foreground">Outcomes:</span> {market.outcomes.length}</div>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Educational Sidebar */}
+        {/* Sidebar */}
         <div className="space-y-6">
+          {/* Quick market stats card */}
+          {analytics && analytics.tradeCount > 0 && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Market Snapshot</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                {analytics.outcomeAnalytics.map((oa) => (
+                  <div key={oa.outcomeId} className="space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground truncate">{oa.outcomeName}</span>
+                      <span className={cn("font-mono font-semibold", oa.priceChange > 0 ? "price-up" : oa.priceChange < 0 ? "price-down" : "")}>
+                        {(oa.currentPrice * 100).toFixed(1)}¢
+                      </span>
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>Vol: ${oa.volume.toFixed(0)}</span>
+                      <span>{oa.tradeCount} trades</span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
           <EducationalSidebar
             price={firstOutcome?.price ?? 0.5}
             outcomeName={firstOutcome?.name ?? ""}
