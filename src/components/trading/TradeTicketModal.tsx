@@ -69,6 +69,16 @@ export function TradeTicketModal({
       toast.success(`${type} ${qty} shares of ${outcomeName}`, {
         description: `Executed at ${(result.pricePerShare * 100).toFixed(1)}¢ avg · Total: $${result.totalCost.toFixed(2)}`,
       });
+
+      // Educational nudges after trade
+      if (educationEnabled) {
+        // High slippage nudge
+        if (slippagePct > 5) pushNudge(NUDGE_CONTENT.slippage);
+        // Concentrated position nudge
+        if (result.totalCost > portfolio.cash * 0.4) pushNudge(NUDGE_CONTENT.concentration);
+        // Overconfident nudge
+        if (type === "BUY" && result.priceBeforeTrade > 0.8) pushNudge(NUDGE_CONTENT.overconfident);
+      }
     } else {
       toast.error("Trade failed", { description: "Something went wrong. Please try again." });
     }
