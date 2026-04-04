@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { DEFAULT_STARTING_CASH } from "@/lib/tradingEngine";
 import { Link } from "react-router-dom";
 import {
   Plus, Play, Pause, StopCircle, RefreshCw, Wand2, Download,
