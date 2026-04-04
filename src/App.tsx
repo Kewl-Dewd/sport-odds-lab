@@ -18,6 +18,8 @@ import Glossary from "./pages/Glossary.tsx";
 import TradeReview from "./pages/TradeReview.tsx";
 import Reports from "./pages/Reports.tsx";
 import InstructorDashboard from "./pages/InstructorDashboard.tsx";
+import Experiments from "./pages/Experiments.tsx";
+import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
 import NotFound from "./pages/NotFound.tsx";
