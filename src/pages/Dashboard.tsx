@@ -18,6 +18,8 @@ export default function Dashboard() {
   ];
 
   return (
+    <>
+      {showOnboarding && <OnboardingModal onComplete={completeOnboarding} />}
     <div className="container py-8 space-y-8 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
