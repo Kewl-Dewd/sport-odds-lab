@@ -2,6 +2,9 @@ import React, { createContext, useContext, useState, useCallback, useMemo, type 
 import {
   type Market,
   type MarketConfig,
+  type MarketMetadata,
+  type MarketCategory,
+  type DifficultyLevel,
   type Trade,
   type UserPortfolio,
   type Holding,
@@ -62,6 +65,22 @@ export interface LeaderboardEntry {
   worstTradePnL: number;
 }
 
+export interface SavedTemplate {
+  id: string;
+  name: string;
+  category: MarketCategory;
+  sport: string;
+  league: string;
+  description: string;
+  outcomes: string[];
+  liquidity: number;
+  settlementRules?: string;
+  instructionalNotes?: string;
+  difficultyLevel: DifficultyLevel;
+  isArchived: boolean;
+  createdAt: string;
+}
+
 // ── Seed Data ──────────────────────────────────────────────────────
 
 const CLASSROOM_ID = "class-1";
@@ -102,7 +121,8 @@ const SEED_CLASSROOMS: Classroom[] = [
 function makeMarket(
   id: string, title: string, league: string, sport: string,
   startTime: string, description: string, outcomes: string[],
-  liquidity: number, status: "open" | "settled" = "open",
+  liquidity: number, category: MarketCategory = "game-winner",
+  status: "open" | "settled" = "open",
   resolvedOutcomeId: string | null = null, settlementResult: string | null = null
 ): Market {
   const prices = evenPriceDistribution(outcomes.length);
@@ -129,34 +149,38 @@ function makeMarket(
     resolvedOutcomeId,
     settlementResult,
     createdAt: new Date().toISOString(),
+    metadata: {
+      category,
+      difficultyLevel: "beginner",
+    },
   };
 }
 
 const SEED_MARKETS: Market[] = [
   makeMarket("m1", "Lakers vs Celtics", "NBA", "Basketball",
     "Tonight, 8:00 PM ET", "Regular season matchup. Trade on who you think will win.",
-    ["Lakers Win", "Celtics Win"], 100),
+    ["Lakers Win", "Celtics Win"], 100, "game-winner"),
   makeMarket("m2", "Super Bowl LIX", "NFL", "Football",
     "Feb 9, 7:30 PM ET", "Championship game. Will the Chiefs three-peat?",
-    ["Chiefs Win", "49ers Win"], 150),
+    ["Chiefs Win", "49ers Win"], 150, "game-winner"),
   makeMarket("m3", "Man City vs Arsenal", "Premier League", "Soccer",
     "Sat, 3:00 PM GMT", "Top of the table clash in the Premier League.",
-    ["Man City", "Draw", "Arsenal"], 120),
+    ["Man City", "Draw", "Arsenal"], 120, "game-winner"),
   makeMarket("m4", "Wimbledon Final", "ATP", "Tennis",
     "Jul 14, 2:00 PM BST", "Men's singles final at the All England Club.",
-    ["Djokovic", "Alcaraz"], 80),
+    ["Djokovic", "Alcaraz"], 80, "tournament-winner"),
   makeMarket("m5", "World Series Game 7", "MLB", "Baseball",
     "Settled", "The deciding game of the Fall Classic.",
-    ["Yankees", "Dodgers"], 100, "settled", "m5-o1", "Yankees"),
+    ["Yankees", "Dodgers"], 100, "game-winner", "settled", "m5-o1", "Yankees"),
   makeMarket("m6", "NBA MVP Award", "NBA", "Basketball",
     "Jun 2026", "Who will be named the 2025-26 NBA Most Valuable Player?",
-    ["Luka Dončić", "Nikola Jokić", "Jayson Tatum", "Giannis Antetokounmpo", "Shai Gilgeous-Alexander"], 180),
+    ["Luka Dončić", "Nikola Jokić", "Jayson Tatum", "Giannis Antetokounmpo", "Shai Gilgeous-Alexander"], 180, "award-winner"),
   makeMarket("m7", "Champions League Winner", "UEFA", "Soccer",
     "May 31, 2026", "Which club will lift the Champions League trophy?",
-    ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "PSG", "Field"], 200),
+    ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "PSG", "Field"], 200, "tournament-winner"),
   makeMarket("m8", "First Scorer — Lakers vs Celtics", "NBA", "Basketball",
     "Tonight, 8:00 PM ET", "Which player will score the first basket tonight?",
-    ["LeBron James", "Anthony Davis", "Jaylen Brown", "Derrick White", "Other"], 120),
+    ["LeBron James", "Anthony Davis", "Jaylen Brown", "Derrick White", "Other"], 120, "first-scorer"),
 ];
 
 const SEED_STUDENTS: UserPortfolio[] = [
@@ -201,7 +225,11 @@ interface MarketContextValue {
   removeStudent: (userId: string) => void;
 
   // Admin market actions
-  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number, transactionFeePct?: number, spread?: number) => void;
+  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number, transactionFeePct?: number, spread?: number, metadata?: Partial<MarketMetadata>, customPrices?: number[]) => void;
+  bulkCreateMarkets: (configs: Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[]; liquidity: number; metadata?: Partial<MarketMetadata> }>) => void;
+  savedTemplates: SavedTemplate[];
+  saveTemplate: (template: SavedTemplate) => void;
+  deleteTemplate: (id: string) => void;
   duplicateMarket: (marketId: string) => void;
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
@@ -249,6 +277,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [priceChanges, setPriceChanges] = useState<
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
   >(new Map());
+  const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -422,9 +451,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Admin market actions ─────────────────────────────────────────
 
   const createMarket = useCallback(
-    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING, transactionFeePct: number = 0, spread: number = 0) => {
+    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING, transactionFeePct: number = 0, spread: number = 0, metadata?: Partial<MarketMetadata>, customPrices?: number[]) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
-      const prices = evenPriceDistribution(outcomes.length);
+      const prices = customPrices && customPrices.length === outcomes.length ? customPrices : evenPriceDistribution(outcomes.length);
       const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling, transactionFeePct, spread };
       const newMarket: Market = {
         id,
@@ -445,6 +474,17 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         resolvedOutcomeId: null,
         settlementResult: null,
         createdAt: new Date().toISOString(),
+        metadata: {
+          category: metadata?.category ?? "custom",
+          difficultyLevel: metadata?.difficultyLevel ?? "beginner",
+          season: metadata?.season,
+          eventDate: metadata?.eventDate,
+          teamNames: metadata?.teamNames,
+          playerNames: metadata?.playerNames,
+          instructionalNotes: metadata?.instructionalNotes,
+          settlementRules: metadata?.settlementRules,
+          templateId: metadata?.templateId,
+        },
       };
       setMarkets((prev) => [newMarket, ...prev]);
       logAction("Create market", `${title} [${engineType}]`);
@@ -781,6 +821,50 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     logAction("Seed demo data", `${studentCount} students, ${tradesPerStudent} trades each`);
   }, [markets, students, classroom.startingBalance, logAction]);
 
+  const bulkCreateMarkets = useCallback((configs: Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[]; liquidity: number; metadata?: Partial<MarketMetadata> }>) => {
+    const newMarkets: Market[] = configs.map((c) => {
+      const id = `m-${crypto.randomUUID().slice(0, 8)}`;
+      const prices = evenPriceDistribution(c.outcomes.length);
+      return {
+        id,
+        classroomId: activeClassroomId,
+        title: c.title,
+        league: c.league,
+        sport: c.sport,
+        status: "open" as const,
+        startTime: c.startTime,
+        closeTime: null,
+        description: c.description,
+        outcomes: c.outcomes.map((name, i) => ({ id: `${id}-o${i + 1}`, name, price: prices[i] })),
+        config: defaultMarketConfig(c.liquidity),
+        resolvedOutcomeId: null,
+        settlementResult: null,
+        createdAt: new Date().toISOString(),
+        metadata: { category: (c.metadata?.category ?? "custom") as MarketCategory, difficultyLevel: (c.metadata?.difficultyLevel ?? "beginner") as DifficultyLevel, ...c.metadata },
+      };
+    });
+    setMarkets((prev) => [...newMarkets, ...prev]);
+    logAction("Bulk create markets", `${configs.length} markets created`);
+  }, [activeClassroomId, logAction]);
+
+  const saveTemplate = useCallback((template: SavedTemplate) => {
+    setSavedTemplates((prev) => {
+      const existing = prev.findIndex((t) => t.id === template.id);
+      if (existing >= 0) {
+        const next = [...prev];
+        next[existing] = template;
+        return next;
+      }
+      return [template, ...prev];
+    });
+    logAction("Save template", template.name);
+  }, [logAction]);
+
+  const deleteTemplate = useCallback((id: string) => {
+    setSavedTemplates((prev) => prev.filter((t) => t.id !== id));
+    logAction("Delete template", id);
+  }, [logAction]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -789,6 +873,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         classrooms, activeClassroom: classroom, setActiveClassroom, createClassroom, deleteClassroom,
         classroom, students, adminActions, updateClassroom, addStudent, removeStudent,
         createMarket, duplicateMarket, suspendMarket, resumeMarket, settleMarket, deleteMarket,
+        bulkCreateMarkets, savedTemplates, saveTemplate, deleteTemplate,
         openAllMarkets, closeAllMarkets, pauseAllTrading, resumeAllTrading, batchSettleMarkets,
         adjustBankroll, reverseTrade, recalculateAll, duplicateClassroom,
         resetClassroom, updateStartingBalance,
