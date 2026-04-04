@@ -92,7 +92,7 @@ export function generateSampleTrades(
           totalCost: Math.abs(est.totalCost),
           priceBeforeTrade: est.priceBefore,
           priceAfterTrade: est.priceAfter,
-          engineType: config.type,
+          engineType: marketToEngineConfig(mkt).type,
           timestamp,
         });
       } catch {
