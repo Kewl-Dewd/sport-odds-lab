@@ -554,6 +554,43 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     logAction("Delete market", marketId);
   }, [logAction]);
 
+  const voidMarket = useCallback((marketId: string, rule: "return-cost" | "return-current-value" = "return-cost") => {
+    const market = markets.find((m) => m.id === marketId);
+    if (!market) return;
+    const { voidedMarket, updatedPortfolios } = voidMarketForPortfolios(market, students, rule);
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? voidedMarket : m));
+    setStudents(updatedPortfolios);
+    const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Void market", `${market.title} (${rule})`);
+  }, [markets, students, portfolio.userId, logAction]);
+
+  const cancelMarket = useCallback((marketId: string) => {
+    const market = markets.find((m) => m.id === marketId);
+    if (!market) return;
+    const { cancelledMarket, updatedPortfolios } = cancelMarketForPortfolios(market, students);
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? cancelledMarket : m));
+    setStudents(updatedPortfolios);
+    const updatedUser = updatedPortfolios.find((p) => p.userId === portfolio.userId);
+    if (updatedUser) setPortfolio(updatedUser);
+    logAction("Cancel market", market.title);
+  }, [markets, students, portfolio.userId, logAction]);
+
+  const postponeMarket = useCallback((marketId: string) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "postponed" as const } : m));
+    logAction("Postpone market", marketId);
+  }, [logAction]);
+
+  const scheduleMarket = useCallback((marketId: string) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "scheduled" as const } : m));
+    logAction("Schedule market", marketId);
+  }, [logAction]);
+
+  const editMarket = useCallback((marketId: string, updates: Partial<Pick<Market, "title" | "league" | "sport" | "startTime" | "closeTime" | "description">>) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, ...updates } : m));
+    logAction("Edit market", `${marketId}: ${Object.keys(updates).join(", ")}`);
+  }, [logAction]);
+
   // ── Batch operations ─────────────────────────────────────────────
 
   const openAllMarkets = useCallback(() => {
