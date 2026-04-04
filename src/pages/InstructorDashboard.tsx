@@ -25,9 +25,13 @@ import { toast } from "sonner";
 
 const statusColor: Record<string, string> = {
   open: "bg-success/15 text-success",
+  scheduled: "bg-info/15 text-info",
   suspended: "bg-warning/15 text-warning",
   settled: "bg-muted text-muted-foreground",
   closed: "bg-destructive/15 text-destructive",
+  void: "bg-muted text-muted-foreground",
+  cancelled: "bg-destructive/10 text-destructive",
+  postponed: "bg-warning/10 text-warning",
 };
 
 export default function InstructorDashboard() {
