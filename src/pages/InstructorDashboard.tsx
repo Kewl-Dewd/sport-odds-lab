@@ -18,6 +18,7 @@ import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
 import { MarketCreator } from "@/components/admin/MarketCreator";
 import { SettlementModal } from "@/components/admin/SettlementModal";
 import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
+import { InstructorEducationControls } from "@/components/education/EducationToggle";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
