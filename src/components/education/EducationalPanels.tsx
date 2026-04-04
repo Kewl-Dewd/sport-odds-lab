@@ -43,9 +43,10 @@ function ExpandablePanel({
 }
 
 export function PriceMeaningPanel({ price, outcomeName }: { price: number; outcomeName: string }) {
+  const { mode } = useEducation();
   const pct = (price * 100).toFixed(0);
   return (
-    <ExpandablePanel icon={Lightbulb} title="What this price means" accentColor="primary">
+    <ExpandablePanel icon={Lightbulb} title="What this price means" accentColor="primary" defaultOpen={mode === "beginner"}>
       <p>
         A price of <strong className="text-foreground font-mono">{pct}¢</strong> for "{outcomeName}" means the
         market currently implies a <strong className="text-foreground">{pct}%</strong> probability that this
@@ -61,6 +62,15 @@ export function PriceMeaningPanel({ price, outcomeName }: { price: number; outco
           each share pays $1.00. Your profit = 100 × ($1.00 − ${(price).toFixed(2)}) = <strong className="text-foreground price-up">${((1 - price) * 100).toFixed(2)}</strong>
         </p>
       </div>
+      {mode === "advanced" && (
+        <div className="rounded-lg bg-muted p-3 mt-2">
+          <p className="text-xs">
+            <strong className="text-foreground">Advanced:</strong> The expected value of this bet is positive when
+            your estimated probability exceeds {pct}%. The Kelly criterion would suggest sizing your bet proportionally
+            to the perceived edge.
+          </p>
+        </div>
+      )}
     </ExpandablePanel>
   );
 }
