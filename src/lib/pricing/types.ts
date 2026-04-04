@@ -92,6 +92,8 @@ export const DEFAULT_ENGINE_CONFIG: PricingEngineConfig = {
   maxTradeSize: 500,
   priceFloor: 0.01,
   priceCeiling: 0.99,
+  transactionFeePct: 0,
+  spread: 0,
 };
 
 /** Available engine type labels for UI */
