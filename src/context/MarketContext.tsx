@@ -87,6 +87,61 @@ export interface SavedTemplate {
   createdAt: string;
 }
 
+// ── Experiment Types ───────────────────────────────────────────────
+
+export type ExperimentType =
+  | "open-simulation"
+  | "information-asymmetry"
+  | "behavioral-bias"
+  | "market-manipulation"
+  | "shock-event"
+  | "prediction-accuracy"
+  | "risk-management"
+  | "diversification-challenge";
+
+export type ExperimentStatus = "draft" | "active" | "paused" | "ended" | "archived";
+
+export type ExperimentScoringMode = "portfolio-return" | "prediction-accuracy" | "decision-quality" | "risk-adjusted" | "participation" | "custom";
+
+export type ExperimentNameVisibility = "public" | "anonymized" | "alias";
+
+export interface ExperimentRule {
+  id: string;
+  label: string;
+  description: string;
+  enabled: boolean;
+}
+
+export const EXPERIMENT_RULE_PRESETS: Omit<ExperimentRule, "enabled">[] = [
+  { id: "restrict-markets", label: "Restrict to experiment markets", description: "Students can only trade in markets linked to this experiment" },
+  { id: "no-sell", label: "Buy only (no selling)", description: "Students cannot sell positions during the experiment" },
+  { id: "max-position", label: "Max position per market", description: "Limit how many shares a student can hold in one outcome" },
+  { id: "blind-prices", label: "Hide other traders' activity", description: "Students cannot see volume or trade count" },
+  { id: "info-advantage", label: "Staggered information release", description: "Some students receive information earlier than others" },
+  { id: "shock-inject", label: "Mid-experiment price shock", description: "Instructor can inject a sudden price change" },
+  { id: "time-pressure", label: "Time-limited trading window", description: "Trading is only open during specific intervals" },
+  { id: "concentration-limit", label: "Diversification requirement", description: "Must hold positions in at least N different markets" },
+];
+
+export interface Experiment {
+  id: string;
+  classroomId: string;
+  title: string;
+  type: ExperimentType;
+  status: ExperimentStatus;
+  objective: string;
+  instructorNotes: string;
+  studentInstructions: string;
+  scoringMode: ExperimentScoringMode;
+  leaderboardVisible: boolean;
+  nameVisibility: ExperimentNameVisibility;
+  linkedMarketIds: string[];
+  rules: ExperimentRule[];
+  startDate: string | null;
+  endDate: string | null;
+  createdAt: string;
+}
+
 // ── Seed Data ──────────────────────────────────────────────────────
 
 const CLASSROOM_ID = "class-1";
