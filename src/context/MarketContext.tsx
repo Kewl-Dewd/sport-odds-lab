@@ -328,6 +328,19 @@ interface MarketContextValue {
 
   // Demo
   seedDemoData: (studentCount: number, tradesPerStudent: number) => void;
+
+  // Experiments
+  experiments: Experiment[];
+  activeExperiment: Experiment | null;
+  createExperiment: (exp: Omit<Experiment, "id" | "createdAt" | "status">) => Experiment;
+  updateExperiment: (id: string, updates: Partial<Experiment>) => void;
+  deleteExperiment: (id: string) => void;
+  duplicateExperiment: (id: string) => void;
+  activateExperiment: (id: string) => void;
+  pauseExperiment: (id: string) => void;
+  endExperiment: (id: string) => void;
+  archiveExperiment: (id: string) => void;
+  setActiveExperiment: (id: string | null) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
