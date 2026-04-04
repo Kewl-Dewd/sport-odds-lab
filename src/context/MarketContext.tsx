@@ -165,7 +165,7 @@ interface MarketContextValue {
   removeStudent: (userId: string) => void;
 
   // Admin market actions
-  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number) => void;
+  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number, transactionFeePct?: number, spread?: number) => void;
   duplicateMarket: (marketId: string) => void;
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
@@ -307,10 +307,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Admin market actions ─────────────────────────────────────────
 
   const createMarket = useCallback(
-    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING) => {
+    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING, transactionFeePct: number = 0, spread: number = 0) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
       const prices = evenPriceDistribution(outcomes.length);
-      const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling };
+      const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling, transactionFeePct, spread };
       const newMarket: Market = {
         id,
         classroomId: classroom.id,

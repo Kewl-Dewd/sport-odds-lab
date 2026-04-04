@@ -96,6 +96,8 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
   const [maxTradeSize, setMaxTradeSize] = useState(DEFAULT_MAX_TRADE_SIZE);
   const [priceFloor, setPriceFloor] = useState(PRICE_FLOOR);
   const [priceCeiling, setPriceCeiling] = useState(PRICE_CEILING);
+  const [transactionFeePct, setTransactionFeePct] = useState(0);
+  const [spread, setSpread] = useState(0);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
 
@@ -132,7 +134,7 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
     if (!canSubmit) return;
     createMarket(
       title, league, sport || league, startTime || "TBD", description,
-      outcomes.filter((o) => o.trim()), liquidity, engineType, maxTradeSize, priceFloor, priceCeiling
+      outcomes.filter((o) => o.trim()), liquidity, engineType, maxTradeSize, priceFloor, priceCeiling, transactionFeePct / 100, spread
     );
     onClose();
   };
@@ -275,6 +277,18 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium">Price Ceiling</label>
                   <Input type="number" value={priceCeiling} onChange={(e) => setPriceCeiling(Number(e.target.value))} min={0.51} max={0.99} step={0.01} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium">Transaction Fee (%)</label>
+                  <Input type="number" value={transactionFeePct} onChange={(e) => setTransactionFeePct(Number(e.target.value))} min={0} max={10} step={0.1} />
+                  <p className="text-[10px] text-muted-foreground">Applied to each trade's cost (0 = no fee)</p>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium">Spread (¢ per share)</label>
+                  <Input type="number" value={spread} onChange={(e) => setSpread(Number(e.target.value))} min={0} max={0.05} step={0.001} />
+                  <p className="text-[10px] text-muted-foreground">Friction cost per share (0 = no spread)</p>
                 </div>
               </div>
             </div>

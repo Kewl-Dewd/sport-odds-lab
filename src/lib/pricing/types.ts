@@ -14,6 +14,10 @@ export interface PricingEngineConfig {
   maxTradeSize: number;
   priceFloor: number;
   priceCeiling: number;
+  /** Transaction fee as a fraction (e.g. 0.01 = 1%) */
+  transactionFeePct: number;
+  /** Spread/friction in price units (e.g. 0.005 = 0.5¢) */
+  spread: number;
   /** Reserved for future engine-specific settings */
   custom?: Record<string, unknown>;
 }
@@ -36,6 +40,10 @@ export interface TradeEstimateResult {
   newPrices: { outcomeId: string; price: number }[];
   priceBefore: number;
   priceAfter: number;
+  fee: number;
+  spread: number;
+  impliedProbBefore: number;
+  impliedProbAfter: number;
 }
 
 export interface SettlementResult {
@@ -84,6 +92,8 @@ export const DEFAULT_ENGINE_CONFIG: PricingEngineConfig = {
   maxTradeSize: 500,
   priceFloor: 0.01,
   priceCeiling: 0.99,
+  transactionFeePct: 0,
+  spread: 0,
 };
 
 /** Available engine type labels for UI */

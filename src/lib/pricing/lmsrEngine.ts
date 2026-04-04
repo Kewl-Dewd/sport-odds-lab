@@ -62,7 +62,7 @@ export const lmsrEngine: PricingEngine = {
     config: PricingEngineConfig
   ): TradeEstimateResult {
     const { outcomeId, quantity, type } = request;
-    const { liquidityParameter: b, priceFloor, priceCeiling } = config;
+    const { liquidityParameter: b, priceFloor, priceCeiling, transactionFeePct, spread: spreadCfg } = config;
 
     const targetIdx = outcomes.findIndex((o) => o.id === outcomeId);
     if (targetIdx === -1) throw new Error("Outcome not found");
@@ -79,7 +79,7 @@ export const lmsrEngine: PricingEngine = {
     // Cost = difference in cost function
     const costBefore = lmsrCost(oldQuantities, b);
     const costAfter = lmsrCost(newQuantities, b);
-    const totalCost = round4(costAfter - costBefore);
+    const rawCost = round4(costAfter - costBefore);
 
     // New prices from updated quantities
     const rawNewPrices = quantitiesToPrices(newQuantities, b);
@@ -90,14 +90,29 @@ export const lmsrEngine: PricingEngine = {
     }));
 
     const newTargetPrice = newPrices[targetIdx].price;
-    const avgPrice = quantity > 0 ? round4(Math.abs(totalCost) / quantity) : oldPrice;
+    const avgPrice = quantity > 0 ? round4(Math.abs(rawCost) / quantity) : oldPrice;
+
+    // Fees and spread
+    const fee = round4(Math.abs(rawCost) * transactionFeePct);
+    const spreadCost = round4(quantity * spreadCfg);
+    const totalCost = type === "BUY"
+      ? Math.abs(rawCost) + fee + spreadCost
+      : -(Math.abs(rawCost) - fee - spreadCost);
+
+    // Implied probabilities (LMSR prices ARE probabilities)
+    const oldPriceSum = outcomes.reduce((s, o) => s + o.price, 0);
+    const newPriceSum = newPrices.reduce((s, p) => s + p.price, 0);
 
     return {
       avgPrice,
-      totalCost: type === "BUY" ? Math.abs(totalCost) : -Math.abs(totalCost),
+      totalCost,
       newPrices,
       priceBefore: oldPrice,
       priceAfter: newTargetPrice,
+      fee,
+      spread: spreadCost,
+      impliedProbBefore: round4(oldPrice / Math.max(oldPriceSum, 0.01)),
+      impliedProbAfter: round4(newTargetPrice / Math.max(newPriceSum, 0.01)),
     };
   },
 
