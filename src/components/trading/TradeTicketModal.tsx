@@ -149,6 +149,11 @@ export function TradeTicketModal({
             {tradeEstimate && qty > 0 && (
               <div className="rounded-lg bg-muted p-4 space-y-2.5 text-sm">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Trade Impact Preview</p>
+                {educationEnabled && (
+                  <p className="text-xs text-muted-foreground -mt-1 mb-1">
+                    Each share costs slightly more than the last because your trade moves the price. This is normal.
+                  </p>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Current Price</span>
                   <span className="font-mono font-semibold">{(currentOutcome.price * 100).toFixed(1)}¢</span>
