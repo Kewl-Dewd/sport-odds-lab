@@ -508,6 +508,10 @@ export default function InstructorDashboard() {
               </CardContent>
             </Card>
 
+            {/* Education Layer Controls */}
+            <InstructorEducationControls />
+
+
             {/* Presentation Links */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Presentation Mode</CardTitle></CardHeader>
