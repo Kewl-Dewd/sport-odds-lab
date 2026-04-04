@@ -271,13 +271,19 @@ export default function Markets() {
       </div>
 
       {/* Trade Modal */}
-      {tradeModal && (
-        <TradeTicketModal
-          marketId={tradeModal.marketId}
-          initialOutcomeId={tradeModal.outcomeId}
-          onClose={() => setTradeModal(null)}
-        />
-      )}
+      {tradeModal && (() => {
+        const m = markets.find((mk) => mk.id === tradeModal.marketId);
+        const o = m?.outcomes.find((oc) => oc.id === tradeModal.outcomeId);
+        return m && o ? (
+          <TradeTicketModal
+            open={true}
+            marketId={tradeModal.marketId}
+            outcomeId={tradeModal.outcomeId}
+            outcomeName={o.name}
+            onClose={() => setTradeModal(null)}
+          />
+        ) : null;
+      })()}
     </div>
   );
 }
