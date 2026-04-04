@@ -28,6 +28,7 @@ export default function Admin() {
     suspendMarket, resumeMarket, duplicateMarket, deleteMarket,
     addStudent, removeStudent, updateStartingBalance, resetClassroom,
     updateClassroom, exportTradeHistory, exportLeaderboard, getLeaderboard,
+    seedDemoData,
   } = useMarket();
 
   const [showCreator, setShowCreator] = useState(false);
