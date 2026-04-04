@@ -2,6 +2,7 @@ import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock, G
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
+import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
