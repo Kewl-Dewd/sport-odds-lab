@@ -6,6 +6,7 @@ import { OnboardingModal, useOnboarding } from "@/components/onboarding/Onboardi
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
+  const { showOnboarding, completeOnboarding } = useOnboarding();
   const leaderboard = getLeaderboard("portfolio");
   const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
