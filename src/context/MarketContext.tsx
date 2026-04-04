@@ -20,6 +20,7 @@ import {
   type TradeValidation,
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
+import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
