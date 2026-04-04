@@ -434,9 +434,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   // ── Admin market actions ─────────────────────────────────────────
 
   const createMarket = useCallback(
-    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING, transactionFeePct: number = 0, spread: number = 0) => {
+    (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType: PricingEngineType = "linear-impact", maxTradeSize: number = DEFAULT_MAX_TRADE_SIZE, priceFloor: number = PRICE_FLOOR, priceCeiling: number = PRICE_CEILING, transactionFeePct: number = 0, spread: number = 0, metadata?: Partial<MarketMetadata>, customPrices?: number[]) => {
       const id = `m-${crypto.randomUUID().slice(0, 8)}`;
-      const prices = evenPriceDistribution(outcomes.length);
+      const prices = customPrices && customPrices.length === outcomes.length ? customPrices : evenPriceDistribution(outcomes.length);
       const config: MarketConfig = { engineType, liquidityParameter: liquidity, maxTradeSize, priceFloor, priceCeiling, transactionFeePct, spread };
       const newMarket: Market = {
         id,
@@ -457,6 +457,17 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         resolvedOutcomeId: null,
         settlementResult: null,
         createdAt: new Date().toISOString(),
+        metadata: {
+          category: metadata?.category ?? "custom",
+          difficultyLevel: metadata?.difficultyLevel ?? "beginner",
+          season: metadata?.season,
+          eventDate: metadata?.eventDate,
+          teamNames: metadata?.teamNames,
+          playerNames: metadata?.playerNames,
+          instructionalNotes: metadata?.instructionalNotes,
+          settlementRules: metadata?.settlementRules,
+          templateId: metadata?.templateId,
+        },
       };
       setMarkets((prev) => [newMarket, ...prev]);
       logAction("Create market", `${title} [${engineType}]`);
