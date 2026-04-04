@@ -93,11 +93,15 @@ export default function MarketDetail() {
         ⏸ Trading is temporarily suspended by the instructor.
       </div>
     );
-    if (market.status === "settled") return (
-      <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-center">
-        ✓ This market has been settled. Winner: <strong>{market.settlementResult}</strong>
-      </div>
-    );
+    if (market.status === "settled") {
+      // Push settlement nudge
+      if (educationEnabled) pushNudge(NUDGE_CONTENT.settlement);
+      return (
+        <div className="rounded-lg bg-success/10 border border-success/30 p-3 text-sm text-center">
+          ✓ This market has been settled. Winner: <strong>{market.settlementResult}</strong>
+        </div>
+      );
+    }
     return null;
   };
 
