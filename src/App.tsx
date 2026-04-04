@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { MarketProvider } from "@/context/MarketContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Index from "./pages/Index.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
@@ -20,24 +21,26 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/markets" element={<Markets />} />
-            <Route path="/markets/:id" element={<MarketDetail />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/auth" element={<Auth />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <MarketProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/markets" element={<Markets />} />
+              <Route path="/markets/:id" element={<MarketDetail />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/auth" element={<Auth />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </MarketProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
