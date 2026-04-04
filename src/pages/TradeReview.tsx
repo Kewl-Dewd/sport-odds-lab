@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft, Play, Pause, SkipForward, SkipBack, Clock,
   TrendingUp, TrendingDown, BarChart3, Users, Zap,
-  CheckCircle, Eye, EyeOff, User, ArrowRight,
+  CheckCircle, Eye, EyeOff, User, ArrowRight, MonitorPlay,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
