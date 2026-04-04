@@ -83,7 +83,10 @@ export default function Admin() {
           <h1 className="text-2xl md:text-3xl font-bold">Admin Panel</h1>
           <p className="text-muted-foreground">{classroom.name}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="outline" size="sm" onClick={handleSeedDemo}>
+            <Wand2 className="mr-1.5 h-4 w-4" />Demo Data
+          </Button>
           <Button variant="outline" size="sm" onClick={() => handleExport("trades")}>
             <Download className="mr-1.5 h-4 w-4" />Trades CSV
           </Button>
