@@ -1,9 +1,11 @@
-import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Trophy, Medal, TrendingUp, TrendingDown, BarChart3, Zap } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft, Trophy, Medal, TrendingUp, TrendingDown, BarChart3, Zap, Play, Pause, SkipForward, SkipBack, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
-import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
+import { calculateMarketAnalytics, buildPriceHistory } from "@/lib/marketAnalytics";
+import { PriceHistoryChart } from "@/components/charts/AnalyticsCharts";
 import { cn } from "@/lib/utils";
 
 const rankIcon = (rank: number) => {
