@@ -27,6 +27,25 @@ export interface MarketConfig {
   spread: number;
 }
 
+export type MarketCategory =
+  | "game-winner" | "series-winner" | "tournament-winner" | "division-winner"
+  | "award-winner" | "first-scorer" | "first-td-scorer" | "playoff-qualification"
+  | "over-under" | "head-to-head" | "prop" | "custom";
+
+export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
+
+export interface MarketMetadata {
+  category: MarketCategory;
+  season?: string;
+  eventDate?: string;
+  teamNames?: string[];
+  playerNames?: string[];
+  difficultyLevel: DifficultyLevel;
+  instructionalNotes?: string;
+  settlementRules?: string;
+  templateId?: string;
+}
+
 export interface Market {
   id: string;
   classroomId: string;
@@ -42,6 +61,7 @@ export interface Market {
   resolvedOutcomeId: string | null;
   settlementResult: string | null;
   createdAt: string;
+  metadata: MarketMetadata;
 }
 
 export type MarketStatus = "open" | "suspended" | "closed" | "settled";
