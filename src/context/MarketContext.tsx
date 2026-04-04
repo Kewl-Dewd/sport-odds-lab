@@ -209,7 +209,11 @@ interface MarketContextValue {
   removeStudent: (userId: string) => void;
 
   // Admin market actions
-  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number, transactionFeePct?: number, spread?: number) => void;
+  createMarket: (title: string, league: string, sport: string, startTime: string, description: string, outcomes: string[], liquidity: number, engineType?: PricingEngineType, maxTradeSize?: number, priceFloor?: number, priceCeiling?: number, transactionFeePct?: number, spread?: number, metadata?: Partial<MarketMetadata>, customPrices?: number[]) => void;
+  bulkCreateMarkets: (configs: Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[]; liquidity: number; metadata?: Partial<MarketMetadata> }>) => void;
+  savedTemplates: SavedTemplate[];
+  saveTemplate: (template: SavedTemplate) => void;
+  deleteTemplate: (id: string) => void;
   duplicateMarket: (marketId: string) => void;
   suspendMarket: (marketId: string) => void;
   resumeMarket: (marketId: string) => void;
