@@ -515,11 +515,13 @@ export default function MarketDetail() {
             </Card>
           )}
 
-          <EducationalSidebar
-            price={firstOutcome?.price ?? 0.5}
-            outcomeName={firstOutcome?.name ?? ""}
-            liquidityParameter={market.config.liquidityParameter}
-          />
+          {educationEnabled && (
+            <EducationalSidebar
+              price={firstOutcome?.price ?? 0.5}
+              outcomeName={firstOutcome?.name ?? ""}
+              liquidityParameter={market.config.liquidityParameter}
+            />
+          )}
         </div>
       </div>
 
