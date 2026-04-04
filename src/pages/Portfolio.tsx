@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarket } from "@/context/MarketContext";
+import { useEducation } from "@/context/EducationContext";
+import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { PortfolioPerformanceChart, HoldingsDistribution } from "@/components/charts/AnalyticsCharts";
 import { buildPortfolioHistory, analyzePositions } from "@/lib/marketAnalytics";
 import {
