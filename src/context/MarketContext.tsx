@@ -2260,6 +2260,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         discussionCards, discussionSettings, updateDiscussionSettings,
         createDiscussionCard, updateDiscussionCard, deleteDiscussionCard,
         toggleDiscussionCardPin, toggleDiscussionCardSaved,
+        scoringSettings, updateScoringSettings, updateScoringWeights,
+        updateGradeMap, toggleBadgeEnabled,
       }}
     >
       {children}
