@@ -2741,7 +2741,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       line: input.line,
       stake: input.stake,
       cash: portfolio.cash,
-      maxStake: classroom.maxTradeSize,
+      maxStake: undefined,
     });
     if (!validation.ok) {
       toast.error(validation.error ?? "Invalid wager");
@@ -2836,7 +2836,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       pool: input.pool,
       stake: input.stake,
       cash: portfolio.cash,
-      maxStake: classroom.maxTradeSize,
+      maxStake: undefined,
     }, pools, m.racetrack.takeout);
     if (!validation.ok) {
       toast.error(validation.error ?? "Invalid wager");
