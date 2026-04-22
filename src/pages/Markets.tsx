@@ -43,7 +43,12 @@ const diffBadgeStyle: Record<string, string> = {
 };
 
 export default function Markets() {
-  const { markets, trades } = useMarket();
+  const { markets: allMarkets, trades } = useMarket();
+  const { mode } = useMode();
+  const markets = useMemo(
+    () => mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets,
+    [allMarkets, mode],
+  );
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketStatus | "all">("all");
   const [leagueFilter, setLeagueFilter] = useState<string>("all");
@@ -95,7 +100,7 @@ export default function Markets() {
   return (
     <div className="container py-8 space-y-6 animate-slide-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Markets</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">Browse and trade on sports events</p>
       </div>
 
