@@ -1699,6 +1699,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         ethicsSettings, updateEthicsSettings,
         scenarioEvents, injectScenarioEvent, deleteScenarioEvent,
         executeWhaleTrade,
+        biasExperiments, createBiasExperiment, updateBiasExperiment,
+        deleteBiasExperiment, setBiasExperimentMarkets, setBiasFraming,
+        getBiasExperimentsForMarket,
       }}
     >
       {children}
