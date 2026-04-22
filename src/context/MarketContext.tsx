@@ -565,6 +565,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
           instructionalNotes: metadata?.instructionalNotes,
           settlementRules: metadata?.settlementRules,
           templateId: metadata?.templateId,
+          dataSource: metadata?.dataSource ?? "manual",
+          externalEventId: metadata?.externalEventId,
+          externalSport: metadata?.externalSport,
+          externalLeague: metadata?.externalLeague,
         },
       };
       setMarkets((prev) => [newMarket, ...prev]);
