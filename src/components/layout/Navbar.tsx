@@ -29,6 +29,13 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isInstructor, isInstructorAccount, viewAsStudent, setViewAsStudent, signOut } = useAuth();
+  const { mode, clearMode } = useMode();
+
+  const switchMode = () => {
+    clearMode();
+    setMobileOpen(false);
+    navigate("/choose-mode");
+  };
 
   const handleSignOut = async () => {
     await signOut();
