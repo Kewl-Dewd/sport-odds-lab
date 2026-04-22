@@ -142,6 +142,82 @@ export interface Experiment {
   createdAt: string;
 }
 
+// ── Information Asymmetry Types ────────────────────────────────────
+
+export type InfoPacketKind =
+  | "text-note"
+  | "team-update"
+  | "injury-update"
+  | "weather-update"
+  | "probability-hint"
+  | "strategic-clue";
+
+export type InfoPacketTruthLevel = "true" | "partial" | "noisy";
+
+export const INFO_PACKET_KIND_LABELS: Record<InfoPacketKind, string> = {
+  "text-note": "Text note",
+  "team-update": "Team / player update",
+  "injury-update": "Injury update",
+  "weather-update": "Weather update",
+  "probability-hint": "Probability hint",
+  "strategic-clue": "Strategic clue",
+};
+
+export const INFO_PACKET_TRUTH_LABELS: Record<InfoPacketTruthLevel, string> = {
+  true: "Verified",
+  partial: "Partially true",
+  noisy: "Noisy / unreliable",
+};
+
+export type InfoAudienceMode =
+  | "everyone"
+  | "subgroup"
+  | "single"
+  | "random";
+
+export interface InfoAudience {
+  mode: InfoAudienceMode;
+  /** Explicit user IDs for "subgroup" or "single" modes. */
+  userIds?: string[];
+  /** Number of recipients for "random" mode. */
+  randomCount?: number;
+}
+
+export interface InfoPacketReceipt {
+  userId: string;
+  /** ISO timestamp the packet became visible to this user. */
+  releasedAt: string;
+  /** ISO timestamp the user opened the packet (null = unread). */
+  openedAt: string | null;
+  /** ISO timestamp the user explicitly acknowledged. */
+  acknowledgedAt: string | null;
+}
+
+export interface InfoPacket {
+  id: string;
+  classroomId: string;
+  experimentId: string | null;
+  marketId: string | null;
+  title: string;
+  body: string;
+  kind: InfoPacketKind;
+  truthLevel: InfoPacketTruthLevel;
+  /** If true, students are told that information is unevenly distributed. */
+  disclosureToClass: boolean;
+  /** Whether this packet shows up in instructor debrief reports. */
+  includeInDebrief: boolean;
+  /** Pre-resolved audience snapshot (recorded at release time). */
+  audience: InfoAudience;
+  receipts: InfoPacketReceipt[];
+  createdAt: string;
+  /** ISO timestamp when the packet should auto-release. Null = released immediately. */
+  scheduledFor: string | null;
+  /** ISO timestamp when the packet actually became visible to recipients. */
+  releasedAt: string | null;
+  createdBy: string;
+}
+
+
 // ── Seed Data ──────────────────────────────────────────────────────
 
 const CLASSROOM_ID = "class-1";
