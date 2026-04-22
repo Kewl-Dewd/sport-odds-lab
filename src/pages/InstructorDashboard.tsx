@@ -617,6 +617,7 @@ export default function InstructorDashboard() {
               </CardContent>
             </Card>
           </div>
+          </div>
         </TabsContent>
 
         {/* Debrief Tab */}
