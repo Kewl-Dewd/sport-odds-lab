@@ -5,6 +5,7 @@ import { useMarket } from "@/context/MarketContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
+import { ReflectionForm } from "@/components/student/ReflectionForm";
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard, ethicsSettings } = useMarket();
@@ -107,6 +108,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <ReflectionForm />
 
       <MarketNewsFeed />
     </div>

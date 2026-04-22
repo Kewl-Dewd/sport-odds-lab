@@ -26,6 +26,8 @@ import { InstructorEducationControls } from "@/components/education/EducationTog
 import { EthicsControlPanel } from "@/components/admin/EthicsControlPanel";
 import { BehavioralExperimentPanel } from "@/components/admin/BehavioralExperimentPanel";
 import { ShockEventConsole } from "@/components/admin/ShockEventConsole";
+import { ReflectionPanel } from "@/components/admin/ReflectionPanel";
+import { DebriefSummary } from "@/components/debrief/DebriefSummary";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -311,6 +313,7 @@ export default function InstructorDashboard() {
           <TabsTrigger value="markets"><BarChart3 className="h-4 w-4 mr-1.5" />Markets</TabsTrigger>
           <TabsTrigger value="students"><Users className="h-4 w-4 mr-1.5" />Students</TabsTrigger>
           <TabsTrigger value="tools"><Settings className="h-4 w-4 mr-1.5" />Tools</TabsTrigger>
+          <TabsTrigger value="debrief"><FileText className="h-4 w-4 mr-1.5" />Debrief</TabsTrigger>
           <TabsTrigger value="classes"><GraduationCap className="h-4 w-4 mr-1.5" />Classes</TabsTrigger>
           <TabsTrigger value="log"><FileText className="h-4 w-4 mr-1.5" />Log</TabsTrigger>
         </TabsList>
@@ -570,6 +573,11 @@ export default function InstructorDashboard() {
               <ShockEventConsole />
             </div>
 
+            {/* Reflection Assignments (full width) */}
+            <div className="md:col-span-2">
+              <ReflectionPanel />
+            </div>
+
             {/* Presentation Links */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Presentation Mode</CardTitle></CardHeader>
@@ -604,6 +612,11 @@ export default function InstructorDashboard() {
               </CardContent>
             </Card>
           </div>
+        </TabsContent>
+
+        {/* Debrief Tab */}
+        <TabsContent value="debrief">
+          <DebriefSummary />
         </TabsContent>
 
         {/* Classes Tab */}

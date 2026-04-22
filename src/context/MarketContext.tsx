@@ -356,6 +356,73 @@ export interface ShockEvent {
   createdAt: string;
 }
 
+// ── Reflection & Debrief ──────────────────────────────────────────
+
+export type ReflectionPromptKind =
+  | "open-text"
+  | "rating-confidence"
+  | "rating-process"
+  | "strategy-vs-emotion"
+  | "what-different";
+
+export const REFLECTION_PROMPT_LABELS: Record<ReflectionPromptKind, string> = {
+  "open-text": "Open response",
+  "rating-confidence": "Confidence self-rating (1–5)",
+  "rating-process": "Decision-process self-rating (1–5)",
+  "strategy-vs-emotion": "Strategy vs. emotion",
+  "what-different": "What would you do differently?",
+};
+
+export type ReflectionVisibility = "instructor-only" | "anonymous-shared";
+
+export interface ReflectionPrompt {
+  id: string;
+  kind: ReflectionPromptKind;
+  /** Question shown to students. */
+  question: string;
+  /** Whether this individual prompt requires an answer. */
+  required: boolean;
+  /** Display order. */
+  order: number;
+}
+
+export interface ReflectionAssignment {
+  id: string;
+  classroomId: string;
+  /** Optional link to an experiment; null = general session debrief. */
+  experimentId: string | null;
+  title: string;
+  description: string;
+  prompts: ReflectionPrompt[];
+  /** If true, students must submit before viewing full debrief. */
+  required: boolean;
+  /** If true, instructor will grade submissions (adds grade fields). */
+  graded: boolean;
+  /** instructor-only or anonymous-shared in discussion mode. */
+  visibility: ReflectionVisibility;
+  status: "draft" | "open" | "closed";
+  createdAt: string;
+}
+
+export type ReflectionAnswerValue = string | number;
+
+export interface ReflectionAnswer {
+  promptId: string;
+  value: ReflectionAnswerValue;
+}
+
+export interface ReflectionResponse {
+  id: string;
+  assignmentId: string;
+  userId: string;
+  answers: ReflectionAnswer[];
+  /** Optional grade assigned by instructor (0-100). */
+  grade: number | null;
+  /** Optional instructor feedback note. */
+  feedback: string | null;
+  submittedAt: string;
+}
+
 export interface BiasExperiment {
   id: string;
   classroomId: string;
@@ -685,6 +752,31 @@ interface MarketContextValue {
   getShocksForUser: (userId: string) => ShockEvent[];
   /** Shocks attached to a market and visible to a user (released only). */
   getShocksForMarket: (marketId: string, userId?: string) => ShockEvent[];
+
+  // Reflection & Debrief
+  reflectionAssignments: ReflectionAssignment[];
+  reflectionResponses: ReflectionResponse[];
+  createReflectionAssignment: (input: {
+    title: string;
+    description?: string;
+    experimentId?: string | null;
+    prompts?: ReflectionPrompt[];
+    required?: boolean;
+    graded?: boolean;
+    visibility?: ReflectionVisibility;
+    openImmediately?: boolean;
+  }) => ReflectionAssignment;
+  updateReflectionAssignment: (id: string, updates: Partial<Omit<ReflectionAssignment, "id" | "classroomId" | "createdAt">>) => void;
+  deleteReflectionAssignment: (id: string) => void;
+  setReflectionStatus: (id: string, status: ReflectionAssignment["status"]) => void;
+  submitReflectionResponse: (assignmentId: string, answers: ReflectionAnswer[]) => ReflectionResponse;
+  gradeReflectionResponse: (responseId: string, grade: number | null, feedback: string | null) => void;
+  /** Reflection assignments visible to a given student (open/closed only). */
+  getReflectionsForUser: (userId: string) => ReflectionAssignment[];
+  /** Returns the user's response for an assignment, if any. */
+  getReflectionResponse: (assignmentId: string, userId: string) => ReflectionResponse | undefined;
+  /** Returns all responses for an assignment (instructor view). */
+  getReflectionResponses: (assignmentId: string) => ReflectionResponse[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -708,6 +800,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
   const [biasExperiments, setBiasExperiments] = useState<BiasExperiment[]>([]);
   const [shockEvents, setShockEvents] = useState<ShockEvent[]>([]);
+  const [reflectionAssignments, setReflectionAssignments] = useState<ReflectionAssignment[]>([]);
+  const [reflectionResponses, setReflectionResponses] = useState<ReflectionResponse[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -1885,6 +1979,97 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     );
   }, [shockEvents, activeClassroomId]);
 
+  // ── Reflection & Debrief ────────────────────────────────────────
+
+  const createReflectionAssignment = useCallback((input: {
+    title: string;
+    description?: string;
+    experimentId?: string | null;
+    prompts?: ReflectionPrompt[];
+    required?: boolean;
+    graded?: boolean;
+    visibility?: ReflectionVisibility;
+    openImmediately?: boolean;
+  }): ReflectionAssignment => {
+    const a: ReflectionAssignment = {
+      id: `rf-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      experimentId: input.experimentId ?? null,
+      title: input.title,
+      description: input.description ?? "",
+      prompts: input.prompts ?? [
+        { id: crypto.randomUUID(), kind: "open-text", question: "Briefly describe what happened in your trades during this session.", required: true, order: 0 },
+        { id: crypto.randomUUID(), kind: "rating-confidence", question: "How confident were you in your decisions overall?", required: false, order: 1 },
+        { id: crypto.randomUUID(), kind: "rating-process", question: "How would you rate your decision-making process?", required: false, order: 2 },
+        { id: crypto.randomUUID(), kind: "strategy-vs-emotion", question: "Did you mostly follow a strategy or react emotionally?", required: false, order: 3 },
+        { id: crypto.randomUUID(), kind: "what-different", question: "What would you do differently next time?", required: false, order: 4 },
+      ],
+      required: input.required ?? false,
+      graded: input.graded ?? false,
+      visibility: input.visibility ?? "instructor-only",
+      status: input.openImmediately ? "open" : "draft",
+      createdAt: new Date().toISOString(),
+    };
+    setReflectionAssignments((prev) => [a, ...prev]);
+    logAction("Create reflection assignment", a.title);
+    return a;
+  }, [activeClassroomId, logAction]);
+
+  const updateReflectionAssignment = useCallback((id: string, updates: Partial<Omit<ReflectionAssignment, "id" | "classroomId" | "createdAt">>) => {
+    setReflectionAssignments((prev) => prev.map((a) => a.id === id ? { ...a, ...updates } : a));
+  }, []);
+
+  const deleteReflectionAssignment = useCallback((id: string) => {
+    setReflectionAssignments((prev) => prev.filter((a) => a.id !== id));
+    setReflectionResponses((prev) => prev.filter((r) => r.assignmentId !== id));
+    logAction("Delete reflection assignment", id);
+  }, [logAction]);
+
+  const setReflectionStatus = useCallback((id: string, status: ReflectionAssignment["status"]) => {
+    setReflectionAssignments((prev) => prev.map((a) => a.id === id ? { ...a, status } : a));
+    logAction("Update reflection status", `${id} → ${status}`);
+  }, [logAction]);
+
+  const submitReflectionResponse = useCallback((assignmentId: string, answers: ReflectionAnswer[]): ReflectionResponse => {
+    const userId = portfolio.userId;
+    const now = new Date().toISOString();
+    let result: ReflectionResponse;
+    setReflectionResponses((prev) => {
+      const existing = prev.find((r) => r.assignmentId === assignmentId && r.userId === userId);
+      if (existing) {
+        result = { ...existing, answers, submittedAt: now };
+        return prev.map((r) => r.id === existing.id ? result : r);
+      }
+      result = {
+        id: `rr-${crypto.randomUUID().slice(0, 8)}`,
+        assignmentId, userId, answers,
+        grade: null, feedback: null, submittedAt: now,
+      };
+      return [result, ...prev];
+    });
+    logAction("Submit reflection", assignmentId);
+    return result!;
+  }, [portfolio.userId, logAction]);
+
+  const gradeReflectionResponse = useCallback((responseId: string, grade: number | null, feedback: string | null) => {
+    setReflectionResponses((prev) => prev.map((r) => r.id === responseId ? { ...r, grade, feedback } : r));
+    logAction("Grade reflection", responseId);
+  }, [logAction]);
+
+  const getReflectionsForUser = useCallback((_userId: string): ReflectionAssignment[] => {
+    return reflectionAssignments.filter((a) =>
+      a.classroomId === activeClassroomId && a.status !== "draft",
+    );
+  }, [reflectionAssignments, activeClassroomId]);
+
+  const getReflectionResponse = useCallback((assignmentId: string, userId: string): ReflectionResponse | undefined => {
+    return reflectionResponses.find((r) => r.assignmentId === assignmentId && r.userId === userId);
+  }, [reflectionResponses]);
+
+  const getReflectionResponses = useCallback((assignmentId: string): ReflectionResponse[] => {
+    return reflectionResponses.filter((r) => r.assignmentId === assignmentId);
+  }, [reflectionResponses]);
+
   const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
     return shockEvents.filter((s) =>
       s.classroomId === activeClassroomId &&
@@ -1925,6 +2110,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         shockEvents, createShockEvent, releaseShockEvent, cancelShockEvent,
         correctShockEvent, deleteShockEvent, updateShockTruthStatus,
         getShocksForUser, getShocksForMarket,
+        reflectionAssignments, reflectionResponses,
+        createReflectionAssignment, updateReflectionAssignment, deleteReflectionAssignment,
+        setReflectionStatus, submitReflectionResponse, gradeReflectionResponse,
+        getReflectionsForUser, getReflectionResponse, getReflectionResponses,
       }}
     >
       {children}
