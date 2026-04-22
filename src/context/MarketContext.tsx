@@ -25,10 +25,12 @@ import {
   DEFAULT_MAX_TRADE_SIZE,
   PRICE_FLOOR,
   PRICE_CEILING,
+  TERMINAL_STATUSES,
   type TradeEstimate,
   type TradeValidation,
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
+import { toast } from "sonner";
 import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
 
 // ── Classroom Types ────────────────────────────────────────────────
