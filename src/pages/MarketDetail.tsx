@@ -567,8 +567,16 @@ export default function MarketDetail() {
           )}
         </div>
       </div>
+        </TabsContent>
 
-      <TradeTicketModal
+        <TabsContent value="sportsbook" className="mt-0">
+          <SportsbookTab market={market} />
+        </TabsContent>
+
+        <TabsContent value="racetrack" className="mt-0">
+          <RacetrackTab market={market} />
+        </TabsContent>
+      </Tabs>
         open={tradeModal.open}
         onClose={() => setTradeModal((s) => ({ ...s, open: false }))}
         marketId={market.id}
