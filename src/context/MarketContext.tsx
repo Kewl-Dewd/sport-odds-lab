@@ -2465,6 +2465,152 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     );
   }, [shockEvents, activeClassroomId]);
 
+  // ── Scenario Library ─────────────────────────────────────────────
+
+  const createScenario = useCallback((input: Omit<Scenario, "id" | "createdAt" | "isArchived" | "lastLaunchedAt" | "launchCount">): Scenario => {
+    const scenario: Scenario = {
+      ...input,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      createdAt: new Date().toISOString(),
+      isArchived: false,
+      lastLaunchedAt: null,
+      launchCount: 0,
+    };
+    setScenarios((prev) => [scenario, ...prev]);
+    logAction("Create scenario", scenario.title);
+    return scenario;
+  }, [logAction]);
+
+  const updateScenario = useCallback((id: string, updates: Partial<Omit<Scenario, "id" | "createdAt">>) => {
+    setScenarios((prev) => prev.map((s) => s.id === id ? { ...s, ...updates } : s));
+    logAction("Update scenario", id);
+  }, [logAction]);
+
+  const duplicateScenario = useCallback((id: string): Scenario | null => {
+    const src = scenarios.find((s) => s.id === id);
+    if (!src) return null;
+    const dup: Scenario = {
+      ...src,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      title: `${src.title} (Copy)`,
+      createdAt: new Date().toISOString(),
+      lastLaunchedAt: null,
+      launchCount: 0,
+      isArchived: false,
+    };
+    setScenarios((prev) => [dup, ...prev]);
+    logAction("Duplicate scenario", src.title);
+    return dup;
+  }, [scenarios, logAction]);
+
+  const archiveScenario = useCallback((id: string, archived: boolean) => {
+    setScenarios((prev) => prev.map((s) => s.id === id ? { ...s, isArchived: archived } : s));
+    logAction(archived ? "Archive scenario" : "Unarchive scenario", id);
+  }, [logAction]);
+
+  const deleteScenario = useCallback((id: string) => {
+    setScenarios((prev) => prev.filter((s) => s.id !== id));
+    logAction("Delete scenario", id);
+  }, [logAction]);
+
+  const saveCurrentAsScenario = useCallback((meta: {
+    title: string; type: ScenarioType; description: string; learningObjective: string;
+    studentInstructions: string; instructorNotes: string; recommendedMinutes: number;
+    recommendedDebriefPoints: string[]; tags: string[]; difficulty: ScenarioDifficulty;
+  }): Scenario => {
+    // Capture current classroom markets as templates.
+    const classMarkets = markets.filter((m) => m.classroomId === activeClassroomId);
+    const templates: ScenarioMarketTemplate[] = classMarkets.map((m) => ({
+      title: m.title,
+      league: m.league,
+      sport: m.sport,
+      description: m.description,
+      outcomes: m.outcomes.map((o) => o.name),
+      liquidity: m.config.liquidityParameter,
+      suggestedStatus: "open",
+    }));
+    const scenario: Scenario = {
+      ...meta,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      marketTemplates: templates,
+      experimentScaffold: activeExperimentId
+        ? {
+            type: experiments.find((e) => e.id === activeExperimentId)?.type ?? "open-simulation",
+            objective: experiments.find((e) => e.id === activeExperimentId)?.objective ?? "",
+          }
+        : null,
+      presets: {
+        leaderboardVisible: true,
+        nameVisibility: "anonymized",
+        activeRuleIds: [],
+        debriefPrompts: meta.recommendedDebriefPoints.slice(0, 2),
+      },
+      createdAt: new Date().toISOString(),
+      isArchived: false,
+      lastLaunchedAt: null,
+      launchCount: 0,
+    };
+    setScenarios((prev) => [scenario, ...prev]);
+    logAction("Save scenario from current setup", `${meta.title} (${templates.length} markets)`);
+    return scenario;
+  }, [markets, activeClassroomId, activeExperimentId, experiments, logAction]);
+
+  const launchScenario = useCallback((id: string) => {
+    const scenario = scenarios.find((s) => s.id === id);
+    if (!scenario || scenario.isArchived) return null;
+
+    // Create markets from templates.
+    let marketsCreated = 0;
+    for (const tmpl of scenario.marketTemplates) {
+      createMarket(
+        tmpl.title, tmpl.league, tmpl.sport,
+        new Date().toISOString(), tmpl.description, tmpl.outcomes, tmpl.liquidity,
+      );
+      marketsCreated++;
+    }
+
+    // Optional experiment scaffold.
+    let experimentId: string | null = null;
+    if (scenario.experimentScaffold) {
+      const exp = createExperiment({
+        classroomId: activeClassroomId,
+        title: scenario.title,
+        type: scenario.experimentScaffold.type,
+        objective: scenario.experimentScaffold.objective,
+        instructorNotes: scenario.instructorNotes,
+        studentInstructions: scenario.studentInstructions,
+        scoringMode: scenario.presets.scoringMode ?? "portfolio-return",
+        leaderboardVisible: scenario.presets.leaderboardVisible ?? true,
+        nameVisibility: scenario.presets.nameVisibility ?? "anonymized",
+        linkedMarketIds: [],
+        rules: EXPERIMENT_RULE_PRESETS.map((r) => ({
+          ...r,
+          enabled: scenario.presets.activeRuleIds?.includes(r.id) ?? false,
+        })),
+        startDate: null,
+        endDate: null,
+      });
+      experimentId = exp.id;
+    }
+
+    // Apply scoring weight overrides.
+    if (scenario.presets.scoringWeightOverrides) {
+      setScoringSettings((prev) => ({
+        ...prev,
+        weights: { ...prev.weights, ...scenario.presets.scoringWeightOverrides },
+      }));
+    }
+
+    // Bump usage stats.
+    setScenarios((prev) => prev.map((s) =>
+      s.id === id
+        ? { ...s, lastLaunchedAt: new Date().toISOString(), launchCount: s.launchCount + 1 }
+        : s,
+    ));
+    logAction("Launch scenario", `${scenario.title} (${marketsCreated} markets)`);
+    return { marketsCreated, experimentId };
+  }, [scenarios, createMarket, createExperiment, activeClassroomId, logAction]);
+
 
   return (
     <MarketContext.Provider
