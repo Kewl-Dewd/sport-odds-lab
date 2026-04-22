@@ -356,6 +356,73 @@ export interface ShockEvent {
   createdAt: string;
 }
 
+// ── Reflection & Debrief ──────────────────────────────────────────
+
+export type ReflectionPromptKind =
+  | "open-text"
+  | "rating-confidence"
+  | "rating-process"
+  | "strategy-vs-emotion"
+  | "what-different";
+
+export const REFLECTION_PROMPT_LABELS: Record<ReflectionPromptKind, string> = {
+  "open-text": "Open response",
+  "rating-confidence": "Confidence self-rating (1–5)",
+  "rating-process": "Decision-process self-rating (1–5)",
+  "strategy-vs-emotion": "Strategy vs. emotion",
+  "what-different": "What would you do differently?",
+};
+
+export type ReflectionVisibility = "instructor-only" | "anonymous-shared";
+
+export interface ReflectionPrompt {
+  id: string;
+  kind: ReflectionPromptKind;
+  /** Question shown to students. */
+  question: string;
+  /** Whether this individual prompt requires an answer. */
+  required: boolean;
+  /** Display order. */
+  order: number;
+}
+
+export interface ReflectionAssignment {
+  id: string;
+  classroomId: string;
+  /** Optional link to an experiment; null = general session debrief. */
+  experimentId: string | null;
+  title: string;
+  description: string;
+  prompts: ReflectionPrompt[];
+  /** If true, students must submit before viewing full debrief. */
+  required: boolean;
+  /** If true, instructor will grade submissions (adds grade fields). */
+  graded: boolean;
+  /** instructor-only or anonymous-shared in discussion mode. */
+  visibility: ReflectionVisibility;
+  status: "draft" | "open" | "closed";
+  createdAt: string;
+}
+
+export type ReflectionAnswerValue = string | number;
+
+export interface ReflectionAnswer {
+  promptId: string;
+  value: ReflectionAnswerValue;
+}
+
+export interface ReflectionResponse {
+  id: string;
+  assignmentId: string;
+  userId: string;
+  answers: ReflectionAnswer[];
+  /** Optional grade assigned by instructor (0-100). */
+  grade: number | null;
+  /** Optional instructor feedback note. */
+  feedback: string | null;
+  submittedAt: string;
+}
+
 export interface BiasExperiment {
   id: string;
   classroomId: string;
