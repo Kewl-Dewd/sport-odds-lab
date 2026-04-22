@@ -1116,6 +1116,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
   const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
   const [scoringSettings, setScoringSettings] = useState<ScoringSettings>(DEFAULT_SCORING_SETTINGS);
+  const [scenarios, setScenarios] = useState<Scenario[]>(SEED_SCENARIOS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
