@@ -15,6 +15,8 @@ import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
+import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
+import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
@@ -125,6 +127,7 @@ export default function MarketDetail() {
               <Badge variant="outline" className="text-xs">
                 <Settings2 className="h-3 w-3 mr-1" />{engineLabel}
               </Badge>
+              <LiveSourceBadge source={market.metadata.dataSource} />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold">{market.title}</h1>
             <p className="text-muted-foreground mt-1 flex items-center gap-1.5">

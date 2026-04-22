@@ -669,6 +669,7 @@ export default function InstructorDashboard() {
 
       {showCreator && <MarketCreator onClose={() => setShowCreator(false)} />}
       {settlingMarket && <SettlementModal market={settlingMarket} onClose={() => setSettlingMarket(null)} />}
+      <LiveFixtureImporter open={showLiveImporter} onClose={() => setShowLiveImporter(false)} />
     </div>
   );
 }
