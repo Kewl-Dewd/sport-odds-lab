@@ -2651,6 +2651,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         toggleDiscussionCardPin, toggleDiscussionCardSaved,
         scoringSettings, updateScoringSettings, updateScoringWeights,
         updateGradeMap, toggleBadgeEnabled,
+        scenarios, createScenario, updateScenario, duplicateScenario,
+        archiveScenario, deleteScenario, saveCurrentAsScenario, launchScenario,
       }}
     >
       {children}
