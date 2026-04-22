@@ -466,6 +466,46 @@ export interface InfoPacket {
   createdBy: string;
 }
 
+// ── Discussion Mode ───────────────────────────────────────────────
+
+export type DiscussionDimension =
+  | "early-vs-late"
+  | "diversified-vs-concentrated"
+  | "info-holders"
+  | "fast-vs-slow-reactors"
+  | "high-return-vs-low-risk";
+
+export interface DiscussionCard {
+  id: string;
+  classroomId: string;
+  /** Optional link to a comparison dimension this card discusses. */
+  dimension: DiscussionDimension | null;
+  /** Optional link to a market this card highlights. */
+  marketId: string | null;
+  whatHappened: string;
+  whatTradersDid: string;
+  howPricesResponded: string;
+  alternativeStrategy: string;
+  keyTakeaway: string;
+  /** Pinned cards are featured at the top during discussion. */
+  pinned: boolean;
+  /** Saved cards persist as part of the course library. */
+  saved: boolean;
+  createdAt: string;
+}
+
+export interface DiscussionSettings {
+  /** Default to anonymized comparison; instructor can toggle on demand. */
+  revealNames: boolean;
+  /** When true, names are revealed only for pinned discussion items. */
+  revealOnPinnedOnly: boolean;
+}
+
+export const DEFAULT_DISCUSSION_SETTINGS: DiscussionSettings = {
+  revealNames: false,
+  revealOnPinnedOnly: false,
+};
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
@@ -777,6 +817,19 @@ interface MarketContextValue {
   getReflectionResponse: (assignmentId: string, userId: string) => ReflectionResponse | undefined;
   /** Returns all responses for an assignment (instructor view). */
   getReflectionResponses: (assignmentId: string) => ReflectionResponse[];
+
+  // Discussion Mode
+  discussionCards: DiscussionCard[];
+  discussionSettings: DiscussionSettings;
+  updateDiscussionSettings: (updates: Partial<DiscussionSettings>) => void;
+  createDiscussionCard: (input: Omit<DiscussionCard, "id" | "classroomId" | "createdAt" | "pinned" | "saved"> & {
+    pinned?: boolean;
+    saved?: boolean;
+  }) => DiscussionCard;
+  updateDiscussionCard: (id: string, updates: Partial<Omit<DiscussionCard, "id" | "classroomId" | "createdAt">>) => void;
+  deleteDiscussionCard: (id: string) => void;
+  toggleDiscussionCardPin: (id: string) => void;
+  toggleDiscussionCardSaved: (id: string) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -802,6 +855,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [shockEvents, setShockEvents] = useState<ShockEvent[]>([]);
   const [reflectionAssignments, setReflectionAssignments] = useState<ReflectionAssignment[]>([]);
   const [reflectionResponses, setReflectionResponses] = useState<ReflectionResponse[]>([]);
+  const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
+  const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -2070,6 +2125,52 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return reflectionResponses.filter((r) => r.assignmentId === assignmentId);
   }, [reflectionResponses]);
 
+  // ── Discussion Mode ────────────────────────────────────────────
+
+  const updateDiscussionSettings = useCallback((updates: Partial<DiscussionSettings>) => {
+    setDiscussionSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update discussion settings", JSON.stringify(updates));
+  }, [logAction]);
+
+  const createDiscussionCard = useCallback((input: Omit<DiscussionCard, "id" | "classroomId" | "createdAt" | "pinned" | "saved"> & {
+    pinned?: boolean; saved?: boolean;
+  }): DiscussionCard => {
+    const card: DiscussionCard = {
+      id: `dc-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      dimension: input.dimension,
+      marketId: input.marketId,
+      whatHappened: input.whatHappened,
+      whatTradersDid: input.whatTradersDid,
+      howPricesResponded: input.howPricesResponded,
+      alternativeStrategy: input.alternativeStrategy,
+      keyTakeaway: input.keyTakeaway,
+      pinned: input.pinned ?? false,
+      saved: input.saved ?? false,
+      createdAt: new Date().toISOString(),
+    };
+    setDiscussionCards((prev) => [card, ...prev]);
+    logAction("Create discussion card", input.whatHappened.slice(0, 60));
+    return card;
+  }, [activeClassroomId, logAction]);
+
+  const updateDiscussionCard = useCallback((id: string, updates: Partial<Omit<DiscussionCard, "id" | "classroomId" | "createdAt">>) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, ...updates } : c));
+  }, []);
+
+  const deleteDiscussionCard = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.filter((c) => c.id !== id));
+    logAction("Delete discussion card", id);
+  }, [logAction]);
+
+  const toggleDiscussionCardPin = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, pinned: !c.pinned } : c));
+  }, []);
+
+  const toggleDiscussionCardSaved = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, saved: !c.saved } : c));
+  }, []);
+
   const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
     return shockEvents.filter((s) =>
       s.classroomId === activeClassroomId &&
@@ -2114,6 +2215,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         createReflectionAssignment, updateReflectionAssignment, deleteReflectionAssignment,
         setReflectionStatus, submitReflectionResponse, gradeReflectionResponse,
         getReflectionsForUser, getReflectionResponse, getReflectionResponses,
+        discussionCards, discussionSettings, updateDiscussionSettings,
+        createDiscussionCard, updateDiscussionCard, deleteDiscussionCard,
+        toggleDiscussionCardPin, toggleDiscussionCardSaved,
       }}
     >
       {children}

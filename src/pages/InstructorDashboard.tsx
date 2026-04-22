@@ -28,6 +28,7 @@ import { BehavioralExperimentPanel } from "@/components/admin/BehavioralExperime
 import { ShockEventConsole } from "@/components/admin/ShockEventConsole";
 import { ReflectionPanel } from "@/components/admin/ReflectionPanel";
 import { DebriefSummary } from "@/components/debrief/DebriefSummary";
+import { DiscussionModePanel } from "@/components/admin/DiscussionModePanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -616,7 +617,10 @@ export default function InstructorDashboard() {
 
         {/* Debrief Tab */}
         <TabsContent value="debrief">
-          <DebriefSummary />
+          <div className="space-y-4">
+            <DebriefSummary />
+            <DiscussionModePanel />
+          </div>
         </TabsContent>
 
         {/* Classes Tab */}
