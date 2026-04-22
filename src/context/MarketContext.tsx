@@ -506,6 +506,40 @@ export const DEFAULT_DISCUSSION_SETTINGS: DiscussionSettings = {
   revealOnPinnedOnly: false,
 };
 
+// ── Classroom Scoring ─────────────────────────────────────────────
+
+import type {
+  CategoryWeights as ScoringWeights,
+  GradeBand as ScoringGradeBand,
+  BadgeId as ScoringBadgeId,
+} from "@/lib/scoringEngine";
+import {
+  DEFAULT_WEIGHTS as SCORING_DEFAULT_WEIGHTS,
+  DEFAULT_GRADE_MAP as SCORING_DEFAULT_GRADE_MAP,
+  BADGE_DEFINITIONS as SCORING_BADGE_DEFINITIONS,
+} from "@/lib/scoringEngine";
+
+export interface ScoringSettings {
+  /** Per-category weights (do not need to sum to 100; engine normalizes). */
+  weights: ScoringWeights;
+  /** Letter-grade band thresholds. */
+  gradeMap: ScoringGradeBand[];
+  /** Which badges are enabled for the class. */
+  enabledBadges: ScoringBadgeId[];
+  /** Number of trades that earns full participation credit. */
+  participationGoal: number;
+  /** Whether scoring is shown to students. */
+  visibleToStudents: boolean;
+}
+
+export const DEFAULT_SCORING_SETTINGS: ScoringSettings = {
+  weights: SCORING_DEFAULT_WEIGHTS,
+  gradeMap: SCORING_DEFAULT_GRADE_MAP,
+  enabledBadges: Object.keys(SCORING_BADGE_DEFINITIONS) as ScoringBadgeId[],
+  participationGoal: 10,
+  visibleToStudents: true,
+};
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
@@ -830,6 +864,13 @@ interface MarketContextValue {
   deleteDiscussionCard: (id: string) => void;
   toggleDiscussionCardPin: (id: string) => void;
   toggleDiscussionCardSaved: (id: string) => void;
+
+  // Classroom Scoring
+  scoringSettings: ScoringSettings;
+  updateScoringSettings: (updates: Partial<ScoringSettings>) => void;
+  updateScoringWeights: (updates: Partial<ScoringWeights>) => void;
+  updateGradeMap: (map: ScoringGradeBand[]) => void;
+  toggleBadgeEnabled: (badgeId: ScoringBadgeId) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -857,6 +898,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [reflectionResponses, setReflectionResponses] = useState<ReflectionResponse[]>([]);
   const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
   const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
+  const [scoringSettings, setScoringSettings] = useState<ScoringSettings>(DEFAULT_SCORING_SETTINGS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -2171,6 +2213,31 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, saved: !c.saved } : c));
   }, []);
 
+  // ── Classroom Scoring ────────────────────────────────────────────
+
+  const updateScoringSettings = useCallback((updates: Partial<ScoringSettings>) => {
+    setScoringSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update scoring settings", JSON.stringify(updates));
+  }, [logAction]);
+
+  const updateScoringWeights = useCallback((updates: Partial<ScoringWeights>) => {
+    setScoringSettings((prev) => ({ ...prev, weights: { ...prev.weights, ...updates } }));
+  }, []);
+
+  const updateGradeMap = useCallback((map: ScoringGradeBand[]) => {
+    setScoringSettings((prev) => ({ ...prev, gradeMap: map }));
+    logAction("Update grade map", `${map.length} bands`);
+  }, [logAction]);
+
+  const toggleBadgeEnabled = useCallback((badgeId: ScoringBadgeId) => {
+    setScoringSettings((prev) => ({
+      ...prev,
+      enabledBadges: prev.enabledBadges.includes(badgeId)
+        ? prev.enabledBadges.filter((b) => b !== badgeId)
+        : [...prev.enabledBadges, badgeId],
+    }));
+  }, []);
+
   const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
     return shockEvents.filter((s) =>
       s.classroomId === activeClassroomId &&
@@ -2218,6 +2285,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         discussionCards, discussionSettings, updateDiscussionSettings,
         createDiscussionCard, updateDiscussionCard, deleteDiscussionCard,
         toggleDiscussionCardPin, toggleDiscussionCardSaved,
+        scoringSettings, updateScoringSettings, updateScoringWeights,
+        updateGradeMap, toggleBadgeEnabled,
       }}
     >
       {children}

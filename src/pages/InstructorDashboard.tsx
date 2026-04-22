@@ -29,6 +29,7 @@ import { ShockEventConsole } from "@/components/admin/ShockEventConsole";
 import { ReflectionPanel } from "@/components/admin/ReflectionPanel";
 import { DebriefSummary } from "@/components/debrief/DebriefSummary";
 import { DiscussionModePanel } from "@/components/admin/DiscussionModePanel";
+import { ScoringSettingsPanel } from "@/components/admin/ScoringSettingsPanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -618,6 +619,7 @@ export default function InstructorDashboard() {
         {/* Debrief Tab */}
         <TabsContent value="debrief">
           <div className="space-y-4">
+            <ScoringSettingsPanel />
             <DebriefSummary />
             <DiscussionModePanel />
           </div>
