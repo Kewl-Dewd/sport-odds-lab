@@ -193,6 +193,76 @@ export interface InfoPacketReceipt {
   acknowledgedAt: string | null;
 }
 
+// ── Market Manipulation & Ethics Mode ─────────────────────────────
+
+export type ScenarioKind =
+  | "rumor-injection"
+  | "pump-burst"
+  | "fake-confidence"
+  | "rumor-overreaction"
+  | "coordinated-buy"
+  | "rapid-reversal"
+  | "herd-setup"
+  | "bluff-unwind"
+  | "whale-trade";
+
+export const SCENARIO_LABELS: Record<ScenarioKind, string> = {
+  "rumor-injection": "Rumor injection",
+  "pump-burst": "Pump-style trading burst",
+  "fake-confidence": "Fake confidence wave",
+  "rumor-overreaction": "Rumor-driven overreaction",
+  "coordinated-buy": "Coordinated buying",
+  "rapid-reversal": "Rapid reversal",
+  "herd-setup": "Herd-following setup",
+  "bluff-unwind": "Bluff and unwind",
+  "whale-trade": "Whale-style large trade",
+};
+
+export interface ScenarioEvent {
+  id: string;
+  classroomId: string;
+  kind: ScenarioKind;
+  marketId: string | null;
+  /** Plain instructor description shown in replay markers / debrief. */
+  note: string;
+  /** Optional list of student userIds nudged in the scenario (e.g. coordination group). */
+  participantIds?: string[];
+  injectedAt: string;
+  injectedBy: string;
+}
+
+export interface EthicsSettings {
+  enabled: boolean;
+  /** Whether students see a banner that manipulation may occur. */
+  studentsAwareOfManipulation: boolean;
+  /** Allow instructor to inject narrative rumors. */
+  allowRumorInjection: boolean;
+  /** Allow team-trading mode (small groups assigned a target). */
+  allowCoordinatedTrading: boolean;
+  /** Whether public class chat is enabled. (UI gate only — chat is out of scope.) */
+  publicChatEnabled: boolean;
+  /** Allow instructor to instruct a small group to push a price direction. */
+  allowDirectionalGroup: boolean;
+  /** Allow whale-style instructor trades. */
+  allowWhaleTrades: boolean;
+  /** Surface integrity flags during replay / debrief. */
+  detectionFlagsVisible: boolean;
+  /** Show post-experiment debrief to students. */
+  studentDebriefEnabled: boolean;
+}
+
+export const DEFAULT_ETHICS_SETTINGS: EthicsSettings = {
+  enabled: false,
+  studentsAwareOfManipulation: false,
+  allowRumorInjection: true,
+  allowCoordinatedTrading: false,
+  publicChatEnabled: true,
+  allowDirectionalGroup: false,
+  allowWhaleTrades: true,
+  detectionFlagsVisible: true,
+  studentDebriefEnabled: true,
+};
+
 export interface InfoPacket {
   id: string;
   classroomId: string;
@@ -440,6 +510,27 @@ interface MarketContextValue {
   deleteInfoPacket: (packetId: string) => void;
   openInfoPacket: (packetId: string, userId: string) => void;
   acknowledgeInfoPacket: (packetId: string, userId: string) => void;
+
+  // Market Manipulation & Ethics Mode
+  ethicsSettings: EthicsSettings;
+  updateEthicsSettings: (updates: Partial<EthicsSettings>) => void;
+  scenarioEvents: ScenarioEvent[];
+  injectScenarioEvent: (input: {
+    kind: ScenarioKind;
+    marketId: string | null;
+    note: string;
+    participantIds?: string[];
+  }) => ScenarioEvent;
+  deleteScenarioEvent: (id: string) => void;
+  /** Execute a large instructor-driven "whale" trade attributed to a chosen student. */
+  executeWhaleTrade: (input: {
+    marketId: string;
+    outcomeId: string;
+    quantity: number;
+    type: "BUY" | "SELL";
+    asUserId: string;
+    note?: string;
+  }) => Trade | null;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -459,6 +550,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [activeExperimentId, setActiveExperimentId] = useState<string | null>(null);
   const [infoPackets, setInfoPackets] = useState<InfoPacket[]>([]);
+  const [ethicsSettings, setEthicsSettings] = useState<EthicsSettings>(DEFAULT_ETHICS_SETTINGS);
+  const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -1383,6 +1476,76 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(t);
   }, [resolveAudience]);
 
+  // ── Market Manipulation & Ethics Mode ───────────────────────────
+
+  const updateEthicsSettings = useCallback((updates: Partial<EthicsSettings>) => {
+    setEthicsSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update ethics settings", Object.keys(updates).join(", "));
+  }, [logAction]);
+
+  const injectScenarioEvent = useCallback((input: {
+    kind: ScenarioKind;
+    marketId: string | null;
+    note: string;
+    participantIds?: string[];
+  }): ScenarioEvent => {
+    const ev: ScenarioEvent = {
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      kind: input.kind,
+      marketId: input.marketId,
+      note: input.note,
+      participantIds: input.participantIds,
+      injectedAt: new Date().toISOString(),
+      injectedBy: "instructor",
+    };
+    setScenarioEvents((prev) => [ev, ...prev]);
+    logAction("Inject scenario", `${SCENARIO_LABELS[input.kind]}: ${input.note}`);
+    return ev;
+  }, [activeClassroomId, logAction]);
+
+  const deleteScenarioEvent = useCallback((id: string) => {
+    setScenarioEvents((prev) => prev.filter((e) => e.id !== id));
+    logAction("Delete scenario", id);
+  }, [logAction]);
+
+  const executeWhaleTrade = useCallback((input: {
+    marketId: string;
+    outcomeId: string;
+    quantity: number;
+    type: "BUY" | "SELL";
+    asUserId: string;
+    note?: string;
+  }): Trade | null => {
+    const market = markets.find((m) => m.id === input.marketId);
+    const trader = students.find((s) => s.userId === input.asUserId);
+    if (!market || !trader) return null;
+    try {
+      const result = executeTrade(market, trader, input.outcomeId, input.quantity, input.type);
+      setMarkets((prev) => prev.map((m) => m.id === input.marketId ? { ...m, outcomes: result.updatedOutcomes } : m));
+      setStudents((prev) => prev.map((s) => s.userId === input.asUserId ? result.updatedPortfolio : s));
+      if (input.asUserId === portfolio.userId) setPortfolio(result.updatedPortfolio);
+      setTrades((prev) => [result.trade, ...prev]);
+      // Record as scenario event for the debrief.
+      const ev: ScenarioEvent = {
+        id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+        classroomId: activeClassroomId,
+        kind: "whale-trade",
+        marketId: input.marketId,
+        note: input.note ?? `Whale ${input.type} ${input.quantity}× ${result.trade.outcomeName} as ${trader.displayName}`,
+        participantIds: [input.asUserId],
+        injectedAt: new Date().toISOString(),
+        injectedBy: "instructor",
+      };
+      setScenarioEvents((prev) => [ev, ...prev]);
+      logAction("Whale trade", `${trader.displayName} ${input.type} ${input.quantity}× ${result.trade.outcomeName}`);
+      return result.trade;
+    } catch (e) {
+      console.error("Whale trade failed:", e);
+      return null;
+    }
+  }, [markets, students, portfolio.userId, activeClassroomId, logAction]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -1404,6 +1567,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         infoPackets, getPacketsForUser, getUnreadPacketCount,
         createInfoPacket, releaseInfoPacket, deleteInfoPacket,
         openInfoPacket, acknowledgeInfoPacket,
+        ethicsSettings, updateEthicsSettings,
+        scenarioEvents, injectScenarioEvent, deleteScenarioEvent,
+        executeWhaleTrade,
       }}
     >
       {children}

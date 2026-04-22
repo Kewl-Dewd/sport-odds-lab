@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
+import { MarketDebrief } from "@/components/student/MarketDebrief";
 
 export default function Dashboard() {
-  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
+  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard, ethicsSettings } = useMarket();
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const leaderboard = getLeaderboard("portfolio");
   const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
@@ -25,6 +26,14 @@ export default function Dashboard() {
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground">{classroom.name} · {portfolio.displayName}</p>
       </div>
+
+      {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
+        <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm">
+          ⚠️ <strong>Experiment notice:</strong> This classroom is running in
+          ethics-research mode. Trading patterns you see may include rumors,
+          coordinated activity, or large directional trades by other participants.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (

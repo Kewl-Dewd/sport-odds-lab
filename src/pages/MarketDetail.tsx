@@ -17,6 +17,7 @@ import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
 import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
+import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +25,7 @@ type OutcomeSort = "price-desc" | "price-asc" | "name" | "change";
 
 export default function MarketDetail() {
   const { id } = useParams<{ id: string }>();
-  const { getMarket, getHolding, trades } = useMarket();
+  const { getMarket, getHolding, trades, ethicsSettings } = useMarket();
   const { educationEnabled, mode, pushNudge } = useEducation();
   const market = getMarket(id ?? "");
 
@@ -136,6 +137,18 @@ export default function MarketDetail() {
           </div>
 
           {statusMessage()}
+
+          {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && market.status === "open" && (
+            <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-xs text-center">
+              ⚠️ <strong>Experiment notice:</strong> This classroom is running in
+              ethics-research mode. Trading patterns may include rumors, coordinated
+              activity, or large directional trades by other participants.
+            </div>
+          )}
+
+          {market.status === "settled" && ethicsSettings.studentDebriefEnabled && (
+            <MarketDebrief marketId={market.id} />
+          )}
 
           {/* Market Info Bar — liquidity, engine, fees */}
           <div className="flex flex-wrap gap-2 text-xs">

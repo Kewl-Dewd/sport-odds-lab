@@ -23,6 +23,7 @@ import { SettlementSuggestions } from "@/components/admin/SettlementSuggestions"
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { InstructorEducationControls } from "@/components/education/EducationToggle";
+import { EthicsControlPanel } from "@/components/admin/EthicsControlPanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -552,6 +553,10 @@ export default function InstructorDashboard() {
             {/* Education Layer Controls */}
             <InstructorEducationControls />
 
+            {/* Market Manipulation & Ethics Mode (full width) */}
+            <div className="md:col-span-2">
+              <EthicsControlPanel />
+            </div>
 
             {/* Presentation Links */}
             <Card>
