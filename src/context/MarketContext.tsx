@@ -584,6 +584,22 @@ interface MarketContextValue {
     asUserId: string;
     note?: string;
   }) => Trade | null;
+
+  // Behavioral Finance Experiments
+  biasExperiments: BiasExperiment[];
+  createBiasExperiment: (input: {
+    title: string;
+    bias: BiasKind;
+    objective?: string;
+    marketIds?: string[];
+    studentNoticeEnabled?: boolean;
+  }) => BiasExperiment;
+  updateBiasExperiment: (id: string, updates: Partial<Omit<BiasExperiment, "id" | "classroomId" | "createdAt">>) => void;
+  deleteBiasExperiment: (id: string) => void;
+  setBiasExperimentMarkets: (id: string, marketIds: string[]) => void;
+  setBiasFraming: (experimentId: string, marketId: string, framing: BiasFraming) => void;
+  /** Returns the active bias experiment(s) for a market in the current classroom. */
+  getBiasExperimentsForMarket: (marketId: string) => BiasExperiment[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
