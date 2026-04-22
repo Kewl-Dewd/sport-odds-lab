@@ -193,6 +193,76 @@ export interface InfoPacketReceipt {
   acknowledgedAt: string | null;
 }
 
+// ── Market Manipulation & Ethics Mode ─────────────────────────────
+
+export type ScenarioKind =
+  | "rumor-injection"
+  | "pump-burst"
+  | "fake-confidence"
+  | "rumor-overreaction"
+  | "coordinated-buy"
+  | "rapid-reversal"
+  | "herd-setup"
+  | "bluff-unwind"
+  | "whale-trade";
+
+export const SCENARIO_LABELS: Record<ScenarioKind, string> = {
+  "rumor-injection": "Rumor injection",
+  "pump-burst": "Pump-style trading burst",
+  "fake-confidence": "Fake confidence wave",
+  "rumor-overreaction": "Rumor-driven overreaction",
+  "coordinated-buy": "Coordinated buying",
+  "rapid-reversal": "Rapid reversal",
+  "herd-setup": "Herd-following setup",
+  "bluff-unwind": "Bluff and unwind",
+  "whale-trade": "Whale-style large trade",
+};
+
+export interface ScenarioEvent {
+  id: string;
+  classroomId: string;
+  kind: ScenarioKind;
+  marketId: string | null;
+  /** Plain instructor description shown in replay markers / debrief. */
+  note: string;
+  /** Optional list of student userIds nudged in the scenario (e.g. coordination group). */
+  participantIds?: string[];
+  injectedAt: string;
+  injectedBy: string;
+}
+
+export interface EthicsSettings {
+  enabled: boolean;
+  /** Whether students see a banner that manipulation may occur. */
+  studentsAwareOfManipulation: boolean;
+  /** Allow instructor to inject narrative rumors. */
+  allowRumorInjection: boolean;
+  /** Allow team-trading mode (small groups assigned a target). */
+  allowCoordinatedTrading: boolean;
+  /** Whether public class chat is enabled. (UI gate only — chat is out of scope.) */
+  publicChatEnabled: boolean;
+  /** Allow instructor to instruct a small group to push a price direction. */
+  allowDirectionalGroup: boolean;
+  /** Allow whale-style instructor trades. */
+  allowWhaleTrades: boolean;
+  /** Surface integrity flags during replay / debrief. */
+  detectionFlagsVisible: boolean;
+  /** Show post-experiment debrief to students. */
+  studentDebriefEnabled: boolean;
+}
+
+export const DEFAULT_ETHICS_SETTINGS: EthicsSettings = {
+  enabled: false,
+  studentsAwareOfManipulation: false,
+  allowRumorInjection: true,
+  allowCoordinatedTrading: false,
+  publicChatEnabled: true,
+  allowDirectionalGroup: false,
+  allowWhaleTrades: true,
+  detectionFlagsVisible: true,
+  studentDebriefEnabled: true,
+};
+
 export interface InfoPacket {
   id: string;
   classroomId: string;
