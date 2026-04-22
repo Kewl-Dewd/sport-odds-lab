@@ -24,6 +24,7 @@ import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { InstructorEducationControls } from "@/components/education/EducationToggle";
 import { EthicsControlPanel } from "@/components/admin/EthicsControlPanel";
+import { BehavioralExperimentPanel } from "@/components/admin/BehavioralExperimentPanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
