@@ -195,7 +195,7 @@ function buildCohortStats(
 
   return {
     label,
-    memberAliases: userIds.map((uid) => ctx.aliasByUser.get(uid) ?? "Trader ?"),
+    members: userIds.map((uid) => ({ userId: uid, alias: ctx.aliasByUser.get(uid) ?? "Trader ?" })),
     userCount: members.length,
     totalTrades,
     totalVolume,

@@ -280,30 +280,20 @@ function CohortCard({
         <div className="flex flex-wrap gap-1">
           {cohort.userCount === 0 ? (
             <span className="text-[10px] text-muted-foreground">No members</span>
-          ) : cohort.memberAliases.slice(0, 12).map((alias, i) => (
-            <Badge key={i} variant="outline" className="text-[9px] font-mono">
-              {showNames ? nameOfFromAlias(alias) : alias}
+          ) : cohort.members.slice(0, 12).map((m) => (
+            <Badge key={m.userId} variant="outline" className="text-[9px] font-mono">
+              {showNames ? nameOf(m.userId) : m.alias}
             </Badge>
           ))}
-          {cohort.memberAliases.length > 12 && (
+          {cohort.members.length > 12 && (
             <Badge variant="outline" className="text-[9px]">
-              +{cohort.memberAliases.length - 12}
+              +{cohort.members.length - 12}
             </Badge>
           )}
         </div>
       </div>
     </div>
   );
-
-  // Helper: when names are revealed we still receive alias chips, so we
-  // need to map alias back. The aliases are deterministic but mapping
-  // requires the original user list. Since CohortCard receives only aliases,
-  // we display the alias when reveal is on too — and if a real-name view
-  // is desired we render alias + real name lookup is left to the caller.
-  // For correctness we just show the alias unless caller passes user IDs.
-  function nameOfFromAlias(alias: string) {
-    return nameOf(alias);
-  }
 }
 
 function Stat({
