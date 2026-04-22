@@ -489,9 +489,15 @@ export default function InstructorDashboard() {
 
         {/* Tools Tab */}
         <TabsContent value="tools">
-          <div className="space-y-4">
-            <ScenarioLibraryPanel />
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Lesson library</h2>
+              <ScenarioLibraryPanel />
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Quick adjustments</h2>
+              <div className="grid md:grid-cols-2 gap-4">
             {/* Bankroll Adjustment */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><DollarSign className="h-4 w-4" />Adjust Bankroll</CardTitle></CardHeader>
