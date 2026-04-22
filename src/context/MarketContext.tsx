@@ -953,6 +953,29 @@ interface MarketContextValue {
   updateScoringWeights: (updates: Partial<ScoringWeights>) => void;
   updateGradeMap: (map: ScoringGradeBand[]) => void;
   toggleBadgeEnabled: (badgeId: ScoringBadgeId) => void;
+
+  // Scenario Library
+  scenarios: Scenario[];
+  createScenario: (input: Omit<Scenario, "id" | "createdAt" | "isArchived" | "lastLaunchedAt" | "launchCount">) => Scenario;
+  updateScenario: (id: string, updates: Partial<Omit<Scenario, "id" | "createdAt">>) => void;
+  duplicateScenario: (id: string) => Scenario | null;
+  archiveScenario: (id: string, archived: boolean) => void;
+  deleteScenario: (id: string) => void;
+  /** Capture current classroom setup as a new scenario. */
+  saveCurrentAsScenario: (meta: {
+    title: string;
+    type: ScenarioType;
+    description: string;
+    learningObjective: string;
+    studentInstructions: string;
+    instructorNotes: string;
+    recommendedMinutes: number;
+    recommendedDebriefPoints: string[];
+    tags: string[];
+    difficulty: ScenarioDifficulty;
+  }) => Scenario;
+  /** One-click launch: creates markets, applies presets, optional experiment. */
+  launchScenario: (id: string) => { marketsCreated: number; experimentId: string | null } | null;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
