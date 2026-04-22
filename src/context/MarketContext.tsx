@@ -32,6 +32,25 @@ import {
 import type { PricingEngineType } from "@/lib/pricing";
 import { toast } from "sonner";
 import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
+import type {
+  SportsbookSurface,
+  SportsbookWager,
+  SportsbookLine,
+  SportsbookGameResult,
+} from "@/lib/sportsbookEngine";
+import { validateWager, settleWager } from "@/lib/sportsbookEngine";
+import type {
+  RacetrackSurface,
+  RaceWager,
+  RaceRunner,
+  RacePoolKind,
+  PoolTotals,
+} from "@/lib/racetrackEngine";
+import {
+  validateRaceWager,
+  settleRaceWagers,
+  calculatePoolTotals,
+} from "@/lib/racetrackEngine";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
@@ -1090,6 +1109,36 @@ interface MarketContextValue {
   }) => Scenario;
   /** One-click launch: creates markets, applies presets, optional experiment. */
   launchScenario: (id: string) => { marketsCreated: number; experimentId: string | null } | null;
+
+  // Sportsbook
+  sportsbookWagers: SportsbookWager[];
+  setSportsbookSurface: (marketId: string, surface: SportsbookSurface | undefined) => void;
+  upsertSportsbookLines: (marketId: string, lines: SportsbookLine[], source?: "manual" | "odds-api") => void;
+  toggleSportsbookEnabled: (marketId: string, enabled: boolean) => void;
+  placeSportsbookWager: (input: {
+    marketId: string;
+    line: SportsbookLine;
+    stake: number;
+  }) => { ok: boolean; error?: string; wager?: SportsbookWager };
+  getWagersForMarket: (marketId: string) => SportsbookWager[];
+  getMyWagers: () => SportsbookWager[];
+  settleSportsbook: (marketId: string, result: SportsbookGameResult) => void;
+
+  // Racetrack
+  raceWagers: RaceWager[];
+  setRacetrackSurface: (marketId: string, surface: RacetrackSurface | undefined) => void;
+  toggleRacetrackEnabled: (marketId: string, enabled: boolean) => void;
+  upsertRunners: (marketId: string, runners: RaceRunner[], meta?: { raceName?: string; postTime?: string; takeout?: number }) => void;
+  placeRaceWager: (input: {
+    marketId: string;
+    runner: RaceRunner;
+    pool: RacePoolKind;
+    stake: number;
+  }) => { ok: boolean; error?: string; wager?: RaceWager };
+  getRaceWagersForMarket: (marketId: string) => RaceWager[];
+  getMyRaceWagers: () => RaceWager[];
+  getRacePoolTotals: (marketId: string) => PoolTotals | null;
+  settleRace: (marketId: string, finishOrder: string[]) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -1101,6 +1150,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [portfolio, setPortfolio] = useState<UserPortfolio>(SEED_STUDENTS[0]);
   const [students, setStudents] = useState<UserPortfolio[]>(SEED_STUDENTS);
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [sportsbookWagers, setSportsbookWagers] = useState<SportsbookWager[]>([]);
+  const [raceWagers, setRaceWagers] = useState<RaceWager[]>([]);
   const [adminActions, setAdminActions] = useState<AdminAction[]>([]);
   const [priceChanges, setPriceChanges] = useState<
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
@@ -2658,6 +2709,195 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return { marketsCreated, experimentId };
   }, [scenarios, createMarket, createExperiment, activeClassroomId, logAction]);
 
+  // ── Sportsbook ───────────────────────────────────────────────────
+  const setSportsbookSurface = useCallback((marketId: string, surface: SportsbookSurface | undefined) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, sportsbook: surface } : m));
+    logAction("Sportsbook surface", marketId);
+  }, [logAction]);
+
+  const upsertSportsbookLines = useCallback((marketId: string, lines: SportsbookLine[], source: "manual" | "odds-api" = "manual") => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? {
+      ...m,
+      sportsbook: {
+        enabled: m.sportsbook?.enabled ?? true,
+        source,
+        lastUpdated: new Date().toISOString(),
+        lines,
+        note: m.sportsbook?.note,
+      },
+    } : m));
+  }, []);
+
+  const toggleSportsbookEnabled = useCallback((marketId: string, enabled: boolean) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId
+      ? { ...m, sportsbook: m.sportsbook ? { ...m.sportsbook, enabled } : { enabled, source: "manual", lines: [] } }
+      : m));
+  }, []);
+
+  const placeSportsbookWager = useCallback((input: { marketId: string; line: SportsbookLine; stake: number }) => {
+    const validation = validateWager({
+      userId: portfolio.userId,
+      marketId: input.marketId,
+      line: input.line,
+      stake: input.stake,
+      cash: portfolio.cash,
+      maxStake: undefined,
+    });
+    if (!validation.ok) {
+      toast.error(validation.error ?? "Invalid wager");
+      return { ok: false, error: validation.error };
+    }
+    const wager: SportsbookWager = {
+      id: `sw-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      userId: portfolio.userId,
+      marketId: input.marketId,
+      lineId: input.line.id,
+      decimalOdds: input.line.decimalOdds,
+      stake: Math.round(input.stake * 100) / 100,
+      label: input.line.label,
+      kind: input.line.kind,
+      side: input.line.side,
+      point: input.line.point,
+      placedAt: new Date().toISOString(),
+      status: "open",
+    };
+    setSportsbookWagers((prev) => [wager, ...prev]);
+    setPortfolio((prev) => ({ ...prev, cash: Math.round((prev.cash - wager.stake) * 100) / 100 }));
+    setStudents((prev) => prev.map((s) => s.userId === portfolio.userId
+      ? { ...s, cash: Math.round((s.cash - wager.stake) * 100) / 100 } : s));
+    toast.success(`Wager placed: $${wager.stake.toFixed(2)} @ ${wager.decimalOdds.toFixed(2)}`);
+    logAction("Place wager", `${wager.label} $${wager.stake.toFixed(2)}`);
+    return { ok: true, wager };
+  }, [portfolio.userId, portfolio.cash, logAction]);
+
+  const getWagersForMarket = useCallback((marketId: string) =>
+    sportsbookWagers.filter((w) => w.marketId === marketId), [sportsbookWagers]);
+
+  const getMyWagers = useCallback(() =>
+    sportsbookWagers.filter((w) => w.userId === portfolio.userId), [sportsbookWagers, portfolio.userId]);
+
+  const settleSportsbook = useCallback((marketId: string, result: SportsbookGameResult) => {
+    let creditsByUser: Record<string, number> = {};
+    setSportsbookWagers((prev) => prev.map((w) => {
+      if (w.marketId !== marketId || w.status !== "open") return w;
+      const { status, payout } = settleWager(w, result);
+      creditsByUser[w.userId] = (creditsByUser[w.userId] ?? 0) + payout;
+      return { ...w, status, settledPayout: payout, settledAt: new Date().toISOString() };
+    }));
+    setStudents((prev) => prev.map((s) => creditsByUser[s.userId]
+      ? { ...s, cash: Math.round((s.cash + creditsByUser[s.userId]) * 100) / 100 } : s));
+    if (creditsByUser[portfolio.userId]) {
+      setPortfolio((prev) => ({ ...prev, cash: Math.round((prev.cash + creditsByUser[prev.userId]) * 100) / 100 }));
+    }
+    logAction("Settle sportsbook", marketId);
+  }, [portfolio.userId, logAction]);
+
+  // ── Racetrack ────────────────────────────────────────────────────
+  const setRacetrackSurface = useCallback((marketId: string, surface: RacetrackSurface | undefined) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, racetrack: surface } : m));
+  }, []);
+
+  const toggleRacetrackEnabled = useCallback((marketId: string, enabled: boolean) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId
+      ? { ...m, racetrack: m.racetrack ? { ...m.racetrack, enabled } : { enabled, source: "manual", takeout: 0.16, runners: [] } }
+      : m));
+  }, []);
+
+  const upsertRunners = useCallback((marketId: string, runners: RaceRunner[], meta?: { raceName?: string; postTime?: string; takeout?: number }) => {
+    setMarkets((prev) => prev.map((m) => m.id === marketId ? {
+      ...m,
+      racetrack: {
+        enabled: m.racetrack?.enabled ?? true,
+        source: "manual" as const,
+        lastUpdated: new Date().toISOString(),
+        takeout: meta?.takeout ?? m.racetrack?.takeout ?? 0.16,
+        raceName: meta?.raceName ?? m.racetrack?.raceName,
+        postTime: meta?.postTime ?? m.racetrack?.postTime,
+        runners,
+      },
+    } : m));
+  }, []);
+
+  const getRacePoolTotals = useCallback((marketId: string): PoolTotals | null => {
+    const m = markets.find((x) => x.id === marketId);
+    if (!m?.racetrack) return null;
+    const wagers = raceWagers.filter((w) => w.marketId === marketId);
+    return calculatePoolTotals(wagers, m.racetrack.runners);
+  }, [markets, raceWagers]);
+
+  const placeRaceWager = useCallback((input: { marketId: string; runner: RaceRunner; pool: RacePoolKind; stake: number }) => {
+    const m = markets.find((x) => x.id === input.marketId);
+    if (!m?.racetrack) return { ok: false, error: "No race configured" };
+    const pools = calculatePoolTotals(raceWagers.filter((w) => w.marketId === input.marketId), m.racetrack.runners);
+    const validation = validateRaceWager({
+      userId: portfolio.userId,
+      marketId: input.marketId,
+      runner: input.runner,
+      pool: input.pool,
+      stake: input.stake,
+      cash: portfolio.cash,
+      maxStake: undefined,
+    }, pools, m.racetrack.takeout);
+    if (!validation.ok) {
+      toast.error(validation.error ?? "Invalid wager");
+      return { ok: false, error: validation.error };
+    }
+    const wager: RaceWager = {
+      id: `rw-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      userId: portfolio.userId,
+      marketId: input.marketId,
+      runnerId: input.runner.id,
+      pool: input.pool,
+      stake: Math.round(input.stake * 100) / 100,
+      runnerName: input.runner.name,
+      runnerNumber: input.runner.number,
+      placedAt: new Date().toISOString(),
+      status: "open",
+    };
+    setRaceWagers((prev) => [wager, ...prev]);
+    setPortfolio((prev) => ({ ...prev, cash: Math.round((prev.cash - wager.stake) * 100) / 100 }));
+    setStudents((prev) => prev.map((s) => s.userId === portfolio.userId
+      ? { ...s, cash: Math.round((s.cash - wager.stake) * 100) / 100 } : s));
+    toast.success(`#${wager.runnerNumber} ${wager.runnerName} — ${wager.pool.toUpperCase()} $${wager.stake.toFixed(2)}`);
+    logAction("Place race wager", `${wager.runnerName} ${wager.pool} $${wager.stake.toFixed(2)}`);
+    return { ok: true, wager };
+  }, [markets, raceWagers, portfolio.userId, portfolio.cash, logAction]);
+
+  const getRaceWagersForMarket = useCallback((marketId: string) =>
+    raceWagers.filter((w) => w.marketId === marketId), [raceWagers]);
+
+  const getMyRaceWagers = useCallback(() =>
+    raceWagers.filter((w) => w.userId === portfolio.userId), [raceWagers, portfolio.userId]);
+
+  const settleRace = useCallback((marketId: string, finishOrder: string[]) => {
+    const m = markets.find((x) => x.id === marketId);
+    if (!m?.racetrack) {
+      toast.error("No race configured");
+      return;
+    }
+    const marketWagers = raceWagers.filter((w) => w.marketId === marketId);
+    const settled = settleRaceWagers(marketWagers, m.racetrack.runners, finishOrder, m.racetrack.takeout);
+    const creditsByUser: Record<string, number> = {};
+    for (const w of settled) {
+      if (w.settledPayout && w.settledPayout > 0) {
+        creditsByUser[w.userId] = (creditsByUser[w.userId] ?? 0) + w.settledPayout;
+      }
+    }
+    setRaceWagers((prev) => prev.map((w) => {
+      const updated = settled.find((s) => s.id === w.id);
+      return updated ?? w;
+    }));
+    setMarkets((prev) => prev.map((mk) => mk.id === marketId && mk.racetrack
+      ? { ...mk, racetrack: { ...mk.racetrack, finishOrder } } : mk));
+    setStudents((prev) => prev.map((s) => creditsByUser[s.userId]
+      ? { ...s, cash: Math.round((s.cash + creditsByUser[s.userId]) * 100) / 100 } : s));
+    if (creditsByUser[portfolio.userId]) {
+      setPortfolio((prev) => ({ ...prev, cash: Math.round((prev.cash + creditsByUser[prev.userId]) * 100) / 100 }));
+    }
+    toast.success("Race settled");
+    logAction("Settle race", marketId);
+  }, [markets, raceWagers, portfolio.userId, logAction]);
+
 
   return (
     <MarketContext.Provider
@@ -2700,6 +2940,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         updateGradeMap, toggleBadgeEnabled,
         scenarios, createScenario, updateScenario, duplicateScenario,
         archiveScenario, deleteScenario, saveCurrentAsScenario, launchScenario,
+        sportsbookWagers, setSportsbookSurface, upsertSportsbookLines,
+        toggleSportsbookEnabled, placeSportsbookWager, getWagersForMarket,
+        getMyWagers, settleSportsbook,
+        raceWagers, setRacetrackSurface, toggleRacetrackEnabled, upsertRunners,
+        placeRaceWager, getRaceWagersForMarket, getMyRaceWagers,
+        getRacePoolTotals, settleRace,
       }}
     >
       {children}

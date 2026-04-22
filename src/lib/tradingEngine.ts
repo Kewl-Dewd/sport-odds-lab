@@ -71,6 +71,10 @@ export interface Market {
   settlementResult: string | null;
   createdAt: string;
   metadata: MarketMetadata;
+  /** Optional sportsbook (fixed-odds) surface */
+  sportsbook?: import("./sportsbookEngine").SportsbookSurface;
+  /** Optional pari-mutuel racetrack surface */
+  racetrack?: import("./racetrackEngine").RacetrackSurface;
 }
 
 export type MarketStatus = "open" | "scheduled" | "suspended" | "closed" | "settled" | "void" | "cancelled" | "postponed";
