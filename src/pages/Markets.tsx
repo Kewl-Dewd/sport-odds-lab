@@ -276,8 +276,10 @@ export default function Markets() {
           markets.length === 0 ? (
             <EmptyState
               icon={BarChart3}
-              title="No markets yet"
-              description="Your instructor hasn't published any markets for this class. Check back once a market opens."
+              title={mode ? `No ${MODE_LABELS[mode]} markets yet` : "No markets yet"}
+              description={mode
+                ? `Your instructor hasn't published any ${MODE_LABELS[mode]} markets. Switch modes from the top nav or check back later.`
+                : "Your instructor hasn't published any markets for this class. Check back once a market opens."}
             />
           ) : (
             <EmptyState
