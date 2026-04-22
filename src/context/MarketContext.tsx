@@ -864,6 +864,13 @@ interface MarketContextValue {
   deleteDiscussionCard: (id: string) => void;
   toggleDiscussionCardPin: (id: string) => void;
   toggleDiscussionCardSaved: (id: string) => void;
+
+  // Classroom Scoring
+  scoringSettings: ScoringSettings;
+  updateScoringSettings: (updates: Partial<ScoringSettings>) => void;
+  updateScoringWeights: (updates: Partial<ScoringWeights>) => void;
+  updateGradeMap: (map: ScoringGradeBand[]) => void;
+  toggleBadgeEnabled: (badgeId: ScoringBadgeId) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -891,6 +898,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [reflectionResponses, setReflectionResponses] = useState<ReflectionResponse[]>([]);
   const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
   const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
+  const [scoringSettings, setScoringSettings] = useState<ScoringSettings>(DEFAULT_SCORING_SETTINGS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
