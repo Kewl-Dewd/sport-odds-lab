@@ -31,7 +31,7 @@ import {
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
 import { toast } from "sonner";
-import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
+// Demo data generator removed — app ships empty for production use.
 import type {
   SportsbookSurface,
   SportsbookWager,
@@ -652,219 +652,28 @@ function generateClassCode(): string {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+// ── Empty initial state — no demo content shipped. ─────────────────
+// Instructors create their own classroom, markets, scenarios, and roster.
 const SEED_CLASSROOMS: Classroom[] = [
   {
     id: CLASSROOM_ID,
-    name: "Econ 101 — Spring 2026",
-    description: "Introduction to prediction markets and probability",
+    name: "My Classroom",
+    description: "",
     startingBalance: DEFAULT_STARTING_CASH,
     createdAt: new Date().toISOString(),
     isActive: true,
-    classCode: "ECN101",
+    classCode: "CLASS",
     allowSelfJoin: true,
-    startDate: "2026-01-15",
-    endDate: "2026-05-15",
+    startDate: new Date().toISOString().slice(0, 10),
+    endDate: null as unknown as string,
     resetMode: "manual",
   },
-  {
-    id: "class-2",
-    name: "Finance 301 — Spring 2026",
-    description: "Advanced market microstructure",
-    startingBalance: 15_000,
-    createdAt: new Date().toISOString(),
-    isActive: false,
-    classCode: "FIN301",
-    allowSelfJoin: false,
-    startDate: "2026-01-20",
-    endDate: "2026-05-10",
-    resetMode: "semester",
-  },
 ];
 
-function makeMarket(
-  id: string, title: string, league: string, sport: string,
-  startTime: string, description: string, outcomes: string[],
-  liquidity: number, category: MarketCategory = "game-winner",
-  status: "open" | "settled" = "open",
-  resolvedOutcomeId: string | null = null, settlementResult: string | null = null
-): Market {
-  const prices = evenPriceDistribution(outcomes.length);
-  const finalPrices = resolvedOutcomeId
-    ? outcomes.map((_, i) => outcomes[i] === settlementResult ? 1.0 : 0.0)
-    : prices;
-
-  return {
-    id,
-    classroomId: CLASSROOM_ID,
-    title,
-    league,
-    sport,
-    status,
-    startTime,
-    closeTime: null,
-    description,
-    outcomes: outcomes.map((name, i) => ({
-      id: `${id}-o${i + 1}`,
-      name,
-      price: resolvedOutcomeId ? finalPrices[i] : prices[i],
-    })),
-    config: defaultMarketConfig(liquidity),
-    resolvedOutcomeId,
-    settlementResult,
-    createdAt: new Date().toISOString(),
-    metadata: {
-      category,
-      difficultyLevel: "beginner",
-    },
-  };
-}
-
-// ── Seed Scenarios ────────────────────────────────────────────────
-
-const SEED_SCENARIOS: Scenario[] = [
-  {
-    id: "scn-efficient-baseline",
-    title: "Efficient Market Baseline",
-    type: "efficient-market",
-    description: "A clean prediction market on a high-information, public event. Used as the control baseline for later experiments.",
-    learningObjective: "Recognize how prices in a transparent, well-informed market converge toward consensus probability.",
-    studentInstructions: "Trade freely on the listed event. Pay attention to how prices move as more participants enter.",
-    instructorNotes: "Run for 10–15 minutes with no shocks or info packets. Use the resulting prices as the comparison baseline.",
-    recommendedMinutes: 15,
-    recommendedDebriefPoints: [
-      "How quickly did prices stabilize?",
-      "Where did the final implied probability land vs your prior expectation?",
-      "Which trades moved prices the most, and why?",
-    ],
-    marketTemplates: [{
-      title: "Lakers vs Celtics — Tonight",
-      league: "NBA", sport: "Basketball",
-      description: "Public, high-coverage matchup. Plenty of available information.",
-      outcomes: ["Lakers Win", "Celtics Win"],
-      liquidity: 250,
-      suggestedStatus: "open",
-    }],
-    experimentScaffold: { type: "open-simulation", objective: "Establish baseline behavior of an efficient market." },
-    presets: {
-      leaderboardVisible: true,
-      nameVisibility: "anonymized",
-      scoringMode: "portfolio-return",
-      activeRuleIds: [],
-      debriefPrompts: ["What surprised you about how the price moved?"],
-    },
-    tags: ["baseline", "intro", "efficiency"],
-    difficulty: "intro",
-    isArchived: false,
-    createdAt: new Date().toISOString(),
-    lastLaunchedAt: null,
-    launchCount: 0,
-  },
-  {
-    id: "scn-low-liquidity",
-    title: "Low-Liquidity Stress Test",
-    type: "low-liquidity",
-    description: "Thin market where even small trades move the price meaningfully. Useful for discussing slippage and manipulation risk.",
-    learningObjective: "Understand how liquidity affects price discovery and trader influence.",
-    studentInstructions: "Trade on the event below. Observe how each trade moves the displayed price.",
-    instructorNotes: "Set liquidity intentionally low (~50). Pause halfway through to compare to the efficient-market baseline.",
-    recommendedMinutes: 15,
-    recommendedDebriefPoints: [
-      "How much did one trade move the price?",
-      "Could a small group of students dominate price formation here?",
-      "What does this imply about real-world thin markets?",
-    ],
-    marketTemplates: [{
-      title: "Minor League Game — Limited Coverage",
-      league: "Misc", sport: "Baseball",
-      description: "Low public information; thin participation.",
-      outcomes: ["Home Win", "Away Win"],
-      liquidity: 50,
-      suggestedStatus: "open",
-    }],
-    experimentScaffold: { type: "open-simulation", objective: "Demonstrate slippage and concentration risk in thin markets." },
-    presets: {
-      leaderboardVisible: true,
-      nameVisibility: "anonymized",
-      activeRuleIds: ["max-position"],
-      debriefPrompts: ["Did a few traders move this market disproportionately?"],
-    },
-    tags: ["liquidity", "microstructure"],
-    difficulty: "intermediate",
-    isArchived: false,
-    createdAt: new Date().toISOString(),
-    lastLaunchedAt: null,
-    launchCount: 0,
-  },
-  {
-    id: "scn-tournament",
-    title: "Tournament Prediction Challenge",
-    type: "tournament-prediction",
-    description: "Multi-market bracket with several simultaneous games. Tests diversification and information allocation across markets.",
-    learningObjective: "Practice allocating limited bankroll across multiple correlated markets under uncertainty.",
-    studentInstructions: "You have one bankroll to deploy across several simultaneous games. Diversify or concentrate as you see fit.",
-    instructorNotes: "Open all four markets at once. Settle them in sequence to discuss pre-settlement vs post-settlement portfolio dynamics.",
-    recommendedMinutes: 25,
-    recommendedDebriefPoints: [
-      "Did concentrated bets pay off, or did diversification win?",
-      "How did settlement of one market affect prices in the others?",
-      "What information should have driven your allocation?",
-    ],
-    marketTemplates: [
-      { title: "Quarterfinal A", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team A", "Team B"], liquidity: 150, suggestedStatus: "open" },
-      { title: "Quarterfinal B", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team C", "Team D"], liquidity: 150, suggestedStatus: "open" },
-      { title: "Quarterfinal C", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team E", "Team F"], liquidity: 150, suggestedStatus: "open" },
-      { title: "Quarterfinal D", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team G", "Team H"], liquidity: 150, suggestedStatus: "open" },
-    ],
-    experimentScaffold: { type: "open-simulation", objective: "Diversification under correlated outcomes." },
-    presets: {
-      leaderboardVisible: true,
-      nameVisibility: "anonymized",
-      activeRuleIds: ["concentration-limit"],
-      debriefPrompts: ["How did you decide your allocation across the four games?"],
-    },
-    tags: ["tournament", "diversification", "bracket"],
-    difficulty: "intermediate",
-    isArchived: false,
-    createdAt: new Date().toISOString(),
-    lastLaunchedAt: null,
-    launchCount: 0,
-  },
-];
-
-const SEED_MARKETS: Market[] = [
-  makeMarket("m1", "Lakers vs Celtics", "NBA", "Basketball",
-    "Tonight, 8:00 PM ET", "Regular season matchup. Trade on who you think will win.",
-    ["Lakers Win", "Celtics Win"], 100, "game-winner"),
-  makeMarket("m2", "Super Bowl LIX", "NFL", "Football",
-    "Feb 9, 7:30 PM ET", "Championship game. Will the Chiefs three-peat?",
-    ["Chiefs Win", "49ers Win"], 150, "game-winner"),
-  makeMarket("m3", "Man City vs Arsenal", "Premier League", "Soccer",
-    "Sat, 3:00 PM GMT", "Top of the table clash in the Premier League.",
-    ["Man City", "Draw", "Arsenal"], 120, "game-winner"),
-  makeMarket("m4", "Wimbledon Final", "ATP", "Tennis",
-    "Jul 14, 2:00 PM BST", "Men's singles final at the All England Club.",
-    ["Djokovic", "Alcaraz"], 80, "tournament-winner"),
-  makeMarket("m5", "World Series Game 7", "MLB", "Baseball",
-    "Settled", "The deciding game of the Fall Classic.",
-    ["Yankees", "Dodgers"], 100, "game-winner", "settled", "m5-o1", "Yankees"),
-  makeMarket("m6", "NBA MVP Award", "NBA", "Basketball",
-    "Jun 2026", "Who will be named the 2025-26 NBA Most Valuable Player?",
-    ["Luka Dončić", "Nikola Jokić", "Jayson Tatum", "Giannis Antetokounmpo", "Shai Gilgeous-Alexander"], 180, "award-winner"),
-  makeMarket("m7", "Champions League Winner", "UEFA", "Soccer",
-    "May 31, 2026", "Which club will lift the Champions League trophy?",
-    ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "PSG", "Field"], 200, "tournament-winner"),
-  makeMarket("m8", "First Scorer — Lakers vs Celtics", "NBA", "Basketball",
-    "Tonight, 8:00 PM ET", "Which player will score the first basket tonight?",
-    ["LeBron James", "Anthony Davis", "Jaylen Brown", "Derrick White", "Other"], 120, "first-scorer"),
-];
-
+const SEED_SCENARIOS: Scenario[] = [];
+const SEED_MARKETS: Market[] = [];
 const SEED_STUDENTS: UserPortfolio[] = [
-  { userId: "user-1", displayName: "You (Demo)", cash: DEFAULT_STARTING_CASH, holdings: [] },
-  { userId: "s-alice", displayName: "Alice Chen", cash: 8_500, holdings: [] },
-  { userId: "s-bob", displayName: "Bob Smith", cash: 9_200, holdings: [] },
-  { userId: "s-carol", displayName: "Carol Wang", cash: 7_800, holdings: [] },
-  { userId: "s-david", displayName: "David Kim", cash: 9_600, holdings: [] },
-  { userId: "s-emma", displayName: "Emma Lee", cash: 8_900, holdings: [] },
+  { userId: "user-1", displayName: "You", cash: DEFAULT_STARTING_CASH, holdings: [] },
 ];
 
 // ── Context ────────────────────────────────────────────────────────
@@ -1823,16 +1632,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
 
   // ── Demo Mode ───────────────────────────────────────────────────
 
-  const seedDemoData = useCallback((studentCount: number, tradesPerStudent: number) => {
-    const demoStudents = generateSampleStudents(studentCount, classroom.startingBalance);
-    const result = generateSampleTrades(markets, demoStudents, tradesPerStudent);
-    setMarkets(result.updatedMarkets);
-    const existingIds = new Set(students.map((s) => s.userId));
-    const newStudents = result.updatedStudents.filter((u) => !existingIds.has(u.userId));
-    setStudents((prev) => [...prev, ...newStudents]);
-    setTrades((prev) => [...result.trades, ...prev]);
-    logAction("Seed demo data", `${studentCount} students, ${tradesPerStudent} trades each`);
-  }, [markets, students, classroom.startingBalance, logAction]);
+  // Demo data seeding intentionally disabled — production-ready empty state.
+  const seedDemoData = useCallback((_studentCount: number, _tradesPerStudent: number) => {
+    toast.message("Demo data is disabled in this build.");
+  }, []);
 
   const bulkCreateMarkets = useCallback((configs: Array<{ title: string; league: string; sport: string; startTime: string; description: string; outcomes: string[]; liquidity: number; metadata?: Partial<MarketMetadata> }>) => {
     const newMarkets: Market[] = configs.map((c) => {
