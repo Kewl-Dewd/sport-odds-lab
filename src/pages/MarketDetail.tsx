@@ -138,6 +138,18 @@ export default function MarketDetail() {
 
           {statusMessage()}
 
+          {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && market.status === "open" && (
+            <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-xs text-center">
+              ⚠️ <strong>Experiment notice:</strong> This classroom is running in
+              ethics-research mode. Trading patterns may include rumors, coordinated
+              activity, or large directional trades by other participants.
+            </div>
+          )}
+
+          {market.status === "settled" && ethicsSettings.studentDebriefEnabled && (
+            <MarketDebrief marketId={market.id} />
+          )}
+
           {/* Market Info Bar — liquidity, engine, fees */}
           <div className="flex flex-wrap gap-2 text-xs">
             <div className="flex items-center gap-1 rounded-md border px-2 py-1">
