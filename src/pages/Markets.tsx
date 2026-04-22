@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useMarket } from "@/context/MarketContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import type { MarketStatus } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
