@@ -2213,6 +2213,31 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, saved: !c.saved } : c));
   }, []);
 
+  // ── Classroom Scoring ────────────────────────────────────────────
+
+  const updateScoringSettings = useCallback((updates: Partial<ScoringSettings>) => {
+    setScoringSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update scoring settings", JSON.stringify(updates));
+  }, [logAction]);
+
+  const updateScoringWeights = useCallback((updates: Partial<ScoringWeights>) => {
+    setScoringSettings((prev) => ({ ...prev, weights: { ...prev.weights, ...updates } }));
+  }, []);
+
+  const updateGradeMap = useCallback((map: ScoringGradeBand[]) => {
+    setScoringSettings((prev) => ({ ...prev, gradeMap: map }));
+    logAction("Update grade map", `${map.length} bands`);
+  }, [logAction]);
+
+  const toggleBadgeEnabled = useCallback((badgeId: ScoringBadgeId) => {
+    setScoringSettings((prev) => ({
+      ...prev,
+      enabledBadges: prev.enabledBadges.includes(badgeId)
+        ? prev.enabledBadges.filter((b) => b !== badgeId)
+        : [...prev.enabledBadges, badgeId],
+    }));
+  }, []);
+
   const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
     return shockEvents.filter((s) =>
       s.classroomId === activeClassroomId &&
