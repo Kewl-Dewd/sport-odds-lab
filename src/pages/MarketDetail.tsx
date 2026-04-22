@@ -19,6 +19,7 @@ import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { BehavioralFraming } from "@/components/student/BehavioralFraming";
+import { MarketNewsFeed, BreakingNewsBanner } from "@/components/student/MarketNewsFeed";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
