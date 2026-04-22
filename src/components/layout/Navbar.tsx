@@ -123,6 +123,17 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          {user && mode && (
+            <button
+              onClick={switchMode}
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground hover:bg-primary/20 transition-colors"
+              title="Switch market mode"
+            >
+              <Zap className="h-3 w-3 text-primary" />
+              {MODE_LABELS[mode]}
+              <Repeat className="h-3 w-3 opacity-60" />
+            </button>
+          )}
           {user && <EducationModeToggle />}
           {isInstructorAccount && (
             <Button
