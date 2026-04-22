@@ -810,7 +810,7 @@ const SEED_SCENARIOS: Scenario[] = [
   },
 ];
 
-
+const SEED_MARKETS: Market[] = [
   makeMarket("m1", "Lakers vs Celtics", "NBA", "Basketball",
     "Tonight, 8:00 PM ET", "Regular season matchup. Trade on who you think will win.",
     ["Lakers Win", "Celtics Win"], 100, "game-winner"),
