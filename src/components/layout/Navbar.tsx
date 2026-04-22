@@ -10,13 +10,16 @@ import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
-const baseLinks = [
+const authedLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Portfolio", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
-  { label: "How It Works", href: "/how-it-works", icon: BookOpen },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
+];
+
+const publicLinks = [
+  { label: "How It Works", href: "/how-it-works", icon: BookOpen },
 ];
 
 export function Navbar() {
@@ -54,7 +57,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {baseLinks.map((link) => (
+          {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
             <Link
               key={link.href}
               to={link.href}
@@ -152,7 +155,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t animate-slide-up">
           <nav className="container flex flex-col gap-1 py-3">
-            {baseLinks.map((link) => (
+            {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
