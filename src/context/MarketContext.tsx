@@ -1179,6 +1179,173 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setActiveExperimentId(id);
   }, []);
 
+  // ── Information Asymmetry ───────────────────────────────────────
+
+  const resolveAudience = useCallback(
+    (audience: InfoAudience): string[] => {
+      const classStudents = students;
+      switch (audience.mode) {
+        case "everyone":
+          return classStudents.map((s) => s.userId);
+        case "subgroup":
+        case "single":
+          return (audience.userIds ?? []).filter((id) =>
+            classStudents.some((s) => s.userId === id),
+          );
+        case "random": {
+          const n = Math.max(0, Math.min(audience.randomCount ?? 1, classStudents.length));
+          const pool = [...classStudents];
+          const picked: string[] = [];
+          for (let i = 0; i < n && pool.length > 0; i++) {
+            const idx = Math.floor(Math.random() * pool.length);
+            picked.push(pool.splice(idx, 1)[0].userId);
+          }
+          return picked;
+        }
+        default:
+          return [];
+      }
+    },
+    [students],
+  );
+
+  const createInfoPacket = useCallback(
+    (input: {
+      title: string;
+      body: string;
+      kind: InfoPacketKind;
+      truthLevel: InfoPacketTruthLevel;
+      audience: InfoAudience;
+      experimentId?: string | null;
+      marketId?: string | null;
+      scheduledFor?: string | null;
+      disclosureToClass?: boolean;
+      includeInDebrief?: boolean;
+    }): InfoPacket => {
+      const id = `pkt-${crypto.randomUUID().slice(0, 8)}`;
+      const now = new Date().toISOString();
+      const isImmediate = !input.scheduledFor;
+      const recipientIds = isImmediate ? resolveAudience(input.audience) : [];
+
+      const packet: InfoPacket = {
+        id,
+        classroomId: activeClassroomId,
+        experimentId: input.experimentId ?? null,
+        marketId: input.marketId ?? null,
+        title: input.title,
+        body: input.body,
+        kind: input.kind,
+        truthLevel: input.truthLevel,
+        disclosureToClass: input.disclosureToClass ?? false,
+        includeInDebrief: input.includeInDebrief ?? true,
+        audience: input.audience,
+        receipts: recipientIds.map((userId) => ({
+          userId,
+          releasedAt: now,
+          openedAt: null,
+          acknowledgedAt: null,
+        })),
+        createdAt: now,
+        scheduledFor: input.scheduledFor ?? null,
+        releasedAt: isImmediate ? now : null,
+        createdBy: "instructor",
+      };
+
+      setInfoPackets((prev) => [packet, ...prev]);
+      logAction(
+        isImmediate ? "Release info packet" : "Schedule info packet",
+        `${input.title} → ${input.audience.mode} (${recipientIds.length})`,
+      );
+      return packet;
+    },
+    [activeClassroomId, resolveAudience, logAction],
+  );
+
+  const releaseInfoPacket = useCallback((packetId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId || p.releasedAt) return p;
+        const now = new Date().toISOString();
+        const recipientIds = resolveAudience(p.audience);
+        return {
+          ...p,
+          releasedAt: now,
+          scheduledFor: null,
+          receipts: recipientIds.map((userId) => ({
+            userId,
+            releasedAt: now,
+            openedAt: null,
+            acknowledgedAt: null,
+          })),
+        };
+      }),
+    );
+    logAction("Release info packet", packetId);
+  }, [resolveAudience, logAction]);
+
+  const deleteInfoPacket = useCallback((packetId: string) => {
+    setInfoPackets((prev) => prev.filter((p) => p.id !== packetId));
+    logAction("Delete info packet", packetId);
+  }, [logAction]);
+
+  const openInfoPacket = useCallback((packetId: string, userId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId) return p;
+        return {
+          ...p,
+          receipts: p.receipts.map((r) =>
+            r.userId === userId && !r.openedAt
+              ? { ...r, openedAt: new Date().toISOString() }
+              : r,
+          ),
+        };
+      }),
+    );
+  }, []);
+
+  const acknowledgeInfoPacket = useCallback((packetId: string, userId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId) return p;
+        return {
+          ...p,
+          receipts: p.receipts.map((r) =>
+            r.userId === userId
+              ? {
+                  ...r,
+                  openedAt: r.openedAt ?? new Date().toISOString(),
+                  acknowledgedAt: r.acknowledgedAt ?? new Date().toISOString(),
+                }
+              : r,
+          ),
+        };
+      }),
+    );
+  }, []);
+
+  const getPacketsForUser = useCallback(
+    (userId: string) =>
+      infoPackets.filter(
+        (p) =>
+          p.releasedAt != null &&
+          p.classroomId === activeClassroomId &&
+          p.receipts.some((r) => r.userId === userId),
+      ),
+    [infoPackets, activeClassroomId],
+  );
+
+  const getUnreadPacketCount = useCallback(
+    (userId: string) =>
+      infoPackets.reduce((count, p) => {
+        if (!p.releasedAt || p.classroomId !== activeClassroomId) return count;
+        const r = p.receipts.find((x) => x.userId === userId);
+        if (r && !r.openedAt) return count + 1;
+        return count;
+      }, 0),
+    [infoPackets, activeClassroomId],
+  );
+
   return (
     <MarketContext.Provider
       value={{
@@ -1197,6 +1364,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         experiments, activeExperiment, createExperiment, updateExperiment, deleteExperiment,
         duplicateExperiment, activateExperiment, pauseExperiment, endExperiment, archiveExperiment,
         setActiveExperiment,
+        infoPackets, getPacketsForUser, getUnreadPacketCount,
+        createInfoPacket, releaseInfoPacket, deleteInfoPacket,
+        openInfoPacket, acknowledgeInfoPacket,
       }}
     >
       {children}
