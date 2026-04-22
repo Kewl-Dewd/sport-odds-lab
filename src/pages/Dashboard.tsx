@@ -23,7 +23,8 @@ export default function Dashboard() {
     [markets, mode],
   );
   const scopedRecentTrades = useMemo(() => recentTrades.filter((t) => modeMarketIds.has(t.marketId)), [recentTrades, modeMarketIds]);
-  const scopedTopMovers = useMemo(() => topMovers.filter((m) => modeMarketIds.has(m.marketId)), [topMovers, modeMarketIds]);
+  const scopedMarketTitles = useMemo(() => new Set(markets.filter((m) => modeMarketIds.has(m.id)).map((m) => m.title)), [markets, modeMarketIds]);
+  const scopedTopMovers = useMemo(() => topMovers.filter((m) => scopedMarketTitles.has(m.marketTitle)), [topMovers, scopedMarketTitles]);
   const scopedHoldings = useMemo(() => portfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)), [portfolio.holdings, modeMarketIds]);
 
   const stats = [
