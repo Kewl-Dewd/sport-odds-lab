@@ -27,6 +27,14 @@ export default function Dashboard() {
         <p className="text-muted-foreground">{classroom.name} · {portfolio.displayName}</p>
       </div>
 
+      {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
+        <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm">
+          ⚠️ <strong>Experiment notice:</strong> This classroom is running in
+          ethics-research mode. Trading patterns you see may include rumors,
+          coordinated activity, or large directional trades by other participants.
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.label} className="stat-card">
