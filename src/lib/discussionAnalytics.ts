@@ -37,11 +37,16 @@ export const COMPARISON_DESCRIPTIONS: Record<ComparisonDimension, string> = {
     "Splits by realized + unrealized return; contrasts top-return cohort vs lowest-volatility cohort.",
 };
 
+export interface CohortMember {
+  userId: string;
+  alias: string;
+}
+
 export interface CohortStats {
   /** Anonymized label for the cohort (no real names). */
   label: string;
-  /** Stable alias keys for members ("Trader A", "Trader B"...). */
-  memberAliases: string[];
+  /** Members with both userId (for reveal) and stable alias. */
+  members: CohortMember[];
   userCount: number;
   totalTrades: number;
   totalVolume: number;
