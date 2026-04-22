@@ -617,7 +617,10 @@ export default function InstructorDashboard() {
 
         {/* Debrief Tab */}
         <TabsContent value="debrief">
-          <DebriefSummary />
+          <div className="space-y-4">
+            <DebriefSummary />
+            <DiscussionModePanel />
+          </div>
         </TabsContent>
 
         {/* Classes Tab */}
