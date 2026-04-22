@@ -1476,6 +1476,76 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(t);
   }, [resolveAudience]);
 
+  // ── Market Manipulation & Ethics Mode ───────────────────────────
+
+  const updateEthicsSettings = useCallback((updates: Partial<EthicsSettings>) => {
+    setEthicsSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update ethics settings", Object.keys(updates).join(", "));
+  }, [logAction]);
+
+  const injectScenarioEvent = useCallback((input: {
+    kind: ScenarioKind;
+    marketId: string | null;
+    note: string;
+    participantIds?: string[];
+  }): ScenarioEvent => {
+    const ev: ScenarioEvent = {
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      kind: input.kind,
+      marketId: input.marketId,
+      note: input.note,
+      participantIds: input.participantIds,
+      injectedAt: new Date().toISOString(),
+      injectedBy: "instructor",
+    };
+    setScenarioEvents((prev) => [ev, ...prev]);
+    logAction("Inject scenario", `${SCENARIO_LABELS[input.kind]}: ${input.note}`);
+    return ev;
+  }, [activeClassroomId, logAction]);
+
+  const deleteScenarioEvent = useCallback((id: string) => {
+    setScenarioEvents((prev) => prev.filter((e) => e.id !== id));
+    logAction("Delete scenario", id);
+  }, [logAction]);
+
+  const executeWhaleTrade = useCallback((input: {
+    marketId: string;
+    outcomeId: string;
+    quantity: number;
+    type: "BUY" | "SELL";
+    asUserId: string;
+    note?: string;
+  }): Trade | null => {
+    const market = markets.find((m) => m.id === input.marketId);
+    const trader = students.find((s) => s.userId === input.asUserId);
+    if (!market || !trader) return null;
+    try {
+      const result = executeTrade(market, trader, input.outcomeId, input.quantity, input.type);
+      setMarkets((prev) => prev.map((m) => m.id === input.marketId ? { ...m, outcomes: result.updatedOutcomes } : m));
+      setStudents((prev) => prev.map((s) => s.userId === input.asUserId ? result.updatedPortfolio : s));
+      if (input.asUserId === portfolio.userId) setPortfolio(result.updatedPortfolio);
+      setTrades((prev) => [result.trade, ...prev]);
+      // Record as scenario event for the debrief.
+      const ev: ScenarioEvent = {
+        id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+        classroomId: activeClassroomId,
+        kind: "whale-trade",
+        marketId: input.marketId,
+        note: input.note ?? `Whale ${input.type} ${input.quantity}× ${result.trade.outcomeName} as ${trader.displayName}`,
+        participantIds: [input.asUserId],
+        injectedAt: new Date().toISOString(),
+        injectedBy: "instructor",
+      };
+      setScenarioEvents((prev) => [ev, ...prev]);
+      logAction("Whale trade", `${trader.displayName} ${input.type} ${input.quantity}× ${result.trade.outcomeName}`);
+      return result.trade;
+    } catch (e) {
+      console.error("Whale trade failed:", e);
+      return null;
+    }
+  }, [markets, students, portfolio.userId, activeClassroomId, logAction]);
+
   return (
     <MarketContext.Provider
       value={{
