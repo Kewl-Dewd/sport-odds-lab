@@ -267,7 +267,21 @@ export default function Markets() {
           );
         })}
         {filtered.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">No markets found.</div>
+          markets.length === 0 ? (
+            <EmptyState
+              icon={BarChart3}
+              title="No markets yet"
+              description="Your instructor hasn't published any markets for this class. Check back once a market opens."
+            />
+          ) : (
+            <EmptyState
+              icon={Search}
+              title="No matches"
+              description="Try clearing filters or searching by team, league, or outcome."
+              actionLabel="Clear filters"
+              onAction={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); setCategoryFilter("all"); setSearch(""); }}
+            />
+          )
         )}
       </div>
 
