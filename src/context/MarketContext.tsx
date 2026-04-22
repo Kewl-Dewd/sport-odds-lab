@@ -1359,18 +1359,43 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   }, [markets, logAction]);
 
   const suspendMarket = useCallback((marketId: string) => {
-    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "suspended" as const } : m));
+    const m = markets.find((x) => x.id === marketId);
+    if (!m) return;
+    if (TERMINAL_STATUSES.includes(m.status)) {
+      toast.error("This market is already settled and cannot be suspended");
+      return;
+    }
+    if (m.status !== "open") {
+      toast.error("Only open markets can be suspended");
+      return;
+    }
+    setMarkets((prev) => prev.map((x) => x.id === marketId ? { ...x, status: "suspended" as const } : x));
     logAction("Suspend market", marketId);
-  }, [logAction]);
+  }, [markets, logAction]);
 
   const resumeMarket = useCallback((marketId: string) => {
-    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "open" as const } : m));
+    const m = markets.find((x) => x.id === marketId);
+    if (!m) return;
+    if (TERMINAL_STATUSES.includes(m.status)) {
+      toast.error("This market is already settled and cannot be reopened");
+      return;
+    }
+    if (m.status === "open") return;
+    setMarkets((prev) => prev.map((x) => x.id === marketId ? { ...x, status: "open" as const } : x));
     logAction("Resume market", marketId);
-  }, [logAction]);
+  }, [markets, logAction]);
 
   const settleMarket = useCallback((marketId: string, winningOutcomeId: string) => {
     const market = markets.find((m) => m.id === marketId);
     if (!market) return;
+    if (TERMINAL_STATUSES.includes(market.status)) {
+      toast.error("This market is already settled");
+      return;
+    }
+    if (!market.outcomes.some((o) => o.id === winningOutcomeId)) {
+      toast.error("Selected outcome is not part of this market");
+      return;
+    }
     const { settledMarket, updatedPortfolios } = settleMarketForPortfolios(
       market, winningOutcomeId, students
     );
