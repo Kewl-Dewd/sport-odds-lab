@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useMarket } from "@/context/MarketContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import type { MarketStatus } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
@@ -42,7 +43,12 @@ const diffBadgeStyle: Record<string, string> = {
 };
 
 export default function Markets() {
-  const { markets, trades } = useMarket();
+  const { markets: allMarkets, trades } = useMarket();
+  const { mode } = useMode();
+  const markets = useMemo(
+    () => mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets,
+    [allMarkets, mode],
+  );
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketStatus | "all">("all");
   const [leagueFilter, setLeagueFilter] = useState<string>("all");
@@ -94,7 +100,7 @@ export default function Markets() {
   return (
     <div className="container py-8 space-y-6 animate-slide-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Markets</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">Browse and trade on sports events</p>
       </div>
 
@@ -270,8 +276,10 @@ export default function Markets() {
           markets.length === 0 ? (
             <EmptyState
               icon={BarChart3}
-              title="No markets yet"
-              description="Your instructor hasn't published any markets for this class. Check back once a market opens."
+              title={mode ? `No ${MODE_LABELS[mode]} markets yet` : "No markets yet"}
+              description={mode
+                ? `Your instructor hasn't published any ${MODE_LABELS[mode]} markets. Switch modes from the top nav or check back later.`
+                : "Your instructor hasn't published any markets for this class. Check back once a market opens."}
             />
           ) : (
             <EmptyState

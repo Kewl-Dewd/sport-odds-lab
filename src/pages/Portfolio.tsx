@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarket } from "@/context/MarketContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { useEducation } from "@/context/EducationContext";
 import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { PortfolioPerformanceChart, HoldingsDistribution } from "@/components/charts/AnalyticsCharts";
@@ -41,7 +42,18 @@ function StatRow({ label, value, icon, className }: { label: string; value: stri
 }
 
 export default function Portfolio() {
-  const { portfolio, portfolioStats, realizedPnL, markets, trades, classroom, students } = useMarket();
+  const { portfolio: rawPortfolio, portfolioStats, realizedPnL, markets: allMarkets, trades: allTrades, classroom, students } = useMarket();
+  const { mode } = useMode();
+  const modeMarketIds = useMemo(
+    () => new Set(mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)).map((m) => m.id) : allMarkets.map((m) => m.id)),
+    [allMarkets, mode],
+  );
+  const markets = useMemo(() => allMarkets.filter((m) => modeMarketIds.has(m.id)), [allMarkets, modeMarketIds]);
+  const trades = useMemo(() => allTrades.filter((t) => modeMarketIds.has(t.marketId)), [allTrades, modeMarketIds]);
+  const portfolio = useMemo(
+    () => ({ ...rawPortfolio, holdings: rawPortfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)) }),
+    [rawPortfolio, modeMarketIds],
+  );
   const { cash, holdingsValue, totalValue, unrealizedPnL } = portfolioStats;
   const { educationEnabled, pushNudge } = useEducation();
 
@@ -128,7 +140,7 @@ export default function Portfolio() {
     <div className="container py-8 space-y-8 animate-slide-up print:py-2 print:space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Portfolio</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Portfolio {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
           <p className="text-muted-foreground">Your holdings, performance, and decision analytics</p>
         </div>
         <div className="flex gap-2 print:hidden">

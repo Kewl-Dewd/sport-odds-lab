@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { MarketProvider } from "@/context/MarketContext";
 import { EducationProvider } from "@/context/EducationContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ModeProvider } from "@/context/ModeContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LearningNudgeBar } from "@/components/education/LearningNudges";
@@ -24,6 +25,7 @@ import Experiments from "./pages/Experiments.tsx";
 import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
+import ChooseMode from "./pages/ChooseMode.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -34,35 +36,38 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
-          <MarketProvider>
-            <EducationProvider>
-              <Toaster />
-              <Sonner />
-              <LearningNudgeBar />
-              <Routes>
-                <Route element={<AppLayout />}>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/markets" element={<Markets />} />
-                  <Route path="/markets/:id" element={<MarketDetail />} />
-                  <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/leaderboard" element={<Leaderboard />} />
-                  <Route path="/how-it-works" element={<HowItWorks />} />
-                  <Route path="/glossary" element={<Glossary />} />
-                  <Route path="/instructor" element={<ProtectedRoute requireInstructor><InstructorDashboard /></ProtectedRoute>} />
-                  <Route path="/instructor/review" element={<ProtectedRoute requireInstructor><TradeReview /></ProtectedRoute>} />
-                  <Route path="/instructor/reports" element={<ProtectedRoute requireInstructor><Reports /></ProtectedRoute>} />
-                  <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
-                  <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
-                  <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
-                  <Route path="/auth" element={<Auth />} />
-                </Route>
-                {/* Presentation mode — no navbar/footer */}
-                <Route path="/instructor/present/:view" element={<ProtectedRoute requireInstructor><PresentationMode /></ProtectedRoute>} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </EducationProvider>
-          </MarketProvider>
+          <ModeProvider>
+            <MarketProvider>
+              <EducationProvider>
+                <Toaster />
+                <Sonner />
+                <LearningNudgeBar />
+                <Routes>
+                  <Route element={<AppLayout />}>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/choose-mode" element={<ProtectedRoute><ChooseMode /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute requireMode><Dashboard /></ProtectedRoute>} />
+                    <Route path="/markets" element={<ProtectedRoute requireMode><Markets /></ProtectedRoute>} />
+                    <Route path="/markets/:id" element={<ProtectedRoute requireMode><MarketDetail /></ProtectedRoute>} />
+                    <Route path="/portfolio" element={<ProtectedRoute requireMode><Portfolio /></ProtectedRoute>} />
+                    <Route path="/leaderboard" element={<ProtectedRoute requireMode><Leaderboard /></ProtectedRoute>} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
+                    <Route path="/instructor" element={<ProtectedRoute requireInstructor><InstructorDashboard /></ProtectedRoute>} />
+                    <Route path="/instructor/review" element={<ProtectedRoute requireInstructor><TradeReview /></ProtectedRoute>} />
+                    <Route path="/instructor/reports" element={<ProtectedRoute requireInstructor><Reports /></ProtectedRoute>} />
+                    <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
+                    <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
+                    <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
+                    <Route path="/auth" element={<Auth />} />
+                  </Route>
+                  {/* Presentation mode — no navbar/footer */}
+                  <Route path="/instructor/present/:view" element={<ProtectedRoute requireInstructor><PresentationMode /></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </EducationProvider>
+            </MarketProvider>
+          </ModeProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

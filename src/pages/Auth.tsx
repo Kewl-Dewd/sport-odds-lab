@@ -21,11 +21,11 @@ export default function Auth() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate("/dashboard", { replace: true });
+    if (!loading && user) navigate("/choose-mode", { replace: true });
   }, [loading, user, navigate]);
 
   if (loading) return null;
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/choose-mode" replace />;
 
   const signIn = async () => {
     setSubmitting(true);
@@ -41,7 +41,7 @@ export default function Auth() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/choose-mode`,
         data: { display_name: displayName },
       },
     });
@@ -53,7 +53,7 @@ export default function Auth() {
   const signInWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard` },
+      options: { redirectTo: `${window.location.origin}/choose-mode` },
     });
     if (error) toast.error(error.message);
   };

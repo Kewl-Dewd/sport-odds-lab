@@ -3,11 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
-  Users, LogOut, LogIn, Eye, EyeOff,
+  Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { useAuth } from "@/context/AuthContext";
+import { useMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const authedLinks = [
@@ -27,6 +29,13 @@ export function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, isInstructor, isInstructorAccount, viewAsStudent, setViewAsStudent, signOut } = useAuth();
+  const { mode, clearMode } = useMode();
+
+  const switchMode = () => {
+    clearMode();
+    setMobileOpen(false);
+    navigate("/choose-mode");
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -114,6 +123,17 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
+          {user && mode && (
+            <button
+              onClick={switchMode}
+              className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground hover:bg-primary/20 transition-colors"
+              title="Switch market mode"
+            >
+              <Zap className="h-3 w-3 text-primary" />
+              {MODE_LABELS[mode]}
+              <Repeat className="h-3 w-3 opacity-60" />
+            </button>
+          )}
           {user && <EducationModeToggle />}
           {isInstructorAccount && (
             <Button
@@ -183,6 +203,16 @@ export function Navbar() {
                   <Users className="h-4 w-4" /> Users
                 </Link>
               </>
+            )}
+            {user && mode && (
+              <div className="px-3 py-2">
+                <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Zap className="h-4 w-4 text-primary" /> Mode: {MODE_LABELS[mode]}
+                  </span>
+                  <Repeat className="h-3.5 w-3.5 opacity-60" />
+                </Button>
+              </div>
             )}
             {user && (
               <div className="px-3 py-2">
