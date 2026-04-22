@@ -263,6 +263,59 @@ export const DEFAULT_ETHICS_SETTINGS: EthicsSettings = {
   studentDebriefEnabled: true,
 };
 
+// ── Behavioral Finance Experiments ────────────────────────────────
+
+import type { BiasKind } from "@/lib/behavioralAnalytics";
+export type { BiasKind } from "@/lib/behavioralAnalytics";
+
+export type SummaryStyle = "expert" | "noisy" | "none";
+
+export const SUMMARY_STYLE_LABELS: Record<SummaryStyle, string> = {
+  expert: "Expert-style summary",
+  noisy: "Noisy / unreliable summary",
+  none: "No summary",
+};
+
+export interface BiasFraming {
+  /** Custom prompt or framing cue shown above the market. */
+  prompt?: string;
+  /** Headline-style framing (e.g. "Lakers on a 5-game win streak"). */
+  headline?: string;
+  /** Pre-seeded "anchor" price displayed prominently. */
+  anchorPrice?: number;
+  /** Anchor label (e.g. "Opening line: 65¢"). */
+  anchorLabel?: string;
+  /** Emphasize price/volume history visually. */
+  emphasizeHistory?: boolean;
+  /** Show recent streak indicator. */
+  showStreak?: boolean;
+  /** Selective news blurb (creates confirmation-bias conditions). */
+  newsBlurb?: string;
+  /** Style of summary shown to students. */
+  summaryStyle?: SummaryStyle;
+  /** Optional content of the summary (filled per style). */
+  summaryText?: string;
+}
+
+export interface BiasExperiment {
+  id: string;
+  classroomId: string;
+  title: string;
+  bias: BiasKind;
+  /** Plain-language objective shown to instructors only. */
+  objective: string;
+  /** Markets attached to this experiment. */
+  marketIds: string[];
+  /** Per-market framing overrides. Keyed by marketId. */
+  framing: Record<string, BiasFraming>;
+  /** Whether students see a generic "experiment in progress" notice. */
+  studentNoticeEnabled: boolean;
+  active: boolean;
+  /** Optional grouping of students for A/B style comparison. */
+  groups?: Record<string, string[]>;
+  createdAt: string;
+}
+
 export interface InfoPacket {
   id: string;
   classroomId: string;
