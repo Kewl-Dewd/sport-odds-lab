@@ -743,7 +743,7 @@ interface MarketContextValue {
   updateStartingBalance: (amount: number) => void;
 
   // Leaderboard
-  getLeaderboard: (mode: LeaderboardMode) => LeaderboardEntry[];
+  getLeaderboard: (mode: LeaderboardMode, options?: { marketIds?: Set<string> }) => LeaderboardEntry[];
 
   // Export
   exportTradeHistory: () => string;
@@ -1526,11 +1526,40 @@ export function MarketProvider({ children }: { children: ReactNode }) {
 
   // ── Leaderboard ──────────────────────────────────────────────────
 
-  const getLeaderboard = useCallback((mode: LeaderboardMode): LeaderboardEntry[] => {
+  const getLeaderboard = useCallback((mode: LeaderboardMode, options?: { marketIds?: Set<string> }): LeaderboardEntry[] => {
+    const filterIds = options?.marketIds;
+    const scopedMarkets = filterIds ? markets.filter((m) => filterIds.has(m.id)) : markets;
+
     const entries: LeaderboardEntry[] = students.map((s) => {
-      const stats = calculatePortfolioValue(s, markets);
-      const stuTrades = trades.filter((t) => t.userId === s.userId);
+      // Holdings limited to scoped markets
+      const scopedHoldings = filterIds ? s.holdings.filter((h) => filterIds.has(h.marketId)) : s.holdings;
+      const stuTrades = trades.filter((t) => t.userId === s.userId && (!filterIds || filterIds.has(t.marketId)));
       const startBal = classroom.startingBalance;
+
+      // Compute scoped value: holdings (mark-to-market) + realized P&L from scoped trades.
+      let scopedHoldingsValue = 0;
+      for (const h of scopedHoldings) {
+        const outcome = scopedMarkets.find((m) => m.id === h.marketId)?.outcomes.find((o) => o.id === h.outcomeId);
+        if (outcome) scopedHoldingsValue += h.shares * outcome.price;
+      }
+      const scopedRealized = stuTrades
+        .filter((t) => t.type === "SELL")
+        .reduce((sum, t) => sum + t.totalCost - t.quantity * t.priceBeforeTrade, 0);
+
+      // For mode view, "portfolio value" = startingBalance + scoped P&L (treated as a sub-account).
+      // When unfiltered, fall back to the real cash + holdings calc.
+      let portfolioValue: number;
+      let cash: number;
+      if (filterIds) {
+        const scopedCostBasis = scopedHoldings.reduce((sum, h) => sum + h.shares * h.avgCostPerShare, 0);
+        const unrealized = scopedHoldingsValue - scopedCostBasis;
+        portfolioValue = startBal + scopedRealized + unrealized;
+        cash = startBal - scopedCostBasis + scopedRealized;
+      } else {
+        const stats = calculatePortfolioValue(s, markets);
+        portfolioValue = stats.totalValue;
+        cash = stats.cash;
+      }
 
       let winCount = 0;
       let bestPnL = 0;
@@ -1549,8 +1578,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         if (t.priceAfterTrade > t.pricePerShare) earlyBuys++;
       }
 
-      const returnPct = startBal > 0 ? ((stats.totalValue - startBal) / startBal) * 100 : 0;
-      const totalReturn = stats.totalValue - startBal;
+      const returnPct = startBal > 0 ? ((portfolioValue - startBal) / startBal) * 100 : 0;
+      const totalReturn = portfolioValue - startBal;
 
       // Decision score (simplified composite)
       const earlyBuyerScore = buys.length > 0 ? earlyBuys / buys.length : 0;
@@ -1558,13 +1587,14 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       const chaseBuyRate = buys.length > 0 ? chaseBuys / buys.length : 0;
       const decisionScore = Math.round(Math.min(100, Math.max(0, earlyBuyerScore * 50 + (1 - chaseBuyRate) * 50)));
 
-      // Risk score
+      // Risk score (concentration + diversification within scope)
       const holdingsByMkt = new Map<string, number>();
-      for (const h of s.holdings) {
-        const o = markets.find((m) => m.id === h.marketId)?.outcomes.find((o) => o.id === h.outcomeId);
+      for (const h of scopedHoldings) {
+        const o = scopedMarkets.find((m) => m.id === h.marketId)?.outcomes.find((o) => o.id === h.outcomeId);
         holdingsByMkt.set(h.marketId, (holdingsByMkt.get(h.marketId) ?? 0) + h.shares * (o?.price ?? 0));
       }
-      const maxConc = stats.totalValue > 0 ? Math.max(0, ...Array.from(holdingsByMkt.values())) / stats.totalValue : 0;
+      const denom = Math.max(portfolioValue, 1);
+      const maxConc = Math.max(0, ...Array.from(holdingsByMkt.values())) / denom;
       const divCount = holdingsByMkt.size;
       const riskScore = Math.round(Math.min(100, Math.max(0, (1 - maxConc) * 50 + Math.min(1, divCount / 5) * 50)));
 
@@ -1573,8 +1603,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
       return {
         userId: s.userId,
         displayName: s.displayName,
-        portfolioValue: stats.totalValue,
-        cash: stats.cash,
+        portfolioValue,
+        cash,
         returnPct: Math.round(returnPct * 10) / 10,
         tradeCount: stuTrades.length,
         winCount,
