@@ -17,6 +17,7 @@ import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
 import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
+import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
