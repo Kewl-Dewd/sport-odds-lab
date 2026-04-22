@@ -34,6 +34,8 @@ export type MarketCategory =
 
 export type DifficultyLevel = "beginner" | "intermediate" | "advanced";
 
+export type MarketDataSource = "manual" | "odds-api";
+
 export interface MarketMetadata {
   category: MarketCategory;
   season?: string;
@@ -44,6 +46,13 @@ export interface MarketMetadata {
   instructionalNotes?: string;
   settlementRules?: string;
   templateId?: string;
+  /** Where this market originated. Defaults to "manual". */
+  dataSource?: MarketDataSource;
+  /** Upstream identifier (e.g. odds-api event id) for live-linked markets. */
+  externalEventId?: string;
+  /** Convenience copies for settlement suggestions. */
+  externalSport?: string;
+  externalLeague?: string;
 }
 
 export interface Market {
