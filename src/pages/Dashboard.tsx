@@ -14,8 +14,6 @@ export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, markets, classroom, getLeaderboard, ethicsSettings } = useMarket();
   const { mode } = useMode();
   const { showOnboarding, completeOnboarding } = useOnboarding();
-  const leaderboard = getLeaderboard("portfolio");
-  const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
   // Mode-scoped views
   const modeMarketIds = useMemo(
@@ -27,9 +25,20 @@ export default function Dashboard() {
   const scopedTopMovers = useMemo(() => topMovers.filter((m) => scopedMarketTitles.has(m.marketTitle)), [topMovers, scopedMarketTitles]);
   const scopedHoldings = useMemo(() => portfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)), [portfolio.holdings, modeMarketIds]);
 
+  const leaderboard = getLeaderboard("portfolio", mode ? { marketIds: modeMarketIds } : undefined);
+  const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
+
+  // Mode-scoped portfolio metrics for stat tiles
+  const modePortfolioValue = mode
+    ? leaderboard.find((e) => e.userId === portfolio.userId)?.portfolioValue ?? classroom.startingBalance
+    : portfolioStats.totalValue;
+  const modeReturn = mode
+    ? modePortfolioValue - classroom.startingBalance
+    : portfolioStats.unrealizedPnL;
+
   const stats = [
     { label: "Available Cash", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
-    { label: "Portfolio Value", value: `$${portfolioStats.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: portfolioStats.unrealizedPnL !== 0 ? `${portfolioStats.unrealizedPnL >= 0 ? "+" : ""}$${portfolioStats.unrealizedPnL.toFixed(2)}` : null },
+    { label: mode ? `${MODE_LABELS[mode]} Value` : "Portfolio Value", value: `$${modePortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: modeReturn !== 0 ? `${modeReturn >= 0 ? "+" : ""}$${modeReturn.toFixed(2)}` : null },
     { label: "Open Positions", value: String(scopedHoldings.length), icon: TrendingUp, change: null },
     { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null },
   ];
