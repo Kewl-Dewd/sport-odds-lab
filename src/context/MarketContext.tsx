@@ -550,6 +550,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [activeExperimentId, setActiveExperimentId] = useState<string | null>(null);
   const [infoPackets, setInfoPackets] = useState<InfoPacket[]>([]);
+  const [ethicsSettings, setEthicsSettings] = useState<EthicsSettings>(DEFAULT_ETHICS_SETTINGS);
+  const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
