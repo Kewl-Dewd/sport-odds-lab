@@ -32,6 +32,25 @@ import {
 import type { PricingEngineType } from "@/lib/pricing";
 import { toast } from "sonner";
 import { generateSampleStudents, generateSampleTrades } from "@/lib/demoData";
+import type {
+  SportsbookSurface,
+  SportsbookWager,
+  SportsbookLine,
+  SportsbookGameResult,
+} from "@/lib/sportsbookEngine";
+import { validateWager, settleWager } from "@/lib/sportsbookEngine";
+import type {
+  RacetrackSurface,
+  RaceWager,
+  RaceRunner,
+  RacePoolKind,
+  PoolTotals,
+} from "@/lib/racetrackEngine";
+import {
+  validateRaceWager,
+  settleRaceWagers,
+  calculatePoolTotals,
+} from "@/lib/racetrackEngine";
 
 // ── Classroom Types ────────────────────────────────────────────────
 
