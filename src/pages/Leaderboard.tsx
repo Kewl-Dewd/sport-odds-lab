@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Trophy, Medal, TrendingUp, BarChart3, Target, Zap, Brain, Shield, Gauge } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
-import { useMode, MODE_LABELS } from "@/context/ModeContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const modes: { key: LeaderboardMode; label: string; icon: typeof Trophy; description: string }[] = [
@@ -24,11 +24,16 @@ const rankIcon = (rank: number) => {
 };
 
 export default function Leaderboard() {
-  const { getLeaderboard, classroom } = useMarket();
+  const { getLeaderboard, classroom, markets } = useMarket();
   const { mode: appMode } = useMode();
   const [mode, setMode] = useState<LeaderboardMode>("portfolio");
 
-  const entries = getLeaderboard(mode);
+  const modeMarketIds = useMemo(
+    () => appMode ? new Set(markets.filter((m) => marketMatchesMode(m, appMode)).map((m) => m.id)) : undefined,
+    [markets, appMode],
+  );
+
+  const entries = getLeaderboard(mode, modeMarketIds ? { marketIds: modeMarketIds } : undefined);
   const currentMode = modes.find((m) => m.key === mode)!;
 
   const formatValue = (entry: typeof entries[0]) => {
