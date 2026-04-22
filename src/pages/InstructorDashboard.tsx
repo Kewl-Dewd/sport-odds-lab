@@ -30,6 +30,7 @@ import { ReflectionPanel } from "@/components/admin/ReflectionPanel";
 import { DebriefSummary } from "@/components/debrief/DebriefSummary";
 import { DiscussionModePanel } from "@/components/admin/DiscussionModePanel";
 import { ScoringSettingsPanel } from "@/components/admin/ScoringSettingsPanel";
+import { ScenarioLibraryPanel } from "@/components/admin/ScenarioLibraryPanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
