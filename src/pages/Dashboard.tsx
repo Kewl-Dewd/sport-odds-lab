@@ -14,8 +14,6 @@ export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, markets, classroom, getLeaderboard, ethicsSettings } = useMarket();
   const { mode } = useMode();
   const { showOnboarding, completeOnboarding } = useOnboarding();
-  const leaderboard = getLeaderboard("portfolio");
-  const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
   // Mode-scoped views
   const modeMarketIds = useMemo(
