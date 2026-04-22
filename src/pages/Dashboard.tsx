@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
+import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard, ethicsSettings } = useMarket();
