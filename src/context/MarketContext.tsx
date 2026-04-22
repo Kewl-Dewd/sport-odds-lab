@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from "react";
 import {
   type Market,
   type MarketConfig,
