@@ -149,18 +149,22 @@ export function buildDebriefSummary({
     }
   }
 
-  // Settled markets
+  // Settled markets — use last trade timestamp as a proxy for settlement time.
   for (const m of markets) {
-    if (m.status === "settled" && m.settledAt) {
-      const winner = m.outcomes.find((o) => o.id === m.winningOutcomeId);
+    if (m.status === "settled") {
+      const winner = m.outcomes.find((o) => o.id === m.resolvedOutcomeId);
+      const mTrades = trades.filter((t) => t.marketId === m.id);
+      const lastTs = mTrades.length > 0
+        ? mTrades.map((t) => t.timestamp).sort().reverse()[0]
+        : m.closeTime ?? m.startTime;
       events.push({
         id: `e-set-${m.id}`,
-        at: m.settledAt,
+        at: lastTs,
         kind: "market-settled",
         marketId: m.id,
         marketTitle: m.title,
         title: `Market settled: ${m.title}`,
-        detail: winner ? `Winner: ${winner.name}` : "Settled",
+        detail: winner ? `Winner: ${winner.name}` : (m.settlementResult ?? "Settled"),
       });
     }
   }
@@ -214,11 +218,11 @@ export function buildDebriefSummary({
   const marketOutcomes: MarketOutcomeSummary[] = markets.map((m) => {
     const mTrades = trades.filter((t) => t.marketId === m.id);
     const uniq = new Set(mTrades.map((t) => t.userId)).size;
-    const top = [...m.outcomes].sort((a, b) => b.currentPrice - a.currentPrice)[0];
-    const winner = m.outcomes.find((o) => o.id === m.winningOutcomeId);
+    const top = [...m.outcomes].sort((a, b) => b.price - a.price)[0];
+    const winner = m.outcomes.find((o) => o.id === m.resolvedOutcomeId);
     // priceRange = max abs change of any outcome from initial 1/n
     const initial = 1 / Math.max(m.outcomes.length, 1);
-    const priceRange = Math.max(...m.outcomes.map((o) => Math.abs(o.currentPrice - initial)), 0);
+    const priceRange = Math.max(...m.outcomes.map((o) => Math.abs(o.price - initial)), 0);
     return {
       marketId: m.id,
       marketTitle: m.title,
@@ -228,7 +232,7 @@ export function buildDebriefSummary({
       uniqueTraders: uniq,
       priceRange,
       topOutcomeName: top?.name,
-      topOutcomePrice: top?.currentPrice,
+      topOutcomePrice: top?.price,
       settledOutcomeName: winner?.name,
     };
   });
