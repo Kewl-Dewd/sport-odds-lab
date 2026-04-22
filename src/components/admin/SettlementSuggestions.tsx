@@ -79,7 +79,7 @@ export function SettlementSuggestions() {
 
   const handleAccept = (s: Suggestion) => {
     if (!s.suggestedOutcomeId || !s.suggestedOutcomeName) return;
-    settleMarket(s.market.id, s.suggestedOutcomeId, s.suggestedOutcomeName);
+    settleMarket(s.market.id, s.suggestedOutcomeId);
     toast.success(`Settled “${s.market.title}” → ${s.suggestedOutcomeName}`);
     setSuggestions((prev) => prev.filter((x) => x.market.id !== s.market.id));
   };
