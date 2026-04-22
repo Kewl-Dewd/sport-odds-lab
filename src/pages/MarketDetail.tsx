@@ -488,6 +488,8 @@ export default function MarketDetail() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          <ReferenceOddsCard market={market} />
+
           {analytics && analytics.tradeCount > 0 && (
             <Card>
               <CardHeader className="pb-3">
