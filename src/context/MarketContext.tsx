@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, type ReactNode } from "react";
 import {
   type Market,
   type MarketConfig,
@@ -141,6 +141,82 @@ export interface Experiment {
   endDate: string | null;
   createdAt: string;
 }
+
+// ── Information Asymmetry Types ────────────────────────────────────
+
+export type InfoPacketKind =
+  | "text-note"
+  | "team-update"
+  | "injury-update"
+  | "weather-update"
+  | "probability-hint"
+  | "strategic-clue";
+
+export type InfoPacketTruthLevel = "true" | "partial" | "noisy";
+
+export const INFO_PACKET_KIND_LABELS: Record<InfoPacketKind, string> = {
+  "text-note": "Text note",
+  "team-update": "Team / player update",
+  "injury-update": "Injury update",
+  "weather-update": "Weather update",
+  "probability-hint": "Probability hint",
+  "strategic-clue": "Strategic clue",
+};
+
+export const INFO_PACKET_TRUTH_LABELS: Record<InfoPacketTruthLevel, string> = {
+  true: "Verified",
+  partial: "Partially true",
+  noisy: "Noisy / unreliable",
+};
+
+export type InfoAudienceMode =
+  | "everyone"
+  | "subgroup"
+  | "single"
+  | "random";
+
+export interface InfoAudience {
+  mode: InfoAudienceMode;
+  /** Explicit user IDs for "subgroup" or "single" modes. */
+  userIds?: string[];
+  /** Number of recipients for "random" mode. */
+  randomCount?: number;
+}
+
+export interface InfoPacketReceipt {
+  userId: string;
+  /** ISO timestamp the packet became visible to this user. */
+  releasedAt: string;
+  /** ISO timestamp the user opened the packet (null = unread). */
+  openedAt: string | null;
+  /** ISO timestamp the user explicitly acknowledged. */
+  acknowledgedAt: string | null;
+}
+
+export interface InfoPacket {
+  id: string;
+  classroomId: string;
+  experimentId: string | null;
+  marketId: string | null;
+  title: string;
+  body: string;
+  kind: InfoPacketKind;
+  truthLevel: InfoPacketTruthLevel;
+  /** If true, students are told that information is unevenly distributed. */
+  disclosureToClass: boolean;
+  /** Whether this packet shows up in instructor debrief reports. */
+  includeInDebrief: boolean;
+  /** Pre-resolved audience snapshot (recorded at release time). */
+  audience: InfoAudience;
+  receipts: InfoPacketReceipt[];
+  createdAt: string;
+  /** ISO timestamp when the packet should auto-release. Null = released immediately. */
+  scheduledFor: string | null;
+  /** ISO timestamp when the packet actually became visible to recipients. */
+  releasedAt: string | null;
+  createdBy: string;
+}
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
@@ -341,6 +417,29 @@ interface MarketContextValue {
   endExperiment: (id: string) => void;
   archiveExperiment: (id: string) => void;
   setActiveExperiment: (id: string | null) => void;
+
+  // Information Asymmetry
+  infoPackets: InfoPacket[];
+  /** Packets visible to the given user (released and assigned to them). */
+  getPacketsForUser: (userId: string) => InfoPacket[];
+  /** Total unread packets for a user (released, not yet opened). */
+  getUnreadPacketCount: (userId: string) => number;
+  createInfoPacket: (input: {
+    title: string;
+    body: string;
+    kind: InfoPacketKind;
+    truthLevel: InfoPacketTruthLevel;
+    audience: InfoAudience;
+    experimentId?: string | null;
+    marketId?: string | null;
+    scheduledFor?: string | null;
+    disclosureToClass?: boolean;
+    includeInDebrief?: boolean;
+  }) => InfoPacket;
+  releaseInfoPacket: (packetId: string) => void;
+  deleteInfoPacket: (packetId: string) => void;
+  openInfoPacket: (packetId: string, userId: string) => void;
+  acknowledgeInfoPacket: (packetId: string, userId: string) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -359,6 +458,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [activeExperimentId, setActiveExperimentId] = useState<string | null>(null);
+  const [infoPackets, setInfoPackets] = useState<InfoPacket[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -1079,6 +1179,210 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     setActiveExperimentId(id);
   }, []);
 
+  // ── Information Asymmetry ───────────────────────────────────────
+
+  const resolveAudience = useCallback(
+    (audience: InfoAudience): string[] => {
+      const classStudents = students;
+      switch (audience.mode) {
+        case "everyone":
+          return classStudents.map((s) => s.userId);
+        case "subgroup":
+        case "single":
+          return (audience.userIds ?? []).filter((id) =>
+            classStudents.some((s) => s.userId === id),
+          );
+        case "random": {
+          const n = Math.max(0, Math.min(audience.randomCount ?? 1, classStudents.length));
+          const pool = [...classStudents];
+          const picked: string[] = [];
+          for (let i = 0; i < n && pool.length > 0; i++) {
+            const idx = Math.floor(Math.random() * pool.length);
+            picked.push(pool.splice(idx, 1)[0].userId);
+          }
+          return picked;
+        }
+        default:
+          return [];
+      }
+    },
+    [students],
+  );
+
+  const createInfoPacket = useCallback(
+    (input: {
+      title: string;
+      body: string;
+      kind: InfoPacketKind;
+      truthLevel: InfoPacketTruthLevel;
+      audience: InfoAudience;
+      experimentId?: string | null;
+      marketId?: string | null;
+      scheduledFor?: string | null;
+      disclosureToClass?: boolean;
+      includeInDebrief?: boolean;
+    }): InfoPacket => {
+      const id = `pkt-${crypto.randomUUID().slice(0, 8)}`;
+      const now = new Date().toISOString();
+      const isImmediate = !input.scheduledFor;
+      const recipientIds = isImmediate ? resolveAudience(input.audience) : [];
+
+      const packet: InfoPacket = {
+        id,
+        classroomId: activeClassroomId,
+        experimentId: input.experimentId ?? null,
+        marketId: input.marketId ?? null,
+        title: input.title,
+        body: input.body,
+        kind: input.kind,
+        truthLevel: input.truthLevel,
+        disclosureToClass: input.disclosureToClass ?? false,
+        includeInDebrief: input.includeInDebrief ?? true,
+        audience: input.audience,
+        receipts: recipientIds.map((userId) => ({
+          userId,
+          releasedAt: now,
+          openedAt: null,
+          acknowledgedAt: null,
+        })),
+        createdAt: now,
+        scheduledFor: input.scheduledFor ?? null,
+        releasedAt: isImmediate ? now : null,
+        createdBy: "instructor",
+      };
+
+      setInfoPackets((prev) => [packet, ...prev]);
+      logAction(
+        isImmediate ? "Release info packet" : "Schedule info packet",
+        `${input.title} → ${input.audience.mode} (${recipientIds.length})`,
+      );
+      return packet;
+    },
+    [activeClassroomId, resolveAudience, logAction],
+  );
+
+  const releaseInfoPacket = useCallback((packetId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId || p.releasedAt) return p;
+        const now = new Date().toISOString();
+        const recipientIds = resolveAudience(p.audience);
+        return {
+          ...p,
+          releasedAt: now,
+          scheduledFor: null,
+          receipts: recipientIds.map((userId) => ({
+            userId,
+            releasedAt: now,
+            openedAt: null,
+            acknowledgedAt: null,
+          })),
+        };
+      }),
+    );
+    logAction("Release info packet", packetId);
+  }, [resolveAudience, logAction]);
+
+  const deleteInfoPacket = useCallback((packetId: string) => {
+    setInfoPackets((prev) => prev.filter((p) => p.id !== packetId));
+    logAction("Delete info packet", packetId);
+  }, [logAction]);
+
+  const openInfoPacket = useCallback((packetId: string, userId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId) return p;
+        return {
+          ...p,
+          receipts: p.receipts.map((r) =>
+            r.userId === userId && !r.openedAt
+              ? { ...r, openedAt: new Date().toISOString() }
+              : r,
+          ),
+        };
+      }),
+    );
+  }, []);
+
+  const acknowledgeInfoPacket = useCallback((packetId: string, userId: string) => {
+    setInfoPackets((prev) =>
+      prev.map((p) => {
+        if (p.id !== packetId) return p;
+        return {
+          ...p,
+          receipts: p.receipts.map((r) =>
+            r.userId === userId
+              ? {
+                  ...r,
+                  openedAt: r.openedAt ?? new Date().toISOString(),
+                  acknowledgedAt: r.acknowledgedAt ?? new Date().toISOString(),
+                }
+              : r,
+          ),
+        };
+      }),
+    );
+  }, []);
+
+  const getPacketsForUser = useCallback(
+    (userId: string) =>
+      infoPackets.filter(
+        (p) =>
+          p.releasedAt != null &&
+          p.classroomId === activeClassroomId &&
+          p.receipts.some((r) => r.userId === userId),
+      ),
+    [infoPackets, activeClassroomId],
+  );
+
+  const getUnreadPacketCount = useCallback(
+    (userId: string) =>
+      infoPackets.reduce((count, p) => {
+        if (!p.releasedAt || p.classroomId !== activeClassroomId) return count;
+        const r = p.receipts.find((x) => x.userId === userId);
+        if (r && !r.openedAt) return count + 1;
+        return count;
+      }, 0),
+    [infoPackets, activeClassroomId],
+  );
+
+  // Periodically auto-release scheduled packets whose time has come.
+  useEffect(() => {
+    const tick = () => {
+      setInfoPackets((prev) => {
+        const now = Date.now();
+        let changed = false;
+        const next = prev.map((p) => {
+          if (
+            !p.releasedAt &&
+            p.scheduledFor &&
+            new Date(p.scheduledFor).getTime() <= now
+          ) {
+            changed = true;
+            const recipientIds = resolveAudience(p.audience);
+            const released = new Date().toISOString();
+            return {
+              ...p,
+              releasedAt: released,
+              scheduledFor: null,
+              receipts: recipientIds.map((userId) => ({
+                userId,
+                releasedAt: released,
+                openedAt: null,
+                acknowledgedAt: null,
+              })),
+            };
+          }
+          return p;
+        });
+        return changed ? next : prev;
+      });
+    };
+    tick();
+    const t = setInterval(tick, 15_000);
+    return () => clearInterval(t);
+  }, [resolveAudience]);
+
   return (
     <MarketContext.Provider
       value={{
@@ -1097,6 +1401,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         experiments, activeExperiment, createExperiment, updateExperiment, deleteExperiment,
         duplicateExperiment, activateExperiment, pauseExperiment, endExperiment, archiveExperiment,
         setActiveExperiment,
+        infoPackets, getPacketsForUser, getUnreadPacketCount,
+        createInfoPacket, releaseInfoPacket, deleteInfoPacket,
+        openInfoPacket, acknowledgeInfoPacket,
       }}
     >
       {children}
