@@ -617,10 +617,16 @@ export default function InstructorDashboard() {
 
         {/* Debrief Tab */}
         <TabsContent value="debrief">
-          <div className="space-y-4">
-            <ScoringSettingsPanel />
-            <DebriefSummary />
-            <DiscussionModePanel />
+          <div className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Scoring & grading</h2>
+              <ScoringSettingsPanel />
+            </section>
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Session debrief</h2>
+              <DebriefSummary />
+              <DiscussionModePanel />
+            </section>
           </div>
         </TabsContent>
 
