@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
-  Users, LogOut, LogIn,
+  Users, LogOut, LogIn, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
@@ -23,11 +23,24 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, signOut } = useAuth();
+  const { user, isInstructor, isInstructorAccount, viewAsStudent, setViewAsStudent, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const toggleViewAs = () => {
+    const next = !viewAsStudent;
+    setViewAsStudent(next);
+    // If switching INTO student view from an instructor-only page, redirect home.
+    if (next && (
+      location.pathname.startsWith("/admin") ||
+      location.pathname.startsWith("/instructor") ||
+      location.pathname.startsWith("/experiments")
+    )) {
+      navigate("/dashboard");
+    }
   };
 
   return (
@@ -99,6 +112,18 @@ export function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <EducationModeToggle />
+          {isInstructorAccount && (
+            <Button
+              variant={viewAsStudent ? "default" : "outline"}
+              size="sm"
+              onClick={toggleViewAs}
+              title={viewAsStudent ? "Switch back to instructor view" : "Preview the app as a student"}
+            >
+              {viewAsStudent
+                ? <><EyeOff className="h-4 w-4 mr-1.5" /> Student view</>
+                : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
+            </Button>
+          )}
           {user ? (
             <>
               <span className="text-xs text-muted-foreground max-w-[140px] truncate">{user.email}</span>
@@ -159,6 +184,20 @@ export function Navbar() {
             <div className="px-3 py-2">
               <EducationModeToggle />
             </div>
+            {isInstructorAccount && (
+              <div className="px-3 py-2">
+                <Button
+                  variant={viewAsStudent ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => { toggleViewAs(); setMobileOpen(false); }}
+                  className="w-full"
+                >
+                  {viewAsStudent
+                    ? <><EyeOff className="h-4 w-4 mr-1.5" /> Switch to instructor view</>
+                    : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
+                </Button>
+              </div>
+            )}
             <div className="px-3 py-2">
               {user ? (
                 <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full">
