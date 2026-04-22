@@ -540,6 +540,88 @@ export const DEFAULT_SCORING_SETTINGS: ScoringSettings = {
   visibleToStudents: true,
 };
 
+// ── Scenario Library ─────────────────────────────────────────────
+
+export type ScenarioType =
+  | "efficient-market"
+  | "rumor-driven"
+  | "insider-information"
+  | "herd-behavior"
+  | "shock-event"
+  | "high-liquidity"
+  | "low-liquidity"
+  | "overconfidence"
+  | "risk-management"
+  | "diversification"
+  | "tournament-prediction";
+
+export const SCENARIO_TYPE_LABELS: Record<ScenarioType, string> = {
+  "efficient-market": "Efficient market",
+  "rumor-driven": "Rumor-driven market",
+  "insider-information": "Insider information",
+  "herd-behavior": "Herd behavior",
+  "shock-event": "Shock event",
+  "high-liquidity": "High-liquidity market",
+  "low-liquidity": "Low-liquidity market",
+  "overconfidence": "Overconfidence",
+  "risk-management": "Risk management challenge",
+  "diversification": "Diversification challenge",
+  "tournament-prediction": "Tournament prediction challenge",
+};
+
+export type ScenarioDifficulty = "intro" | "intermediate" | "advanced";
+
+/** Snapshot of a market template stored inside a scenario. */
+export interface ScenarioMarketTemplate {
+  title: string;
+  league: string;
+  sport: string;
+  description: string;
+  outcomes: string[];
+  liquidity: number;
+  /** Suggested status when launched (most scenarios open immediately). */
+  suggestedStatus?: "open" | "scheduled";
+}
+
+/** Preset settings applied at one-click launch. */
+export interface ScenarioPresets {
+  scoringWeightOverrides?: Partial<CategoryWeights>;
+  leaderboardVisible?: boolean;
+  nameVisibility?: ExperimentNameVisibility;
+  scoringMode?: ExperimentScoringMode;
+  /** Active special rules (subset of EXPERIMENT_RULE_PRESETS ids). */
+  activeRuleIds?: string[];
+  /** Optional debrief reflection prompts to auto-create on launch. */
+  debriefPrompts?: string[];
+}
+
+export interface Scenario {
+  id: string;
+  title: string;
+  type: ScenarioType;
+  description: string;
+  learningObjective: string;
+  studentInstructions: string;
+  instructorNotes: string;
+  /** Recommended duration in minutes. */
+  recommendedMinutes: number;
+  recommendedDebriefPoints: string[];
+  marketTemplates: ScenarioMarketTemplate[];
+  /** Optional Experiment scaffold to create alongside the markets. */
+  experimentScaffold: {
+    type: ExperimentType;
+    objective: string;
+  } | null;
+  presets: ScenarioPresets;
+  tags: string[];
+  difficulty: ScenarioDifficulty;
+  isArchived: boolean;
+  createdAt: string;
+  /** Last time this scenario was launched. */
+  lastLaunchedAt: string | null;
+  launchCount: number;
+}
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
