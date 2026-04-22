@@ -506,6 +506,40 @@ export const DEFAULT_DISCUSSION_SETTINGS: DiscussionSettings = {
   revealOnPinnedOnly: false,
 };
 
+// ── Classroom Scoring ─────────────────────────────────────────────
+
+import type {
+  CategoryWeights as ScoringWeights,
+  GradeBand as ScoringGradeBand,
+  BadgeId as ScoringBadgeId,
+} from "@/lib/scoringEngine";
+import {
+  DEFAULT_WEIGHTS as SCORING_DEFAULT_WEIGHTS,
+  DEFAULT_GRADE_MAP as SCORING_DEFAULT_GRADE_MAP,
+  BADGE_DEFINITIONS as SCORING_BADGE_DEFINITIONS,
+} from "@/lib/scoringEngine";
+
+export interface ScoringSettings {
+  /** Per-category weights (do not need to sum to 100; engine normalizes). */
+  weights: ScoringWeights;
+  /** Letter-grade band thresholds. */
+  gradeMap: ScoringGradeBand[];
+  /** Which badges are enabled for the class. */
+  enabledBadges: ScoringBadgeId[];
+  /** Number of trades that earns full participation credit. */
+  participationGoal: number;
+  /** Whether scoring is shown to students. */
+  visibleToStudents: boolean;
+}
+
+export const DEFAULT_SCORING_SETTINGS: ScoringSettings = {
+  weights: SCORING_DEFAULT_WEIGHTS,
+  gradeMap: SCORING_DEFAULT_GRADE_MAP,
+  enabledBadges: Object.keys(SCORING_BADGE_DEFINITIONS) as ScoringBadgeId[],
+  participationGoal: 10,
+  visibleToStudents: true,
+};
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
