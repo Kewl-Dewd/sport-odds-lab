@@ -39,7 +39,7 @@ export default function Dashboard() {
       {showOnboarding && <OnboardingModal onComplete={completeOnboarding} />}
     <div className="container py-8 space-y-8 animate-slide-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Dashboard {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">{classroom.name} · {portfolio.displayName}</p>
       </div>
 
@@ -68,13 +68,13 @@ export default function Dashboard() {
         <Card>
           <CardHeader><CardTitle className="text-lg">Recent Trades</CardTitle></CardHeader>
           <CardContent>
-            {recentTrades.length === 0 ? (
+            {scopedRecentTrades.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
                 No trades yet. <Link to="/markets" className="text-primary underline">Browse markets</Link> to start trading.
               </p>
             ) : (
               <div className="space-y-3">
-                {recentTrades.slice(0, 5).map((t) => (
+                {scopedRecentTrades.slice(0, 5).map((t) => (
                   <div key={t.id} className="flex items-center justify-between py-2 border-b last:border-0">
                     <div className="space-y-0.5">
                       <p className="text-sm font-medium">{t.marketTitle}</p>
@@ -98,11 +98,11 @@ export default function Dashboard() {
         <Card>
           <CardHeader><CardTitle className="text-lg">Top Movers</CardTitle></CardHeader>
           <CardContent>
-            {topMovers.length === 0 ? (
+            {scopedTopMovers.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">Prices will move as trades are placed.</p>
             ) : (
               <div className="space-y-3">
-                {topMovers.map((m, i) => (
+                {scopedTopMovers.map((m, i) => (
                   <div key={i} className="flex items-center justify-between py-2 border-b last:border-0">
                     <div className="space-y-0.5">
                       <p className="text-sm font-medium">{m.marketTitle}</p>
