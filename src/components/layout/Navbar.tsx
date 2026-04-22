@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
-  Users, LogOut, LogIn,
+  Users, LogOut, LogIn, Eye, EyeOff,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
@@ -23,11 +23,24 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, signOut } = useAuth();
+  const { user, isInstructor, isInstructorAccount, viewAsStudent, setViewAsStudent, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
+  };
+
+  const toggleViewAs = () => {
+    const next = !viewAsStudent;
+    setViewAsStudent(next);
+    // If switching INTO student view from an instructor-only page, redirect home.
+    if (next && (
+      location.pathname.startsWith("/admin") ||
+      location.pathname.startsWith("/instructor") ||
+      location.pathname.startsWith("/experiments")
+    )) {
+      navigate("/dashboard");
+    }
   };
 
   return (
