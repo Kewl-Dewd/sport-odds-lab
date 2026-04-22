@@ -204,6 +204,16 @@ export function Navbar() {
                 </Link>
               </>
             )}
+            {user && mode && (
+              <div className="px-3 py-2">
+                <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between">
+                  <span className="inline-flex items-center gap-1.5">
+                    <Zap className="h-4 w-4 text-primary" /> Mode: {MODE_LABELS[mode]}
+                  </span>
+                  <Repeat className="h-3.5 w-3.5 opacity-60" />
+                </Button>
+              </div>
+            )}
             {user && (
               <div className="px-3 py-2">
                 <EducationModeToggle />
