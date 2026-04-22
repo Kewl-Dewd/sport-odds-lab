@@ -114,7 +114,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <EducationModeToggle />
+          {user && <EducationModeToggle />}
           {isInstructorAccount && (
             <Button
               variant={viewAsStudent ? "default" : "outline"}
