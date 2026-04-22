@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarket } from "@/context/MarketContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { useEducation } from "@/context/EducationContext";
 import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { PortfolioPerformanceChart, HoldingsDistribution } from "@/components/charts/AnalyticsCharts";
