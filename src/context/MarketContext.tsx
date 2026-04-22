@@ -659,6 +659,32 @@ interface MarketContextValue {
   setBiasFraming: (experimentId: string, marketId: string, framing: BiasFraming) => void;
   /** Returns the active bias experiment(s) for a market in the current classroom. */
   getBiasExperimentsForMarket: (marketId: string) => BiasExperiment[];
+
+  // Shock Events
+  shockEvents: ShockEvent[];
+  createShockEvent: (input: {
+    kind: ShockKind;
+    title: string;
+    description: string;
+    marketIds?: string[];
+    confidence?: ShockConfidence;
+    urgency?: ShockUrgency;
+    visibility?: ShockVisibility;
+    audienceUserIds?: string[];
+    truthStatus?: ShockTruth;
+    scheduledFor?: string | null;
+    releaseNow?: boolean;
+    correctsShockId?: string | null;
+  }) => ShockEvent;
+  releaseShockEvent: (id: string) => void;
+  cancelShockEvent: (id: string) => void;
+  correctShockEvent: (originalId: string, correction: { title: string; description: string }) => ShockEvent | null;
+  deleteShockEvent: (id: string) => void;
+  updateShockTruthStatus: (id: string, truthStatus: ShockTruth) => void;
+  /** Shocks visible to a given user (released only). */
+  getShocksForUser: (userId: string) => ShockEvent[];
+  /** Shocks attached to a market and visible to a user (released only). */
+  getShocksForMarket: (marketId: string, userId?: string) => ShockEvent[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -681,6 +707,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [ethicsSettings, setEthicsSettings] = useState<EthicsSettings>(DEFAULT_ETHICS_SETTINGS);
   const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
   const [biasExperiments, setBiasExperiments] = useState<BiasExperiment[]>([]);
+  const [shockEvents, setShockEvents] = useState<ShockEvent[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
