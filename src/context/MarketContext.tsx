@@ -817,6 +817,19 @@ interface MarketContextValue {
   getReflectionResponse: (assignmentId: string, userId: string) => ReflectionResponse | undefined;
   /** Returns all responses for an assignment (instructor view). */
   getReflectionResponses: (assignmentId: string) => ReflectionResponse[];
+
+  // Discussion Mode
+  discussionCards: DiscussionCard[];
+  discussionSettings: DiscussionSettings;
+  updateDiscussionSettings: (updates: Partial<DiscussionSettings>) => void;
+  createDiscussionCard: (input: Omit<DiscussionCard, "id" | "classroomId" | "createdAt" | "pinned" | "saved"> & {
+    pinned?: boolean;
+    saved?: boolean;
+  }) => DiscussionCard;
+  updateDiscussionCard: (id: string, updates: Partial<Omit<DiscussionCard, "id" | "classroomId" | "createdAt">>) => void;
+  deleteDiscussionCard: (id: string) => void;
+  toggleDiscussionCardPin: (id: string) => void;
+  toggleDiscussionCardSaved: (id: string) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
