@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
+import { MarketDebrief } from "@/components/student/MarketDebrief";
 
 export default function Dashboard() {
-  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard } = useMarket();
+  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard, ethicsSettings } = useMarket();
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const leaderboard = getLeaderboard("portfolio");
   const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
