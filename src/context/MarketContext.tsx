@@ -855,6 +855,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [shockEvents, setShockEvents] = useState<ShockEvent[]>([]);
   const [reflectionAssignments, setReflectionAssignments] = useState<ReflectionAssignment[]>([]);
   const [reflectionResponses, setReflectionResponses] = useState<ReflectionResponse[]>([]);
+  const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
+  const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -2167,6 +2169,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         createReflectionAssignment, updateReflectionAssignment, deleteReflectionAssignment,
         setReflectionStatus, submitReflectionResponse, gradeReflectionResponse,
         getReflectionsForUser, getReflectionResponse, getReflectionResponses,
+        discussionCards, discussionSettings, updateDiscussionSettings,
+        createDiscussionCard, updateDiscussionCard, deleteDiscussionCard,
+        toggleDiscussionCardPin, toggleDiscussionCardSaved,
       }}
     >
       {children}
