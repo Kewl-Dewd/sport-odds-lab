@@ -1416,6 +1416,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const voidMarket = useCallback((marketId: string, rule: "return-cost" | "return-current-value" = "return-cost") => {
     const market = markets.find((m) => m.id === marketId);
     if (!market) return;
+    if (TERMINAL_STATUSES.includes(market.status)) {
+      toast.error("This market is already finalized");
+      return;
+    }
     const { voidedMarket, updatedPortfolios } = voidMarketForPortfolios(market, students, rule);
     setMarkets((prev) => prev.map((m) => m.id === marketId ? voidedMarket : m));
     setStudents(updatedPortfolios);
@@ -1427,6 +1431,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const cancelMarket = useCallback((marketId: string) => {
     const market = markets.find((m) => m.id === marketId);
     if (!market) return;
+    if (TERMINAL_STATUSES.includes(market.status)) {
+      toast.error("This market is already finalized");
+      return;
+    }
     const { cancelledMarket, updatedPortfolios } = cancelMarketForPortfolios(market, students);
     setMarkets((prev) => prev.map((m) => m.id === marketId ? cancelledMarket : m));
     setStudents(updatedPortfolios);
@@ -1436,9 +1444,15 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   }, [markets, students, portfolio.userId, logAction]);
 
   const postponeMarket = useCallback((marketId: string) => {
-    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "postponed" as const } : m));
+    const m = markets.find((x) => x.id === marketId);
+    if (!m) return;
+    if (TERMINAL_STATUSES.includes(m.status)) {
+      toast.error("Settled markets cannot be postponed");
+      return;
+    }
+    setMarkets((prev) => prev.map((x) => x.id === marketId ? { ...x, status: "postponed" as const } : x));
     logAction("Postpone market", marketId);
-  }, [logAction]);
+  }, [markets, logAction]);
 
   const scheduleMarket = useCallback((marketId: string) => {
     setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, status: "scheduled" as const } : m));
@@ -1446,9 +1460,15 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   }, [logAction]);
 
   const editMarket = useCallback((marketId: string, updates: Partial<Pick<Market, "title" | "league" | "sport" | "startTime" | "closeTime" | "description">>) => {
-    setMarkets((prev) => prev.map((m) => m.id === marketId ? { ...m, ...updates } : m));
+    const m = markets.find((x) => x.id === marketId);
+    if (!m) return;
+    if (TERMINAL_STATUSES.includes(m.status)) {
+      toast.error("Settled markets cannot be edited");
+      return;
+    }
+    setMarkets((prev) => prev.map((x) => x.id === marketId ? { ...x, ...updates } : x));
     logAction("Edit market", `${marketId}: ${Object.keys(updates).join(", ")}`);
-  }, [logAction]);
+  }, [markets, logAction]);
 
   // ── Batch operations ─────────────────────────────────────────────
 
