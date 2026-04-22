@@ -2940,6 +2940,12 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         updateGradeMap, toggleBadgeEnabled,
         scenarios, createScenario, updateScenario, duplicateScenario,
         archiveScenario, deleteScenario, saveCurrentAsScenario, launchScenario,
+        sportsbookWagers, setSportsbookSurface, upsertSportsbookLines,
+        toggleSportsbookEnabled, placeSportsbookWager, getWagersForMarket,
+        getMyWagers, settleSportsbook,
+        raceWagers, setRacetrackSurface, toggleRacetrackEnabled, upsertRunners,
+        placeRaceWager, getRaceWagersForMarket, getMyRaceWagers,
+        getRacePoolTotals, settleRace,
       }}
     >
       {children}
