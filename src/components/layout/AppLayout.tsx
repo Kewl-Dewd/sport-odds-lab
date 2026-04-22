@@ -1,7 +1,9 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "./Navbar";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 
 export function AppLayout() {
+  useActivityTracker();
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

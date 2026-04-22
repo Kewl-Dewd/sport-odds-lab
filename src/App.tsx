@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { MarketProvider } from "@/context/MarketContext";
 import { EducationProvider } from "@/context/EducationContext";
+import { AuthProvider } from "@/context/AuthContext";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LearningNudgeBar } from "@/components/education/LearningNudges";
 import Index from "./pages/Index.tsx";
@@ -22,6 +24,7 @@ import Experiments from "./pages/Experiments.tsx";
 import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
+import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -29,37 +32,39 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <MarketProvider>
-        <EducationProvider>
-          <Toaster />
-          <Sonner />
-          <LearningNudgeBar />
-          <BrowserRouter>
-            <Routes>
-              <Route element={<AppLayout />}>
-                <Route path="/" element={<Index />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/markets" element={<Markets />} />
-                <Route path="/markets/:id" element={<MarketDetail />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/leaderboard" element={<Leaderboard />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/glossary" element={<Glossary />} />
-                <Route path="/instructor" element={<InstructorDashboard />} />
-                <Route path="/instructor/review" element={<TradeReview />} />
-                <Route path="/instructor/reports" element={<Reports />} />
-                <Route path="/experiments" element={<Experiments />} />
-                <Route path="/experiments/:id" element={<ExperimentView />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/auth" element={<Auth />} />
-              </Route>
-              {/* Presentation mode — no navbar/footer */}
-              <Route path="/instructor/present/:view" element={<PresentationMode />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </EducationProvider>
-      </MarketProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <MarketProvider>
+            <EducationProvider>
+              <Toaster />
+              <Sonner />
+              <LearningNudgeBar />
+              <Routes>
+                <Route element={<AppLayout />}>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/markets" element={<Markets />} />
+                  <Route path="/markets/:id" element={<MarketDetail />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/leaderboard" element={<Leaderboard />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/glossary" element={<Glossary />} />
+                  <Route path="/instructor" element={<ProtectedRoute requireInstructor><InstructorDashboard /></ProtectedRoute>} />
+                  <Route path="/instructor/review" element={<ProtectedRoute requireInstructor><TradeReview /></ProtectedRoute>} />
+                  <Route path="/instructor/reports" element={<ProtectedRoute requireInstructor><Reports /></ProtectedRoute>} />
+                  <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
+                  <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
+                  <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
+                  <Route path="/auth" element={<Auth />} />
+                </Route>
+                {/* Presentation mode — no navbar/footer */}
+                <Route path="/instructor/present/:view" element={<ProtectedRoute requireInstructor><PresentationMode /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </EducationProvider>
+          </MarketProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

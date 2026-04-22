@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_activity: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -62,11 +86,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          ended_at: string | null
+          id: string
+          last_seen_at: string
+          started_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          ended_at?: string | null
+          id?: string
+          last_seen_at?: string
+          started_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          ended_at?: string | null
+          id?: string
+          last_seen_at?: string
+          started_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_user_stats: {
+        Args: never
+        Returns: {
+          display_name: string
+          email: string
+          joined_at: string
+          last_seen_at: string
+          role: Database["public"]["Enums"]["app_role"]
+          total_actions: number
+          total_seconds_on_site: number
+          user_id: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
