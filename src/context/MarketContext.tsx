@@ -585,7 +585,7 @@ export interface ScenarioMarketTemplate {
 
 /** Preset settings applied at one-click launch. */
 export interface ScenarioPresets {
-  scoringWeightOverrides?: Partial<CategoryWeights>;
+  scoringWeightOverrides?: Partial<ScoringWeights>;
   leaderboardVisible?: boolean;
   nameVisibility?: ExperimentNameVisibility;
   scoringMode?: ExperimentScoringMode;
