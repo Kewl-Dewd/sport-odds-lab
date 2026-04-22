@@ -1,7 +1,9 @@
+import { useMemo } from "react";
 import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
+import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
@@ -9,15 +11,25 @@ import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
 
 export default function Dashboard() {
-  const { portfolio, portfolioStats, recentTrades, topMovers, trades, classroom, getLeaderboard, ethicsSettings } = useMarket();
+  const { portfolio, portfolioStats, recentTrades, topMovers, trades, markets, classroom, getLeaderboard, ethicsSettings } = useMarket();
+  const { mode } = useMode();
   const { showOnboarding, completeOnboarding } = useOnboarding();
   const leaderboard = getLeaderboard("portfolio");
   const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
 
+  // Mode-scoped views
+  const modeMarketIds = useMemo(
+    () => new Set(mode ? markets.filter((m) => marketMatchesMode(m, mode)).map((m) => m.id) : markets.map((m) => m.id)),
+    [markets, mode],
+  );
+  const scopedRecentTrades = useMemo(() => recentTrades.filter((t) => modeMarketIds.has(t.marketId)), [recentTrades, modeMarketIds]);
+  const scopedTopMovers = useMemo(() => topMovers.filter((m) => modeMarketIds.has(m.marketId)), [topMovers, modeMarketIds]);
+  const scopedHoldings = useMemo(() => portfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)), [portfolio.holdings, modeMarketIds]);
+
   const stats = [
     { label: "Available Cash", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
     { label: "Portfolio Value", value: `$${portfolioStats.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: portfolioStats.unrealizedPnL !== 0 ? `${portfolioStats.unrealizedPnL >= 0 ? "+" : ""}$${portfolioStats.unrealizedPnL.toFixed(2)}` : null },
-    { label: "Open Positions", value: String(portfolio.holdings.length), icon: TrendingUp, change: null },
+    { label: "Open Positions", value: String(scopedHoldings.length), icon: TrendingUp, change: null },
     { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null },
   ];
 
