@@ -84,9 +84,7 @@ export default function Admin() {
           <p className="text-muted-foreground">{classroom.name}</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button variant="outline" size="sm" onClick={handleSeedDemo}>
-            <Wand2 className="mr-1.5 h-4 w-4" />Demo Data
-          </Button>
+          {/* Demo data button removed — production-ready empty state. */}
           <Button variant="outline" size="sm" onClick={() => handleExport("trades")}>
             <Download className="mr-1.5 h-4 w-4" />Trades CSV
           </Button>

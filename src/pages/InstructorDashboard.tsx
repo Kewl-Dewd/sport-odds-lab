@@ -177,9 +177,7 @@ export default function InstructorDashboard() {
             <Button variant="outline" size="sm" onClick={() => { recalculateAll(); toast.success("Portfolios recalculated"); }} title="Recompute every portfolio value from current prices">
               <Calculator className="mr-1 h-3.5 w-3.5" />Recalculate portfolios
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { seedDemoData(8, 5); toast.success("Demo data added"); }} title="Add sample students and trades for demos">
-              <Wand2 className="mr-1 h-3.5 w-3.5" />Add demo data
-            </Button>
+            {/* Demo data button removed — app ships clean for live classroom use. */}
           </div>
         </CardContent>
       </Card>
