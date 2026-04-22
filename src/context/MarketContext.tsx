@@ -510,6 +510,27 @@ interface MarketContextValue {
   deleteInfoPacket: (packetId: string) => void;
   openInfoPacket: (packetId: string, userId: string) => void;
   acknowledgeInfoPacket: (packetId: string, userId: string) => void;
+
+  // Market Manipulation & Ethics Mode
+  ethicsSettings: EthicsSettings;
+  updateEthicsSettings: (updates: Partial<EthicsSettings>) => void;
+  scenarioEvents: ScenarioEvent[];
+  injectScenarioEvent: (input: {
+    kind: ScenarioKind;
+    marketId: string | null;
+    note: string;
+    participantIds?: string[];
+  }) => ScenarioEvent;
+  deleteScenarioEvent: (id: string) => void;
+  /** Execute a large instructor-driven "whale" trade attributed to a chosen student. */
+  executeWhaleTrade: (input: {
+    marketId: string;
+    outcomeId: string;
+    quantity: number;
+    type: "BUY" | "SELL";
+    asUserId: string;
+    note?: string;
+  }) => Trade | null;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
