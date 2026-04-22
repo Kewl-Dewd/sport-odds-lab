@@ -1616,6 +1616,65 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     }
   }, [markets, students, portfolio.userId, activeClassroomId, logAction]);
 
+  // ── Behavioral Finance Experiments ──────────────────────────────
+
+  const createBiasExperiment = useCallback((input: {
+    title: string;
+    bias: BiasKind;
+    objective?: string;
+    marketIds?: string[];
+    studentNoticeEnabled?: boolean;
+  }): BiasExperiment => {
+    const exp: BiasExperiment = {
+      id: `bx-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      title: input.title,
+      bias: input.bias,
+      objective: input.objective ?? "",
+      marketIds: input.marketIds ?? [],
+      framing: {},
+      studentNoticeEnabled: input.studentNoticeEnabled ?? false,
+      active: true,
+      createdAt: new Date().toISOString(),
+    };
+    setBiasExperiments((prev) => [exp, ...prev]);
+    logAction("Create bias experiment", `${input.title} (${input.bias})`);
+    return exp;
+  }, [activeClassroomId, logAction]);
+
+  const updateBiasExperiment = useCallback((id: string, updates: Partial<Omit<BiasExperiment, "id" | "classroomId" | "createdAt">>) => {
+    setBiasExperiments((prev) => prev.map((e) => e.id === id ? { ...e, ...updates } : e));
+    logAction("Update bias experiment", id);
+  }, [logAction]);
+
+  const deleteBiasExperiment = useCallback((id: string) => {
+    setBiasExperiments((prev) => prev.filter((e) => e.id !== id));
+    logAction("Delete bias experiment", id);
+  }, [logAction]);
+
+  const setBiasExperimentMarkets = useCallback((id: string, marketIds: string[]) => {
+    setBiasExperiments((prev) => prev.map((e) => e.id === id ? { ...e, marketIds } : e));
+  }, []);
+
+  const setBiasFraming = useCallback((experimentId: string, marketId: string, framing: BiasFraming) => {
+    setBiasExperiments((prev) => prev.map((e) =>
+      e.id === experimentId
+        ? { ...e, framing: { ...e.framing, [marketId]: framing } }
+        : e,
+    ));
+    logAction("Update bias framing", `${experimentId} → ${marketId}`);
+  }, [logAction]);
+
+  const getBiasExperimentsForMarket = useCallback((marketId: string): BiasExperiment[] => {
+    return biasExperiments.filter(
+      (e) =>
+        e.classroomId === activeClassroomId &&
+        e.active &&
+        e.marketIds.includes(marketId),
+    );
+  }, [biasExperiments, activeClassroomId]);
+
+
   return (
     <MarketContext.Provider
       value={{
