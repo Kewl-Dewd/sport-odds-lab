@@ -2125,6 +2125,52 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     return reflectionResponses.filter((r) => r.assignmentId === assignmentId);
   }, [reflectionResponses]);
 
+  // ── Discussion Mode ────────────────────────────────────────────
+
+  const updateDiscussionSettings = useCallback((updates: Partial<DiscussionSettings>) => {
+    setDiscussionSettings((prev) => ({ ...prev, ...updates }));
+    logAction("Update discussion settings", JSON.stringify(updates));
+  }, [logAction]);
+
+  const createDiscussionCard = useCallback((input: Omit<DiscussionCard, "id" | "classroomId" | "createdAt" | "pinned" | "saved"> & {
+    pinned?: boolean; saved?: boolean;
+  }): DiscussionCard => {
+    const card: DiscussionCard = {
+      id: `dc-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      dimension: input.dimension,
+      marketId: input.marketId,
+      whatHappened: input.whatHappened,
+      whatTradersDid: input.whatTradersDid,
+      howPricesResponded: input.howPricesResponded,
+      alternativeStrategy: input.alternativeStrategy,
+      keyTakeaway: input.keyTakeaway,
+      pinned: input.pinned ?? false,
+      saved: input.saved ?? false,
+      createdAt: new Date().toISOString(),
+    };
+    setDiscussionCards((prev) => [card, ...prev]);
+    logAction("Create discussion card", input.whatHappened.slice(0, 60));
+    return card;
+  }, [activeClassroomId, logAction]);
+
+  const updateDiscussionCard = useCallback((id: string, updates: Partial<Omit<DiscussionCard, "id" | "classroomId" | "createdAt">>) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, ...updates } : c));
+  }, []);
+
+  const deleteDiscussionCard = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.filter((c) => c.id !== id));
+    logAction("Delete discussion card", id);
+  }, [logAction]);
+
+  const toggleDiscussionCardPin = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, pinned: !c.pinned } : c));
+  }, []);
+
+  const toggleDiscussionCardSaved = useCallback((id: string) => {
+    setDiscussionCards((prev) => prev.map((c) => c.id === id ? { ...c, saved: !c.saved } : c));
+  }, []);
+
   const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
     return shockEvents.filter((s) =>
       s.classroomId === activeClassroomId &&
