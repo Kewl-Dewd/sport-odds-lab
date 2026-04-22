@@ -752,6 +752,31 @@ interface MarketContextValue {
   getShocksForUser: (userId: string) => ShockEvent[];
   /** Shocks attached to a market and visible to a user (released only). */
   getShocksForMarket: (marketId: string, userId?: string) => ShockEvent[];
+
+  // Reflection & Debrief
+  reflectionAssignments: ReflectionAssignment[];
+  reflectionResponses: ReflectionResponse[];
+  createReflectionAssignment: (input: {
+    title: string;
+    description?: string;
+    experimentId?: string | null;
+    prompts?: ReflectionPrompt[];
+    required?: boolean;
+    graded?: boolean;
+    visibility?: ReflectionVisibility;
+    openImmediately?: boolean;
+  }) => ReflectionAssignment;
+  updateReflectionAssignment: (id: string, updates: Partial<Omit<ReflectionAssignment, "id" | "classroomId" | "createdAt">>) => void;
+  deleteReflectionAssignment: (id: string) => void;
+  setReflectionStatus: (id: string, status: ReflectionAssignment["status"]) => void;
+  submitReflectionResponse: (assignmentId: string, answers: ReflectionAnswer[]) => ReflectionResponse;
+  gradeReflectionResponse: (responseId: string, grade: number | null, feedback: string | null) => void;
+  /** Reflection assignments visible to a given student (open/closed only). */
+  getReflectionsForUser: (userId: string) => ReflectionAssignment[];
+  /** Returns the user's response for an assignment, if any. */
+  getReflectionResponse: (assignmentId: string, userId: string) => ReflectionResponse | undefined;
+  /** Returns all responses for an assignment (instructor view). */
+  getReflectionResponses: (assignmentId: string) => ReflectionResponse[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
