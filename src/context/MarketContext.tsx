@@ -1109,6 +1109,36 @@ interface MarketContextValue {
   }) => Scenario;
   /** One-click launch: creates markets, applies presets, optional experiment. */
   launchScenario: (id: string) => { marketsCreated: number; experimentId: string | null } | null;
+
+  // Sportsbook
+  sportsbookWagers: SportsbookWager[];
+  setSportsbookSurface: (marketId: string, surface: SportsbookSurface | undefined) => void;
+  upsertSportsbookLines: (marketId: string, lines: SportsbookLine[], source?: "manual" | "odds-api") => void;
+  toggleSportsbookEnabled: (marketId: string, enabled: boolean) => void;
+  placeSportsbookWager: (input: {
+    marketId: string;
+    line: SportsbookLine;
+    stake: number;
+  }) => { ok: boolean; error?: string; wager?: SportsbookWager };
+  getWagersForMarket: (marketId: string) => SportsbookWager[];
+  getMyWagers: () => SportsbookWager[];
+  settleSportsbook: (marketId: string, result: SportsbookGameResult) => void;
+
+  // Racetrack
+  raceWagers: RaceWager[];
+  setRacetrackSurface: (marketId: string, surface: RacetrackSurface | undefined) => void;
+  toggleRacetrackEnabled: (marketId: string, enabled: boolean) => void;
+  upsertRunners: (marketId: string, runners: RaceRunner[], meta?: { raceName?: string; postTime?: string; takeout?: number }) => void;
+  placeRaceWager: (input: {
+    marketId: string;
+    runner: RaceRunner;
+    pool: RacePoolKind;
+    stake: number;
+  }) => { ok: boolean; error?: string; wager?: RaceWager };
+  getRaceWagersForMarket: (marketId: string) => RaceWager[];
+  getMyRaceWagers: () => RaceWager[];
+  getRacePoolTotals: (marketId: string) => PoolTotals | null;
+  settleRace: (marketId: string, finishOrder: string[]) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
