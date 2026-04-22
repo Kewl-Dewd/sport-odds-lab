@@ -114,7 +114,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <EducationModeToggle />
+          {user && <EducationModeToggle />}
           {isInstructorAccount && (
             <Button
               variant={viewAsStudent ? "default" : "outline"}
@@ -184,9 +184,11 @@ export function Navbar() {
                 </Link>
               </>
             )}
-            <div className="px-3 py-2">
-              <EducationModeToggle />
-            </div>
+            {user && (
+              <div className="px-3 py-2">
+                <EducationModeToggle />
+              </div>
+            )}
             {isInstructorAccount && (
               <div className="px-3 py-2">
                 <Button
