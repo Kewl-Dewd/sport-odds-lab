@@ -184,6 +184,20 @@ export function Navbar() {
             <div className="px-3 py-2">
               <EducationModeToggle />
             </div>
+            {isInstructorAccount && (
+              <div className="px-3 py-2">
+                <Button
+                  variant={viewAsStudent ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => { toggleViewAs(); setMobileOpen(false); }}
+                  className="w-full"
+                >
+                  {viewAsStudent
+                    ? <><EyeOff className="h-4 w-4 mr-1.5" /> Switch to instructor view</>
+                    : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
+                </Button>
+              </div>
+            )}
             <div className="px-3 py-2">
               {user ? (
                 <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full">
