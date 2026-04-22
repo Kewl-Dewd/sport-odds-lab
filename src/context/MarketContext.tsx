@@ -466,6 +466,46 @@ export interface InfoPacket {
   createdBy: string;
 }
 
+// ── Discussion Mode ───────────────────────────────────────────────
+
+export type DiscussionDimension =
+  | "early-vs-late"
+  | "diversified-vs-concentrated"
+  | "info-holders"
+  | "fast-vs-slow-reactors"
+  | "high-return-vs-low-risk";
+
+export interface DiscussionCard {
+  id: string;
+  classroomId: string;
+  /** Optional link to a comparison dimension this card discusses. */
+  dimension: DiscussionDimension | null;
+  /** Optional link to a market this card highlights. */
+  marketId: string | null;
+  whatHappened: string;
+  whatTradersDid: string;
+  howPricesResponded: string;
+  alternativeStrategy: string;
+  keyTakeaway: string;
+  /** Pinned cards are featured at the top during discussion. */
+  pinned: boolean;
+  /** Saved cards persist as part of the course library. */
+  saved: boolean;
+  createdAt: string;
+}
+
+export interface DiscussionSettings {
+  /** Default to anonymized comparison; instructor can toggle on demand. */
+  revealNames: boolean;
+  /** When true, names are revealed only for pinned discussion items. */
+  revealOnPinnedOnly: boolean;
+}
+
+export const DEFAULT_DISCUSSION_SETTINGS: DiscussionSettings = {
+  revealNames: false,
+  revealOnPinnedOnly: false,
+};
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
