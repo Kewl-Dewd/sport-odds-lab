@@ -140,7 +140,7 @@ export default function Portfolio() {
     <div className="container py-8 space-y-8 animate-slide-up print:py-2 print:space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Portfolio</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Portfolio {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
           <p className="text-muted-foreground">Your holdings, performance, and decision analytics</p>
         </div>
         <div className="flex gap-2 print:hidden">
