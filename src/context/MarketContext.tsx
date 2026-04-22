@@ -458,6 +458,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [savedTemplates, setSavedTemplates] = useState<SavedTemplate[]>([]);
   const [experiments, setExperiments] = useState<Experiment[]>([]);
   const [activeExperimentId, setActiveExperimentId] = useState<string | null>(null);
+  const [infoPackets, setInfoPackets] = useState<InfoPacket[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
