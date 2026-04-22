@@ -577,6 +577,8 @@ export default function MarketDetail() {
           <RacetrackTab market={market} />
         </TabsContent>
       </Tabs>
+
+      <TradeTicketModal
         open={tradeModal.open}
         onClose={() => setTradeModal((s) => ({ ...s, open: false }))}
         marketId={market.id}
