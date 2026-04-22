@@ -3,6 +3,7 @@ import { Trophy, Medal, TrendingUp, BarChart3, Target, Zap, Brain, Shield, Gauge
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
+import { useMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const modes: { key: LeaderboardMode; label: string; icon: typeof Trophy; description: string }[] = [
@@ -24,6 +25,7 @@ const rankIcon = (rank: number) => {
 
 export default function Leaderboard() {
   const { getLeaderboard, classroom } = useMarket();
+  const { mode: appMode } = useMode();
   const [mode, setMode] = useState<LeaderboardMode>("portfolio");
 
   const entries = getLeaderboard(mode);
@@ -51,7 +53,7 @@ export default function Leaderboard() {
   return (
     <div className="container py-8 space-y-6 animate-slide-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Leaderboard</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">Leaderboard {appMode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[appMode]}</span>}</h1>
         <p className="text-muted-foreground">{classroom.name}</p>
       </div>
 
