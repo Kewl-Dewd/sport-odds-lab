@@ -2768,7 +2768,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     toast.success(`Wager placed: $${wager.stake.toFixed(2)} @ ${wager.decimalOdds.toFixed(2)}`);
     logAction("Place wager", `${wager.label} $${wager.stake.toFixed(2)}`);
     return { ok: true, wager };
-  }, [portfolio.userId, portfolio.cash, classroom.maxTradeSize, logAction]);
+  }, [portfolio.userId, portfolio.cash, logAction]);
 
   const getWagersForMarket = useCallback((marketId: string) =>
     sportsbookWagers.filter((w) => w.marketId === marketId), [sportsbookWagers]);
@@ -2861,7 +2861,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     toast.success(`#${wager.runnerNumber} ${wager.runnerName} — ${wager.pool.toUpperCase()} $${wager.stake.toFixed(2)}`);
     logAction("Place race wager", `${wager.runnerName} ${wager.pool} $${wager.stake.toFixed(2)}`);
     return { ok: true, wager };
-  }, [markets, raceWagers, portfolio.userId, portfolio.cash, classroom.maxTradeSize, logAction]);
+  }, [markets, raceWagers, portfolio.userId, portfolio.cash, logAction]);
 
   const getRaceWagersForMarket = useCallback((marketId: string) =>
     raceWagers.filter((w) => w.marketId === marketId), [raceWagers]);
