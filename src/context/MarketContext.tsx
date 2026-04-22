@@ -417,6 +417,29 @@ interface MarketContextValue {
   endExperiment: (id: string) => void;
   archiveExperiment: (id: string) => void;
   setActiveExperiment: (id: string | null) => void;
+
+  // Information Asymmetry
+  infoPackets: InfoPacket[];
+  /** Packets visible to the given user (released and assigned to them). */
+  getPacketsForUser: (userId: string) => InfoPacket[];
+  /** Total unread packets for a user (released, not yet opened). */
+  getUnreadPacketCount: (userId: string) => number;
+  createInfoPacket: (input: {
+    title: string;
+    body: string;
+    kind: InfoPacketKind;
+    truthLevel: InfoPacketTruthLevel;
+    audience: InfoAudience;
+    experimentId?: string | null;
+    marketId?: string | null;
+    scheduledFor?: string | null;
+    disclosureToClass?: boolean;
+    includeInDebrief?: boolean;
+  }) => InfoPacket;
+  releaseInfoPacket: (packetId: string) => void;
+  deleteInfoPacket: (packetId: string) => void;
+  openInfoPacket: (packetId: string, userId: string) => void;
+  acknowledgeInfoPacket: (packetId: string, userId: string) => void;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
