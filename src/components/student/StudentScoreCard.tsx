@@ -111,7 +111,7 @@ export function StudentScoreCard() {
           <div>
             <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Experiment</p>
             <p className="text-xs font-medium">
-              {activeExperiment ? activeExperiment.name : "No active experiment"}
+              {activeExperiment ? activeExperiment.title : "No active experiment"}
             </p>
           </div>
           <Badge variant="outline" className="text-[10px]">
