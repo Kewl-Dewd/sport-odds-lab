@@ -17,6 +17,9 @@ import { EducationalSidebar } from "@/components/education/EducationalPanels";
 import { PriceHistoryChart, VolumeChart, PressureIndicator } from "@/components/charts/AnalyticsCharts";
 import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
+import { SportsbookTab } from "@/components/markets/SportsbookTab";
+import { RacetrackTab } from "@/components/markets/RacetrackTab";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { BehavioralFraming } from "@/components/student/BehavioralFraming";
 import { MarketNewsFeed, BreakingNewsBanner } from "@/components/student/MarketNewsFeed";
@@ -118,6 +121,20 @@ export default function MarketDetail() {
         <ArrowLeft className="h-4 w-4" />Back to Markets
       </Link>
 
+      <Tabs defaultValue="prediction" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="prediction">Prediction Market</TabsTrigger>
+          <TabsTrigger value="sportsbook" disabled={!market.sportsbook?.enabled}>
+            Sportsbook
+            {!market.sportsbook?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
+          </TabsTrigger>
+          <TabsTrigger value="racetrack" disabled={!market.racetrack?.enabled}>
+            Racetrack
+            {!market.racetrack?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="prediction" className="mt-0">
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
@@ -550,6 +567,16 @@ export default function MarketDetail() {
           )}
         </div>
       </div>
+        </TabsContent>
+
+        <TabsContent value="sportsbook" className="mt-0">
+          <SportsbookTab market={market} />
+        </TabsContent>
+
+        <TabsContent value="racetrack" className="mt-0">
+          <RacetrackTab market={market} />
+        </TabsContent>
+      </Tabs>
 
       <TradeTicketModal
         open={tradeModal.open}
