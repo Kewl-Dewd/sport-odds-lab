@@ -6,7 +6,7 @@ import {
   Users, BarChart3, Trophy, Activity, Zap, TrendingUp, TrendingDown,
   AlertTriangle, Settings, Copy, Trash2, Clock, FileText, UserPlus,
   X, DollarSign, Undo2, Calculator, MonitorPlay, ChevronRight,
-  LayoutGrid, GraduationCap, Eye, Ban, CalendarOff, Pencil, MoreHorizontal,
+  LayoutGrid, GraduationCap, Eye, Ban, CalendarOff, Pencil, MoreHorizontal, Radio,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +18,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
 import { MarketCreator } from "@/components/admin/MarketCreator";
 import { SettlementModal } from "@/components/admin/SettlementModal";
+import { LiveFixtureImporter } from "@/components/admin/LiveFixtureImporter";
+import { SettlementSuggestions } from "@/components/admin/SettlementSuggestions";
+import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { InstructorEducationControls } from "@/components/education/EducationToggle";
 import type { Market } from "@/lib/tradingEngine";
@@ -49,6 +52,7 @@ export default function InstructorDashboard() {
   } = useMarket();
 
   const [showCreator, setShowCreator] = useState(false);
+  const [showLiveImporter, setShowLiveImporter] = useState(false);
   const [settlingMarket, setSettlingMarket] = useState<Market | null>(null);
   const [newStudentName, setNewStudentName] = useState("");
   const [startingBal, setStartingBal] = useState(classroom.startingBalance);
@@ -312,9 +316,12 @@ export default function InstructorDashboard() {
         <TabsContent value="markets">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <CardTitle className="text-lg">Markets ({classMarkets.length})</CardTitle>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
+                  <Button variant="outline" size="sm" onClick={() => setShowLiveImporter(true)}>
+                    <Radio className="mr-1 h-3.5 w-3.5" />Live import
+                  </Button>
                   <Button variant="outline" size="sm" onClick={() => handleExport("trades")}>
                     <Download className="mr-1 h-3.5 w-3.5" />CSV
                   </Button>
@@ -340,7 +347,10 @@ export default function InstructorDashboard() {
                       return (
                         <tr key={m.id} className="border-b last:border-0">
                           <td className="py-3 font-medium">
-                            <Link to={`/markets/${m.id}`} className="hover:text-primary transition-colors">{m.title}</Link>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <Link to={`/markets/${m.id}`} className="hover:text-primary transition-colors">{m.title}</Link>
+                              <LiveSourceBadge source={m.metadata.dataSource} />
+                            </div>
                           </td>
                           <td className="py-3">{m.league}</td>
                           <td className="py-3">
@@ -659,6 +669,7 @@ export default function InstructorDashboard() {
 
       {showCreator && <MarketCreator onClose={() => setShowCreator(false)} />}
       {settlingMarket && <SettlementModal market={settlingMarket} onClose={() => setSettlingMarket(null)} />}
+      <LiveFixtureImporter open={showLiveImporter} onClose={() => setShowLiveImporter(false)} />
     </div>
   );
 }
