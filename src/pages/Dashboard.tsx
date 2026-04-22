@@ -109,6 +109,8 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      <ReflectionForm />
+
       <MarketNewsFeed />
     </div>
     </>
