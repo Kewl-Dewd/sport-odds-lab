@@ -559,6 +559,11 @@ export default function InstructorDashboard() {
               <EthicsControlPanel />
             </div>
 
+            {/* Behavioral Finance Experiments (full width) */}
+            <div className="md:col-span-2">
+              <BehavioralExperimentPanel />
+            </div>
+
             {/* Presentation Links */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Presentation Mode</CardTitle></CardHeader>
