@@ -62,11 +62,11 @@ export function useActivityTracker() {
   // Page-view activity logging
   useEffect(() => {
     if (!user) return;
-    void supabase.from("user_activity").insert({
+    void supabase.from("user_activity").insert([{
       user_id: user.id,
       action: "page_view",
       details: { path: location.pathname },
-    });
+    }]);
   }, [user, location.pathname]);
 }
 
@@ -74,9 +74,9 @@ export function useActivityTracker() {
 export async function logUserAction(action: string, details?: Record<string, unknown>) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
-  await supabase.from("user_activity").insert({
+  await supabase.from("user_activity").insert([{
     user_id: user.id,
     action,
-    details: details ?? null,
-  });
+    details: (details ?? null) as never,
+  }]);
 }
