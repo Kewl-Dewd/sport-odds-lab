@@ -553,6 +553,10 @@ export default function InstructorDashboard() {
             {/* Education Layer Controls */}
             <InstructorEducationControls />
 
+            {/* Market Manipulation & Ethics Mode (full width) */}
+            <div className="md:col-span-2">
+              <EthicsControlPanel />
+            </div>
 
             {/* Presentation Links */}
             <Card>
