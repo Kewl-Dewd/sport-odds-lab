@@ -121,6 +121,20 @@ export default function MarketDetail() {
         <ArrowLeft className="h-4 w-4" />Back to Markets
       </Link>
 
+      <Tabs defaultValue="prediction" className="w-full">
+        <TabsList className="mb-6">
+          <TabsTrigger value="prediction">Prediction Market</TabsTrigger>
+          <TabsTrigger value="sportsbook" disabled={!market.sportsbook?.enabled}>
+            Sportsbook
+            {!market.sportsbook?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
+          </TabsTrigger>
+          <TabsTrigger value="racetrack" disabled={!market.racetrack?.enabled}>
+            Racetrack
+            {!market.racetrack?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="prediction" className="mt-0">
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main content */}
         <div className="lg:col-span-2 space-y-6">
