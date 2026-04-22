@@ -1567,6 +1567,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         infoPackets, getPacketsForUser, getUnreadPacketCount,
         createInfoPacket, releaseInfoPacket, deleteInfoPacket,
         openInfoPacket, acknowledgeInfoPacket,
+        ethicsSettings, updateEthicsSettings,
+        scenarioEvents, injectScenarioEvent, deleteScenarioEvent,
+        executeWhaleTrade,
       }}
     >
       {children}
