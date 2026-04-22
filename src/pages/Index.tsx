@@ -1,27 +1,63 @@
 import { Link } from "react-router-dom";
-import { TrendingUp, BarChart3, Users, Trophy, ArrowRight, Zap } from "lucide-react";
+import {
+  TrendingUp, BarChart3, Users, Trophy, ArrowRight, Zap,
+  LineChart, Target, Flag, Calculator, GraduationCap, ShieldCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+const models = [
+  {
+    icon: LineChart,
+    badge: "Prediction Market",
+    title: "Trade outcome shares",
+    description:
+      "Buy and sell shares on event outcomes. Prices move with supply and demand using a deterministic LMSR or linear-impact market maker — students see how collective belief becomes a price.",
+    bullets: ["LMSR & linear-impact engines", "Implied probabilities sum to 100%", "Live order book & price history"],
+    accent: "from-primary/15 to-primary/5",
+    iconBg: "bg-primary/10 text-primary",
+  },
+  {
+    icon: Target,
+    badge: "Sportsbook",
+    title: "Wager against fixed odds",
+    description:
+      "Place stakes against moneyline, spread, and totals lines pulled live from the The Odds API. Odds lock at the moment of acceptance, so students learn how vig and implied probability shape risk.",
+    bullets: ["Moneyline · Spread · Totals", "American & decimal odds", "Live lines from The Odds API"],
+    accent: "from-success/15 to-success/5",
+    iconBg: "bg-success/10 text-success",
+  },
+  {
+    icon: Flag,
+    badge: "Racetrack",
+    title: "Pari-mutuel pools",
+    description:
+      "Win, Place, and Show pools where the house never sets the price. Payouts come from the pool itself after takeout — students discover how crowd behavior determines the final odds.",
+    bullets: ["Win / Place / Show pools", "Live indicative odds", "Configurable track takeout"],
+    accent: "from-accent/15 to-accent/5",
+    iconBg: "bg-accent/10 text-accent-foreground",
+  },
+];
 
 const features = [
   {
-    icon: TrendingUp,
-    title: "Trade Outcome Shares",
-    description: "Buy and sell shares on sports outcomes using virtual currency. Prices move based on supply and demand.",
+    icon: Calculator,
+    title: "Math-driven, no luck",
+    description: "Every price comes from a transparent formula students can study, not a black box.",
   },
   {
-    icon: BarChart3,
-    title: "Real-Time Pricing",
-    description: "Deterministic market-maker formulas drive prices. No AI, no randomness — pure math and strategy.",
+    icon: GraduationCap,
+    title: "Classroom ready",
+    description: "Manage students, run experiments, and reset between units or semesters.",
   },
   {
-    icon: Users,
-    title: "Classroom Ready",
-    description: "Built for educators. Manage students, reset seasons, and track learning outcomes effortlessly.",
+    icon: ShieldCheck,
+    title: "Safe & virtual",
+    description: "Virtual currency, instructor controls, and full activity tracking — zero financial risk.",
   },
   {
     icon: Trophy,
-    title: "Compete & Learn",
-    description: "Climb the leaderboard, build your portfolio, and learn market dynamics through hands-on experience.",
+    title: "Compete & debrief",
+    description: "Leaderboards, P&L, behavioral analytics and post-experiment debriefs built in.",
   },
 ];
 
@@ -35,15 +71,18 @@ export default function Index() {
           <div className="mx-auto max-w-3xl text-center space-y-6">
             <div className="badge-live mx-auto w-fit">
               <Zap className="h-3 w-3" />
-              Prediction Market Simulator
+              Three markets · One classroom
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
               Learn Markets by{" "}
               <span className="text-gradient">Trading Sports</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              A classroom-friendly prediction exchange where you trade outcome shares with virtual money. 
-              Math-driven pricing, real strategy, zero risk.
+              A classroom platform that runs three live market models side-by-side:
+              <span className="text-foreground font-medium"> Prediction Market</span>,
+              <span className="text-foreground font-medium"> Sportsbook</span>, and
+              <span className="text-foreground font-medium"> Racetrack</span>. Math-driven pricing,
+              real strategy, zero risk.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
@@ -59,8 +98,49 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Features */}
-      <section className="container py-16 md:py-24">
+      {/* Three market models */}
+      <section className="container py-16 md:py-20">
+        <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <h2 className="text-2xl md:text-3xl font-bold">Three market models, one event</h2>
+          <p className="text-muted-foreground">
+            Every game powers all three surfaces. Students compare how price discovery, fixed odds,
+            and pari-mutuel pools each handle the same uncertainty.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-5">
+          {models.map((m) => (
+            <div
+              key={m.badge}
+              className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${m.accent} p-6 space-y-4`}
+            >
+              <div className="flex items-center gap-2">
+                <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${m.iconBg}`}>
+                  <m.icon className="h-5 w-5" />
+                </div>
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  {m.badge}
+                </span>
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-bold">{m.title}</h3>
+                <p className="text-sm text-muted-foreground">{m.description}</p>
+              </div>
+              <ul className="space-y-1.5 text-xs text-muted-foreground">
+                {m.bullets.map((b) => (
+                  <li key={b} className="flex items-center gap-2">
+                    <span className="h-1 w-1 rounded-full bg-foreground/50" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Platform features */}
+      <section className="container py-12 md:py-16">
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map((f) => (
             <div key={f.title} className="stat-card space-y-3">
@@ -74,16 +154,60 @@ export default function Index() {
         </div>
       </section>
 
+      {/* How it flows */}
+      <section className="container py-12 md:py-16">
+        <div className="rounded-2xl border p-8 md:p-10 bg-card">
+          <div className="grid md:grid-cols-3 gap-6 text-sm">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">1</span>
+                <h4 className="font-semibold">Instructor sets up the event</h4>
+              </div>
+              <p className="text-muted-foreground">
+                Pick a game, pull live lines from the odds API, configure runners, and choose which
+                of the three market surfaces to enable.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">2</span>
+                <h4 className="font-semibold">Students trade across all three</h4>
+              </div>
+              <p className="text-muted-foreground">
+                Each market opens in its own tab. Students choose how to allocate virtual capital
+                between prediction shares, fixed-odds wagers, and pool tickets.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">3</span>
+                <h4 className="font-semibold">Settle and debrief</h4>
+              </div>
+              <p className="text-muted-foreground">
+                The instructor settles outcomes; the platform reconciles every model into a single
+                P&L, leaderboard, and behavioral debrief.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="container pb-20">
         <div className="rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border p-8 md:p-12 text-center space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold">Ready to learn by doing?</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Join your classroom market, analyze events, and make predictions backed by strategy — not luck.
+            Join your classroom, analyze the same event through three different market lenses, and
+            see which approach rewards your strategy.
           </p>
-          <Button variant="hero" size="lg" asChild>
-            <Link to="/auth?tab=signup">Create Free Account</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button variant="hero" size="lg" asChild>
+              <Link to="/auth?tab=signup">Create Free Account</Link>
+            </Button>
+            <Button variant="outline" size="lg" asChild>
+              <Link to="/how-it-works">Compare the Models</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
