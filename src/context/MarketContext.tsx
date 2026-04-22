@@ -297,6 +297,65 @@ export interface BiasFraming {
   summaryText?: string;
 }
 
+// ── Shock Events ──────────────────────────────────────────────────
+
+export type ShockKind =
+  | "breaking-news"
+  | "player-injury"
+  | "lineup-change"
+  | "weather"
+  | "coach-change"
+  | "suspension"
+  | "schedule-change"
+  | "confidence-shock"
+  | "rumor"
+  | "false-alarm"
+  | "correction";
+
+export const SHOCK_LABELS: Record<ShockKind, string> = {
+  "breaking-news": "Breaking news",
+  "player-injury": "Player injury",
+  "lineup-change": "Lineup change",
+  "weather": "Weather event",
+  "coach-change": "Coach change",
+  "suspension": "Suspension",
+  "schedule-change": "Schedule change",
+  "confidence-shock": "Confidence shock",
+  "rumor": "Rumor",
+  "false-alarm": "False alarm",
+  "correction": "Correction",
+};
+
+export type ShockTruth = "true" | "false" | "unresolved";
+export type ShockConfidence = "low" | "medium" | "high";
+export type ShockUrgency = "breaking" | "routine";
+export type ShockVisibility = "everyone" | "subgroup";
+export type ShockStatus = "scheduled" | "released" | "cancelled" | "corrected";
+
+export interface ShockEvent {
+  id: string;
+  classroomId: string;
+  kind: ShockKind;
+  title: string;
+  description: string;
+  /** Markets impacted by this shock. Empty array = unspecified / all. */
+  marketIds: string[];
+  confidence: ShockConfidence;
+  urgency: ShockUrgency;
+  visibility: ShockVisibility;
+  /** When visibility=subgroup, the userIds who can see it. */
+  audienceUserIds: string[];
+  truthStatus: ShockTruth;
+  status: ShockStatus;
+  /** ISO datetime when scheduled to release. */
+  scheduledFor: string | null;
+  /** ISO datetime when actually released to students. */
+  releasedAt: string | null;
+  /** If this shock corrects another shock, the original's id. */
+  correctsShockId: string | null;
+  createdAt: string;
+}
+
 export interface BiasExperiment {
   id: string;
   classroomId: string;
