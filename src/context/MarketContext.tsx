@@ -540,6 +540,88 @@ export const DEFAULT_SCORING_SETTINGS: ScoringSettings = {
   visibleToStudents: true,
 };
 
+// ── Scenario Library ─────────────────────────────────────────────
+
+export type ScenarioType =
+  | "efficient-market"
+  | "rumor-driven"
+  | "insider-information"
+  | "herd-behavior"
+  | "shock-event"
+  | "high-liquidity"
+  | "low-liquidity"
+  | "overconfidence"
+  | "risk-management"
+  | "diversification"
+  | "tournament-prediction";
+
+export const SCENARIO_TYPE_LABELS: Record<ScenarioType, string> = {
+  "efficient-market": "Efficient market",
+  "rumor-driven": "Rumor-driven market",
+  "insider-information": "Insider information",
+  "herd-behavior": "Herd behavior",
+  "shock-event": "Shock event",
+  "high-liquidity": "High-liquidity market",
+  "low-liquidity": "Low-liquidity market",
+  "overconfidence": "Overconfidence",
+  "risk-management": "Risk management challenge",
+  "diversification": "Diversification challenge",
+  "tournament-prediction": "Tournament prediction challenge",
+};
+
+export type ScenarioDifficulty = "intro" | "intermediate" | "advanced";
+
+/** Snapshot of a market template stored inside a scenario. */
+export interface ScenarioMarketTemplate {
+  title: string;
+  league: string;
+  sport: string;
+  description: string;
+  outcomes: string[];
+  liquidity: number;
+  /** Suggested status when launched (most scenarios open immediately). */
+  suggestedStatus?: "open" | "scheduled";
+}
+
+/** Preset settings applied at one-click launch. */
+export interface ScenarioPresets {
+  scoringWeightOverrides?: Partial<ScoringWeights>;
+  leaderboardVisible?: boolean;
+  nameVisibility?: ExperimentNameVisibility;
+  scoringMode?: ExperimentScoringMode;
+  /** Active special rules (subset of EXPERIMENT_RULE_PRESETS ids). */
+  activeRuleIds?: string[];
+  /** Optional debrief reflection prompts to auto-create on launch. */
+  debriefPrompts?: string[];
+}
+
+export interface Scenario {
+  id: string;
+  title: string;
+  type: ScenarioType;
+  description: string;
+  learningObjective: string;
+  studentInstructions: string;
+  instructorNotes: string;
+  /** Recommended duration in minutes. */
+  recommendedMinutes: number;
+  recommendedDebriefPoints: string[];
+  marketTemplates: ScenarioMarketTemplate[];
+  /** Optional Experiment scaffold to create alongside the markets. */
+  experimentScaffold: {
+    type: ExperimentType;
+    objective: string;
+  } | null;
+  presets: ScenarioPresets;
+  tags: string[];
+  difficulty: ScenarioDifficulty;
+  isArchived: boolean;
+  createdAt: string;
+  /** Last time this scenario was launched. */
+  lastLaunchedAt: string | null;
+  launchCount: number;
+}
+
 
 // ── Seed Data ──────────────────────────────────────────────────────
 
@@ -616,7 +698,119 @@ function makeMarket(
   };
 }
 
-const SEED_MARKETS: Market[] = [
+// ── Seed Scenarios ────────────────────────────────────────────────
+
+const SEED_SCENARIOS: Scenario[] = [
+  {
+    id: "scn-efficient-baseline",
+    title: "Efficient Market Baseline",
+    type: "efficient-market",
+    description: "A clean prediction market on a high-information, public event. Used as the control baseline for later experiments.",
+    learningObjective: "Recognize how prices in a transparent, well-informed market converge toward consensus probability.",
+    studentInstructions: "Trade freely on the listed event. Pay attention to how prices move as more participants enter.",
+    instructorNotes: "Run for 10–15 minutes with no shocks or info packets. Use the resulting prices as the comparison baseline.",
+    recommendedMinutes: 15,
+    recommendedDebriefPoints: [
+      "How quickly did prices stabilize?",
+      "Where did the final implied probability land vs your prior expectation?",
+      "Which trades moved prices the most, and why?",
+    ],
+    marketTemplates: [{
+      title: "Lakers vs Celtics — Tonight",
+      league: "NBA", sport: "Basketball",
+      description: "Public, high-coverage matchup. Plenty of available information.",
+      outcomes: ["Lakers Win", "Celtics Win"],
+      liquidity: 250,
+      suggestedStatus: "open",
+    }],
+    experimentScaffold: { type: "open-simulation", objective: "Establish baseline behavior of an efficient market." },
+    presets: {
+      leaderboardVisible: true,
+      nameVisibility: "anonymized",
+      scoringMode: "portfolio-return",
+      activeRuleIds: [],
+      debriefPrompts: ["What surprised you about how the price moved?"],
+    },
+    tags: ["baseline", "intro", "efficiency"],
+    difficulty: "intro",
+    isArchived: false,
+    createdAt: new Date().toISOString(),
+    lastLaunchedAt: null,
+    launchCount: 0,
+  },
+  {
+    id: "scn-low-liquidity",
+    title: "Low-Liquidity Stress Test",
+    type: "low-liquidity",
+    description: "Thin market where even small trades move the price meaningfully. Useful for discussing slippage and manipulation risk.",
+    learningObjective: "Understand how liquidity affects price discovery and trader influence.",
+    studentInstructions: "Trade on the event below. Observe how each trade moves the displayed price.",
+    instructorNotes: "Set liquidity intentionally low (~50). Pause halfway through to compare to the efficient-market baseline.",
+    recommendedMinutes: 15,
+    recommendedDebriefPoints: [
+      "How much did one trade move the price?",
+      "Could a small group of students dominate price formation here?",
+      "What does this imply about real-world thin markets?",
+    ],
+    marketTemplates: [{
+      title: "Minor League Game — Limited Coverage",
+      league: "Misc", sport: "Baseball",
+      description: "Low public information; thin participation.",
+      outcomes: ["Home Win", "Away Win"],
+      liquidity: 50,
+      suggestedStatus: "open",
+    }],
+    experimentScaffold: { type: "open-simulation", objective: "Demonstrate slippage and concentration risk in thin markets." },
+    presets: {
+      leaderboardVisible: true,
+      nameVisibility: "anonymized",
+      activeRuleIds: ["max-position"],
+      debriefPrompts: ["Did a few traders move this market disproportionately?"],
+    },
+    tags: ["liquidity", "microstructure"],
+    difficulty: "intermediate",
+    isArchived: false,
+    createdAt: new Date().toISOString(),
+    lastLaunchedAt: null,
+    launchCount: 0,
+  },
+  {
+    id: "scn-tournament",
+    title: "Tournament Prediction Challenge",
+    type: "tournament-prediction",
+    description: "Multi-market bracket with several simultaneous games. Tests diversification and information allocation across markets.",
+    learningObjective: "Practice allocating limited bankroll across multiple correlated markets under uncertainty.",
+    studentInstructions: "You have one bankroll to deploy across several simultaneous games. Diversify or concentrate as you see fit.",
+    instructorNotes: "Open all four markets at once. Settle them in sequence to discuss pre-settlement vs post-settlement portfolio dynamics.",
+    recommendedMinutes: 25,
+    recommendedDebriefPoints: [
+      "Did concentrated bets pay off, or did diversification win?",
+      "How did settlement of one market affect prices in the others?",
+      "What information should have driven your allocation?",
+    ],
+    marketTemplates: [
+      { title: "Quarterfinal A", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team A", "Team B"], liquidity: 150, suggestedStatus: "open" },
+      { title: "Quarterfinal B", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team C", "Team D"], liquidity: 150, suggestedStatus: "open" },
+      { title: "Quarterfinal C", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team E", "Team F"], liquidity: 150, suggestedStatus: "open" },
+      { title: "Quarterfinal D", league: "March Madness", sport: "Basketball", description: "Bracket QF.", outcomes: ["Team G", "Team H"], liquidity: 150, suggestedStatus: "open" },
+    ],
+    experimentScaffold: { type: "open-simulation", objective: "Diversification under correlated outcomes." },
+    presets: {
+      leaderboardVisible: true,
+      nameVisibility: "anonymized",
+      activeRuleIds: ["concentration-limit"],
+      debriefPrompts: ["How did you decide your allocation across the four games?"],
+    },
+    tags: ["tournament", "diversification", "bracket"],
+    difficulty: "intermediate",
+    isArchived: false,
+    createdAt: new Date().toISOString(),
+    lastLaunchedAt: null,
+    launchCount: 0,
+  },
+];
+
+
   makeMarket("m1", "Lakers vs Celtics", "NBA", "Basketball",
     "Tonight, 8:00 PM ET", "Regular season matchup. Trade on who you think will win.",
     ["Lakers Win", "Celtics Win"], 100, "game-winner"),
@@ -871,6 +1065,29 @@ interface MarketContextValue {
   updateScoringWeights: (updates: Partial<ScoringWeights>) => void;
   updateGradeMap: (map: ScoringGradeBand[]) => void;
   toggleBadgeEnabled: (badgeId: ScoringBadgeId) => void;
+
+  // Scenario Library
+  scenarios: Scenario[];
+  createScenario: (input: Omit<Scenario, "id" | "createdAt" | "isArchived" | "lastLaunchedAt" | "launchCount">) => Scenario;
+  updateScenario: (id: string, updates: Partial<Omit<Scenario, "id" | "createdAt">>) => void;
+  duplicateScenario: (id: string) => Scenario | null;
+  archiveScenario: (id: string, archived: boolean) => void;
+  deleteScenario: (id: string) => void;
+  /** Capture current classroom setup as a new scenario. */
+  saveCurrentAsScenario: (meta: {
+    title: string;
+    type: ScenarioType;
+    description: string;
+    learningObjective: string;
+    studentInstructions: string;
+    instructorNotes: string;
+    recommendedMinutes: number;
+    recommendedDebriefPoints: string[];
+    tags: string[];
+    difficulty: ScenarioDifficulty;
+  }) => Scenario;
+  /** One-click launch: creates markets, applies presets, optional experiment. */
+  launchScenario: (id: string) => { marketsCreated: number; experimentId: string | null } | null;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -899,6 +1116,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [discussionCards, setDiscussionCards] = useState<DiscussionCard[]>([]);
   const [discussionSettings, setDiscussionSettings] = useState<DiscussionSettings>(DEFAULT_DISCUSSION_SETTINGS);
   const [scoringSettings, setScoringSettings] = useState<ScoringSettings>(DEFAULT_SCORING_SETTINGS);
+  const [scenarios, setScenarios] = useState<Scenario[]>(SEED_SCENARIOS);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -2247,6 +2465,152 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     );
   }, [shockEvents, activeClassroomId]);
 
+  // ── Scenario Library ─────────────────────────────────────────────
+
+  const createScenario = useCallback((input: Omit<Scenario, "id" | "createdAt" | "isArchived" | "lastLaunchedAt" | "launchCount">): Scenario => {
+    const scenario: Scenario = {
+      ...input,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      createdAt: new Date().toISOString(),
+      isArchived: false,
+      lastLaunchedAt: null,
+      launchCount: 0,
+    };
+    setScenarios((prev) => [scenario, ...prev]);
+    logAction("Create scenario", scenario.title);
+    return scenario;
+  }, [logAction]);
+
+  const updateScenario = useCallback((id: string, updates: Partial<Omit<Scenario, "id" | "createdAt">>) => {
+    setScenarios((prev) => prev.map((s) => s.id === id ? { ...s, ...updates } : s));
+    logAction("Update scenario", id);
+  }, [logAction]);
+
+  const duplicateScenario = useCallback((id: string): Scenario | null => {
+    const src = scenarios.find((s) => s.id === id);
+    if (!src) return null;
+    const dup: Scenario = {
+      ...src,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      title: `${src.title} (Copy)`,
+      createdAt: new Date().toISOString(),
+      lastLaunchedAt: null,
+      launchCount: 0,
+      isArchived: false,
+    };
+    setScenarios((prev) => [dup, ...prev]);
+    logAction("Duplicate scenario", src.title);
+    return dup;
+  }, [scenarios, logAction]);
+
+  const archiveScenario = useCallback((id: string, archived: boolean) => {
+    setScenarios((prev) => prev.map((s) => s.id === id ? { ...s, isArchived: archived } : s));
+    logAction(archived ? "Archive scenario" : "Unarchive scenario", id);
+  }, [logAction]);
+
+  const deleteScenario = useCallback((id: string) => {
+    setScenarios((prev) => prev.filter((s) => s.id !== id));
+    logAction("Delete scenario", id);
+  }, [logAction]);
+
+  const saveCurrentAsScenario = useCallback((meta: {
+    title: string; type: ScenarioType; description: string; learningObjective: string;
+    studentInstructions: string; instructorNotes: string; recommendedMinutes: number;
+    recommendedDebriefPoints: string[]; tags: string[]; difficulty: ScenarioDifficulty;
+  }): Scenario => {
+    // Capture current classroom markets as templates.
+    const classMarkets = markets.filter((m) => m.classroomId === activeClassroomId);
+    const templates: ScenarioMarketTemplate[] = classMarkets.map((m) => ({
+      title: m.title,
+      league: m.league,
+      sport: m.sport,
+      description: m.description,
+      outcomes: m.outcomes.map((o) => o.name),
+      liquidity: m.config.liquidityParameter,
+      suggestedStatus: "open",
+    }));
+    const scenario: Scenario = {
+      ...meta,
+      id: `scn-${crypto.randomUUID().slice(0, 8)}`,
+      marketTemplates: templates,
+      experimentScaffold: activeExperimentId
+        ? {
+            type: experiments.find((e) => e.id === activeExperimentId)?.type ?? "open-simulation",
+            objective: experiments.find((e) => e.id === activeExperimentId)?.objective ?? "",
+          }
+        : null,
+      presets: {
+        leaderboardVisible: true,
+        nameVisibility: "anonymized",
+        activeRuleIds: [],
+        debriefPrompts: meta.recommendedDebriefPoints.slice(0, 2),
+      },
+      createdAt: new Date().toISOString(),
+      isArchived: false,
+      lastLaunchedAt: null,
+      launchCount: 0,
+    };
+    setScenarios((prev) => [scenario, ...prev]);
+    logAction("Save scenario from current setup", `${meta.title} (${templates.length} markets)`);
+    return scenario;
+  }, [markets, activeClassroomId, activeExperimentId, experiments, logAction]);
+
+  const launchScenario = useCallback((id: string) => {
+    const scenario = scenarios.find((s) => s.id === id);
+    if (!scenario || scenario.isArchived) return null;
+
+    // Create markets from templates.
+    let marketsCreated = 0;
+    for (const tmpl of scenario.marketTemplates) {
+      createMarket(
+        tmpl.title, tmpl.league, tmpl.sport,
+        new Date().toISOString(), tmpl.description, tmpl.outcomes, tmpl.liquidity,
+      );
+      marketsCreated++;
+    }
+
+    // Optional experiment scaffold.
+    let experimentId: string | null = null;
+    if (scenario.experimentScaffold) {
+      const exp = createExperiment({
+        classroomId: activeClassroomId,
+        title: scenario.title,
+        type: scenario.experimentScaffold.type,
+        objective: scenario.experimentScaffold.objective,
+        instructorNotes: scenario.instructorNotes,
+        studentInstructions: scenario.studentInstructions,
+        scoringMode: scenario.presets.scoringMode ?? "portfolio-return",
+        leaderboardVisible: scenario.presets.leaderboardVisible ?? true,
+        nameVisibility: scenario.presets.nameVisibility ?? "anonymized",
+        linkedMarketIds: [],
+        rules: EXPERIMENT_RULE_PRESETS.map((r) => ({
+          ...r,
+          enabled: scenario.presets.activeRuleIds?.includes(r.id) ?? false,
+        })),
+        startDate: null,
+        endDate: null,
+      });
+      experimentId = exp.id;
+    }
+
+    // Apply scoring weight overrides.
+    if (scenario.presets.scoringWeightOverrides) {
+      setScoringSettings((prev) => ({
+        ...prev,
+        weights: { ...prev.weights, ...scenario.presets.scoringWeightOverrides },
+      }));
+    }
+
+    // Bump usage stats.
+    setScenarios((prev) => prev.map((s) =>
+      s.id === id
+        ? { ...s, lastLaunchedAt: new Date().toISOString(), launchCount: s.launchCount + 1 }
+        : s,
+    ));
+    logAction("Launch scenario", `${scenario.title} (${marketsCreated} markets)`);
+    return { marketsCreated, experimentId };
+  }, [scenarios, createMarket, createExperiment, activeClassroomId, logAction]);
+
 
   return (
     <MarketContext.Provider
@@ -2287,6 +2651,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         toggleDiscussionCardPin, toggleDiscussionCardSaved,
         scoringSettings, updateScoringSettings, updateScoringWeights,
         updateGradeMap, toggleBadgeEnabled,
+        scenarios, createScenario, updateScenario, duplicateScenario,
+        archiveScenario, deleteScenario, saveCurrentAsScenario, launchScenario,
       }}
     >
       {children}

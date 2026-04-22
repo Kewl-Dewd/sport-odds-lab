@@ -30,6 +30,7 @@ import { ReflectionPanel } from "@/components/admin/ReflectionPanel";
 import { DebriefSummary } from "@/components/debrief/DebriefSummary";
 import { DiscussionModePanel } from "@/components/admin/DiscussionModePanel";
 import { ScoringSettingsPanel } from "@/components/admin/ScoringSettingsPanel";
+import { ScenarioLibraryPanel } from "@/components/admin/ScenarioLibraryPanel";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -488,7 +489,9 @@ export default function InstructorDashboard() {
 
         {/* Tools Tab */}
         <TabsContent value="tools">
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <ScenarioLibraryPanel />
+            <div className="grid md:grid-cols-2 gap-4">
             {/* Bankroll Adjustment */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><DollarSign className="h-4 w-4" />Adjust Bankroll</CardTitle></CardHeader>
@@ -613,6 +616,7 @@ export default function InstructorDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </div>
           </div>
         </TabsContent>
 
