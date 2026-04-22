@@ -263,6 +263,59 @@ export const DEFAULT_ETHICS_SETTINGS: EthicsSettings = {
   studentDebriefEnabled: true,
 };
 
+// ── Behavioral Finance Experiments ────────────────────────────────
+
+import type { BiasKind } from "@/lib/behavioralAnalytics";
+export type { BiasKind } from "@/lib/behavioralAnalytics";
+
+export type SummaryStyle = "expert" | "noisy" | "none";
+
+export const SUMMARY_STYLE_LABELS: Record<SummaryStyle, string> = {
+  expert: "Expert-style summary",
+  noisy: "Noisy / unreliable summary",
+  none: "No summary",
+};
+
+export interface BiasFraming {
+  /** Custom prompt or framing cue shown above the market. */
+  prompt?: string;
+  /** Headline-style framing (e.g. "Lakers on a 5-game win streak"). */
+  headline?: string;
+  /** Pre-seeded "anchor" price displayed prominently. */
+  anchorPrice?: number;
+  /** Anchor label (e.g. "Opening line: 65¢"). */
+  anchorLabel?: string;
+  /** Emphasize price/volume history visually. */
+  emphasizeHistory?: boolean;
+  /** Show recent streak indicator. */
+  showStreak?: boolean;
+  /** Selective news blurb (creates confirmation-bias conditions). */
+  newsBlurb?: string;
+  /** Style of summary shown to students. */
+  summaryStyle?: SummaryStyle;
+  /** Optional content of the summary (filled per style). */
+  summaryText?: string;
+}
+
+export interface BiasExperiment {
+  id: string;
+  classroomId: string;
+  title: string;
+  bias: BiasKind;
+  /** Plain-language objective shown to instructors only. */
+  objective: string;
+  /** Markets attached to this experiment. */
+  marketIds: string[];
+  /** Per-market framing overrides. Keyed by marketId. */
+  framing: Record<string, BiasFraming>;
+  /** Whether students see a generic "experiment in progress" notice. */
+  studentNoticeEnabled: boolean;
+  active: boolean;
+  /** Optional grouping of students for A/B style comparison. */
+  groups?: Record<string, string[]>;
+  createdAt: string;
+}
+
 export interface InfoPacket {
   id: string;
   classroomId: string;
@@ -531,6 +584,22 @@ interface MarketContextValue {
     asUserId: string;
     note?: string;
   }) => Trade | null;
+
+  // Behavioral Finance Experiments
+  biasExperiments: BiasExperiment[];
+  createBiasExperiment: (input: {
+    title: string;
+    bias: BiasKind;
+    objective?: string;
+    marketIds?: string[];
+    studentNoticeEnabled?: boolean;
+  }) => BiasExperiment;
+  updateBiasExperiment: (id: string, updates: Partial<Omit<BiasExperiment, "id" | "classroomId" | "createdAt">>) => void;
+  deleteBiasExperiment: (id: string) => void;
+  setBiasExperimentMarkets: (id: string, marketIds: string[]) => void;
+  setBiasFraming: (experimentId: string, marketId: string, framing: BiasFraming) => void;
+  /** Returns the active bias experiment(s) for a market in the current classroom. */
+  getBiasExperimentsForMarket: (marketId: string) => BiasExperiment[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -552,6 +621,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [infoPackets, setInfoPackets] = useState<InfoPacket[]>([]);
   const [ethicsSettings, setEthicsSettings] = useState<EthicsSettings>(DEFAULT_ETHICS_SETTINGS);
   const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
+  const [biasExperiments, setBiasExperiments] = useState<BiasExperiment[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -1546,6 +1616,65 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     }
   }, [markets, students, portfolio.userId, activeClassroomId, logAction]);
 
+  // ── Behavioral Finance Experiments ──────────────────────────────
+
+  const createBiasExperiment = useCallback((input: {
+    title: string;
+    bias: BiasKind;
+    objective?: string;
+    marketIds?: string[];
+    studentNoticeEnabled?: boolean;
+  }): BiasExperiment => {
+    const exp: BiasExperiment = {
+      id: `bx-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      title: input.title,
+      bias: input.bias,
+      objective: input.objective ?? "",
+      marketIds: input.marketIds ?? [],
+      framing: {},
+      studentNoticeEnabled: input.studentNoticeEnabled ?? false,
+      active: true,
+      createdAt: new Date().toISOString(),
+    };
+    setBiasExperiments((prev) => [exp, ...prev]);
+    logAction("Create bias experiment", `${input.title} (${input.bias})`);
+    return exp;
+  }, [activeClassroomId, logAction]);
+
+  const updateBiasExperiment = useCallback((id: string, updates: Partial<Omit<BiasExperiment, "id" | "classroomId" | "createdAt">>) => {
+    setBiasExperiments((prev) => prev.map((e) => e.id === id ? { ...e, ...updates } : e));
+    logAction("Update bias experiment", id);
+  }, [logAction]);
+
+  const deleteBiasExperiment = useCallback((id: string) => {
+    setBiasExperiments((prev) => prev.filter((e) => e.id !== id));
+    logAction("Delete bias experiment", id);
+  }, [logAction]);
+
+  const setBiasExperimentMarkets = useCallback((id: string, marketIds: string[]) => {
+    setBiasExperiments((prev) => prev.map((e) => e.id === id ? { ...e, marketIds } : e));
+  }, []);
+
+  const setBiasFraming = useCallback((experimentId: string, marketId: string, framing: BiasFraming) => {
+    setBiasExperiments((prev) => prev.map((e) =>
+      e.id === experimentId
+        ? { ...e, framing: { ...e.framing, [marketId]: framing } }
+        : e,
+    ));
+    logAction("Update bias framing", `${experimentId} → ${marketId}`);
+  }, [logAction]);
+
+  const getBiasExperimentsForMarket = useCallback((marketId: string): BiasExperiment[] => {
+    return biasExperiments.filter(
+      (e) =>
+        e.classroomId === activeClassroomId &&
+        e.active &&
+        e.marketIds.includes(marketId),
+    );
+  }, [biasExperiments, activeClassroomId]);
+
+
   return (
     <MarketContext.Provider
       value={{
@@ -1570,6 +1699,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         ethicsSettings, updateEthicsSettings,
         scenarioEvents, injectScenarioEvent, deleteScenarioEvent,
         executeWhaleTrade,
+        biasExperiments, createBiasExperiment, updateBiasExperiment,
+        deleteBiasExperiment, setBiasExperimentMarkets, setBiasFraming,
+        getBiasExperimentsForMarket,
       }}
     >
       {children}
