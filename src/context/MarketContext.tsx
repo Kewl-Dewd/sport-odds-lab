@@ -726,8 +726,8 @@ const SEED_SCENARIOS: Scenario[] = [
     experimentScaffold: { type: "open-simulation", objective: "Establish baseline behavior of an efficient market." },
     presets: {
       leaderboardVisible: true,
-      nameVisibility: "anonymous",
-      scoringMode: "return-based",
+      nameVisibility: "anonymized",
+      scoringMode: "portfolio-return",
       activeRuleIds: [],
       debriefPrompts: ["What surprised you about how the price moved?"],
     },
@@ -763,7 +763,7 @@ const SEED_SCENARIOS: Scenario[] = [
     experimentScaffold: { type: "open-simulation", objective: "Demonstrate slippage and concentration risk in thin markets." },
     presets: {
       leaderboardVisible: true,
-      nameVisibility: "anonymous",
+      nameVisibility: "anonymized",
       activeRuleIds: ["max-position"],
       debriefPrompts: ["Did a few traders move this market disproportionately?"],
     },
@@ -797,7 +797,7 @@ const SEED_SCENARIOS: Scenario[] = [
     experimentScaffold: { type: "open-simulation", objective: "Diversification under correlated outcomes." },
     presets: {
       leaderboardVisible: true,
-      nameVisibility: "anonymous",
+      nameVisibility: "anonymized",
       activeRuleIds: ["concentration-limit"],
       debriefPrompts: ["How did you decide your allocation across the four games?"],
     },
