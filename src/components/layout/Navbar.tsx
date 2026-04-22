@@ -112,6 +112,18 @@ export function Navbar() {
 
         <div className="hidden md:flex items-center gap-3">
           <EducationModeToggle />
+          {isInstructorAccount && (
+            <Button
+              variant={viewAsStudent ? "default" : "outline"}
+              size="sm"
+              onClick={toggleViewAs}
+              title={viewAsStudent ? "Switch back to instructor view" : "Preview the app as a student"}
+            >
+              {viewAsStudent
+                ? <><EyeOff className="h-4 w-4 mr-1.5" /> Student view</>
+                : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
+            </Button>
+          )}
           {user ? (
             <>
               <span className="text-xs text-muted-foreground max-w-[140px] truncate">{user.email}</span>
