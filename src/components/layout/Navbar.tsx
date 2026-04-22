@@ -10,13 +10,16 @@ import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
-const baseLinks = [
+const authedLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Portfolio", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
-  { label: "How It Works", href: "/how-it-works", icon: BookOpen },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
+];
+
+const publicLinks = [
+  { label: "How It Works", href: "/how-it-works", icon: BookOpen },
 ];
 
 export function Navbar() {
