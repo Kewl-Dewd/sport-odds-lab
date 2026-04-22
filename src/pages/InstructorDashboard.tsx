@@ -160,25 +160,25 @@ export default function InstructorDashboard() {
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="py-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold mr-2">Live Controls:</span>
-            <Button variant="outline" size="sm" onClick={() => { openAllMarkets(); toast.success("All markets opened"); }}>
-              <Play className="mr-1 h-3.5 w-3.5" />Open All
+            <span className="text-sm font-semibold mr-2">Live class controls</span>
+            <Button variant="outline" size="sm" onClick={() => { openAllMarkets(); toast.success("All markets are now open"); }} title="Open every market in this class for trading">
+              <Play className="mr-1 h-3.5 w-3.5" />Open all markets
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { pauseAllTrading(); toast.success("All trading paused"); }}>
-              <Pause className="mr-1 h-3.5 w-3.5" />Pause All
+            <Button variant="outline" size="sm" onClick={() => { pauseAllTrading(); toast.success("Trading paused"); }} title="Pause trading without closing markets">
+              <Pause className="mr-1 h-3.5 w-3.5" />Pause trading
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { resumeAllTrading(); toast.success("Trading resumed"); }}>
-              <Play className="mr-1 h-3.5 w-3.5" />Resume All
+            <Button variant="outline" size="sm" onClick={() => { resumeAllTrading(); toast.success("Trading resumed"); }} title="Resume any paused markets">
+              <Play className="mr-1 h-3.5 w-3.5" />Resume trading
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { closeAllMarkets(); toast.success("All markets closed"); }}>
-              <StopCircle className="mr-1 h-3.5 w-3.5" />Close All
+            <Button variant="outline" size="sm" onClick={() => { closeAllMarkets(); toast.success("All markets closed"); }} title="Close every open market (no further trades)">
+              <StopCircle className="mr-1 h-3.5 w-3.5" />Close all
             </Button>
             <div className="border-l h-6 mx-1" />
-            <Button variant="outline" size="sm" onClick={() => { recalculateAll(); toast.success("All portfolios recalculated"); }}>
-              <Calculator className="mr-1 h-3.5 w-3.5" />Recalculate
+            <Button variant="outline" size="sm" onClick={() => { recalculateAll(); toast.success("Portfolios recalculated"); }} title="Recompute every portfolio value from current prices">
+              <Calculator className="mr-1 h-3.5 w-3.5" />Recalculate portfolios
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { seedDemoData(8, 5); toast.success("Demo data seeded"); }}>
-              <Wand2 className="mr-1 h-3.5 w-3.5" />Demo Data
+            <Button variant="outline" size="sm" onClick={() => { seedDemoData(8, 5); toast.success("Demo data added"); }} title="Add sample students and trades for demos">
+              <Wand2 className="mr-1 h-3.5 w-3.5" />Add demo data
             </Button>
           </div>
         </CardContent>
@@ -489,9 +489,15 @@ export default function InstructorDashboard() {
 
         {/* Tools Tab */}
         <TabsContent value="tools">
-          <div className="space-y-4">
-            <ScenarioLibraryPanel />
-            <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Lesson library</h2>
+              <ScenarioLibraryPanel />
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Quick adjustments</h2>
+              <div className="grid md:grid-cols-2 gap-4">
             {/* Bankroll Adjustment */}
             <Card>
               <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><DollarSign className="h-4 w-4" />Adjust Bankroll</CardTitle></CardHeader>
@@ -560,72 +566,67 @@ export default function InstructorDashboard() {
               </CardContent>
             </Card>
 
-            {/* Education Layer Controls */}
-            <InstructorEducationControls />
+              {/* Education Layer Controls */}
+              <InstructorEducationControls />
 
-            {/* Market Manipulation & Ethics Mode (full width) */}
-            <div className="md:col-span-2">
+              {/* Presentation Links */}
+              <Card>
+                <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Projection views</CardTitle></CardHeader>
+                <CardContent className="space-y-2">
+                  <p className="text-xs text-muted-foreground">Full-screen views designed for classroom projection. Use arrow keys, Space, or F for fullscreen.</p>
+                  <div className="space-y-1.5">
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/board">Market Board<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/leaderboard">Live Leaderboard<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/heatmap">Market Heatmap<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/movers">Top Movers<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/settlement">Settlement Board<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/present/replay">Market Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/review">Trade Review<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                    <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                      <Link to="/instructor/reports">Reports & Grading<ChevronRight className="h-3.5 w-3.5" /></Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              </div>
+            </section>
+
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Classroom experiments</h2>
               <EthicsControlPanel />
-            </div>
-
-            {/* Behavioral Finance Experiments (full width) */}
-            <div className="md:col-span-2">
               <BehavioralExperimentPanel />
-            </div>
-
-            {/* Shock Event Console (full width) */}
-            <div className="md:col-span-2">
               <ShockEventConsole />
-            </div>
-
-            {/* Reflection Assignments (full width) */}
-            <div className="md:col-span-2">
               <ReflectionPanel />
-            </div>
-
-            {/* Presentation Links */}
-            <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><MonitorPlay className="h-4 w-4" />Presentation Mode</CardTitle></CardHeader>
-              <CardContent className="space-y-2">
-                <p className="text-xs text-muted-foreground">Full-screen views for classroom projection. Use arrow keys, Space, or F for fullscreen.</p>
-                <div className="space-y-1.5">
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/board">Market Board<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/leaderboard">Live Leaderboard<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/heatmap">Market Heatmap<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/movers">Top Movers<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/settlement">Settlement Board<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/present/replay">Market Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/review">Trade Review<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                  <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                    <Link to="/instructor/reports">Reports & Grading<ChevronRight className="h-3.5 w-3.5" /></Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            </section>
           </div>
         </TabsContent>
 
         {/* Debrief Tab */}
         <TabsContent value="debrief">
-          <div className="space-y-4">
-            <ScoringSettingsPanel />
-            <DebriefSummary />
-            <DiscussionModePanel />
+          <div className="space-y-6">
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Scoring & grading</h2>
+              <ScoringSettingsPanel />
+            </section>
+            <section className="space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Session debrief</h2>
+              <DebriefSummary />
+              <DiscussionModePanel />
+            </section>
           </div>
         </TabsContent>
 

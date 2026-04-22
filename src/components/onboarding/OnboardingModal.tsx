@@ -46,19 +46,24 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
       <div className="absolute inset-0 bg-foreground/50 backdrop-blur-sm" />
       <div className="relative w-full max-w-md bg-card border rounded-2xl shadow-2xl animate-slide-up overflow-hidden">
         {/* Progress */}
-        <div className="flex gap-1 p-4 pb-0">
-          {steps.map((_, i) => (
-            <div
-              key={i}
-              className={cn(
-                "h-1 flex-1 rounded-full transition-colors",
-                i <= step ? "bg-primary" : "bg-muted"
-              )}
-            />
-          ))}
+        <div className="flex items-center justify-between px-4 pt-4 pb-2">
+          <div className="flex gap-1 flex-1">
+            {steps.map((_, i) => (
+              <div
+                key={i}
+                className={cn(
+                  "h-1 flex-1 rounded-full transition-colors",
+                  i <= step ? "bg-primary" : "bg-muted"
+                )}
+              />
+            ))}
+          </div>
+          <span className="ml-3 text-xs font-mono text-muted-foreground tabular-nums shrink-0">
+            {step + 1}/{steps.length}
+          </span>
         </div>
 
-        <div className="p-6 space-y-5">
+        <div className="p-6 pt-2 space-y-5">
           <div className="mx-auto h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center">
             <current.icon className="h-7 w-7 text-primary" />
           </div>
@@ -85,17 +90,25 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
               </Button>
             ) : (
               <Button variant="hero" onClick={handleComplete} className="flex-1">
-                Start Trading!
+                Got it — start trading
               </Button>
             )}
           </div>
 
-          <button
-            onClick={handleComplete}
-            className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Skip walkthrough
-          </button>
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <button
+              onClick={handleComplete}
+              className="hover:text-foreground transition-colors"
+            >
+              Skip walkthrough
+            </button>
+            <a
+              href="/how-it-works"
+              className="hover:text-foreground transition-colors underline-offset-4 hover:underline"
+            >
+              Read the full guide →
+            </a>
+          </div>
         </div>
       </div>
     </div>
