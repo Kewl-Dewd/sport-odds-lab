@@ -1120,6 +1120,8 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [portfolio, setPortfolio] = useState<UserPortfolio>(SEED_STUDENTS[0]);
   const [students, setStudents] = useState<UserPortfolio[]>(SEED_STUDENTS);
   const [trades, setTrades] = useState<Trade[]>([]);
+  const [sportsbookWagers, setSportsbookWagers] = useState<SportsbookWager[]>([]);
+  const [raceWagers, setRaceWagers] = useState<RaceWager[]>([]);
   const [adminActions, setAdminActions] = useState<AdminAction[]>([]);
   const [priceChanges, setPriceChanges] = useState<
     Map<string, { marketTitle: string; outcomeName: string; price: number; change: number }>
