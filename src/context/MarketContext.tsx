@@ -297,6 +297,65 @@ export interface BiasFraming {
   summaryText?: string;
 }
 
+// ── Shock Events ──────────────────────────────────────────────────
+
+export type ShockKind =
+  | "breaking-news"
+  | "player-injury"
+  | "lineup-change"
+  | "weather"
+  | "coach-change"
+  | "suspension"
+  | "schedule-change"
+  | "confidence-shock"
+  | "rumor"
+  | "false-alarm"
+  | "correction";
+
+export const SHOCK_LABELS: Record<ShockKind, string> = {
+  "breaking-news": "Breaking news",
+  "player-injury": "Player injury",
+  "lineup-change": "Lineup change",
+  "weather": "Weather event",
+  "coach-change": "Coach change",
+  "suspension": "Suspension",
+  "schedule-change": "Schedule change",
+  "confidence-shock": "Confidence shock",
+  "rumor": "Rumor",
+  "false-alarm": "False alarm",
+  "correction": "Correction",
+};
+
+export type ShockTruth = "true" | "false" | "unresolved";
+export type ShockConfidence = "low" | "medium" | "high";
+export type ShockUrgency = "breaking" | "routine";
+export type ShockVisibility = "everyone" | "subgroup";
+export type ShockStatus = "scheduled" | "released" | "cancelled" | "corrected";
+
+export interface ShockEvent {
+  id: string;
+  classroomId: string;
+  kind: ShockKind;
+  title: string;
+  description: string;
+  /** Markets impacted by this shock. Empty array = unspecified / all. */
+  marketIds: string[];
+  confidence: ShockConfidence;
+  urgency: ShockUrgency;
+  visibility: ShockVisibility;
+  /** When visibility=subgroup, the userIds who can see it. */
+  audienceUserIds: string[];
+  truthStatus: ShockTruth;
+  status: ShockStatus;
+  /** ISO datetime when scheduled to release. */
+  scheduledFor: string | null;
+  /** ISO datetime when actually released to students. */
+  releasedAt: string | null;
+  /** If this shock corrects another shock, the original's id. */
+  correctsShockId: string | null;
+  createdAt: string;
+}
+
 export interface BiasExperiment {
   id: string;
   classroomId: string;
@@ -600,6 +659,32 @@ interface MarketContextValue {
   setBiasFraming: (experimentId: string, marketId: string, framing: BiasFraming) => void;
   /** Returns the active bias experiment(s) for a market in the current classroom. */
   getBiasExperimentsForMarket: (marketId: string) => BiasExperiment[];
+
+  // Shock Events
+  shockEvents: ShockEvent[];
+  createShockEvent: (input: {
+    kind: ShockKind;
+    title: string;
+    description: string;
+    marketIds?: string[];
+    confidence?: ShockConfidence;
+    urgency?: ShockUrgency;
+    visibility?: ShockVisibility;
+    audienceUserIds?: string[];
+    truthStatus?: ShockTruth;
+    scheduledFor?: string | null;
+    releaseNow?: boolean;
+    correctsShockId?: string | null;
+  }) => ShockEvent;
+  releaseShockEvent: (id: string) => void;
+  cancelShockEvent: (id: string) => void;
+  correctShockEvent: (originalId: string, correction: { title: string; description: string }) => ShockEvent | null;
+  deleteShockEvent: (id: string) => void;
+  updateShockTruthStatus: (id: string, truthStatus: ShockTruth) => void;
+  /** Shocks visible to a given user (released only). */
+  getShocksForUser: (userId: string) => ShockEvent[];
+  /** Shocks attached to a market and visible to a user (released only). */
+  getShocksForMarket: (marketId: string, userId?: string) => ShockEvent[];
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -622,6 +707,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [ethicsSettings, setEthicsSettings] = useState<EthicsSettings>(DEFAULT_ETHICS_SETTINGS);
   const [scenarioEvents, setScenarioEvents] = useState<ScenarioEvent[]>([]);
   const [biasExperiments, setBiasExperiments] = useState<BiasExperiment[]>([]);
+  const [shockEvents, setShockEvents] = useState<ShockEvent[]>([]);
 
   const classroom = classrooms.find((c) => c.id === activeClassroomId) ?? classrooms[0];
 
@@ -1674,6 +1760,140 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     );
   }, [biasExperiments, activeClassroomId]);
 
+  // ── Shock Events ────────────────────────────────────────────────
+
+  const createShockEvent = useCallback((input: {
+    kind: ShockKind;
+    title: string;
+    description: string;
+    marketIds?: string[];
+    confidence?: ShockConfidence;
+    urgency?: ShockUrgency;
+    visibility?: ShockVisibility;
+    audienceUserIds?: string[];
+    truthStatus?: ShockTruth;
+    scheduledFor?: string | null;
+    releaseNow?: boolean;
+    correctsShockId?: string | null;
+  }): ShockEvent => {
+    const now = new Date().toISOString();
+    const ev: ShockEvent = {
+      id: `sk-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: activeClassroomId,
+      kind: input.kind,
+      title: input.title,
+      description: input.description,
+      marketIds: input.marketIds ?? [],
+      confidence: input.confidence ?? "medium",
+      urgency: input.urgency ?? "breaking",
+      visibility: input.visibility ?? "everyone",
+      audienceUserIds: input.audienceUserIds ?? [],
+      truthStatus: input.truthStatus ?? "unresolved",
+      status: input.releaseNow ? "released" : input.scheduledFor ? "scheduled" : "released",
+      scheduledFor: input.scheduledFor ?? null,
+      releasedAt: input.releaseNow || !input.scheduledFor ? now : null,
+      correctsShockId: input.correctsShockId ?? null,
+      createdAt: now,
+    };
+    setShockEvents((prev) => [ev, ...prev]);
+    logAction(
+      ev.status === "released" ? "Release shock event" : "Schedule shock event",
+      `${SHOCK_LABELS[ev.kind]}: ${ev.title}`,
+    );
+    return ev;
+  }, [activeClassroomId, logAction]);
+
+  const releaseShockEvent = useCallback((id: string) => {
+    const now = new Date().toISOString();
+    setShockEvents((prev) => prev.map((s) =>
+      s.id === id && s.status !== "released"
+        ? { ...s, status: "released", releasedAt: now }
+        : s,
+    ));
+    logAction("Release shock event", id);
+  }, [logAction]);
+
+  const cancelShockEvent = useCallback((id: string) => {
+    setShockEvents((prev) => prev.map((s) =>
+      s.id === id ? { ...s, status: "cancelled" } : s,
+    ));
+    logAction("Cancel shock event", id);
+  }, [logAction]);
+
+  const correctShockEvent = useCallback((originalId: string, correction: { title: string; description: string }): ShockEvent | null => {
+    let original: ShockEvent | undefined;
+    setShockEvents((prev) => {
+      original = prev.find((s) => s.id === originalId);
+      return prev.map((s) =>
+        s.id === originalId ? { ...s, status: "corrected", truthStatus: "false" } : s,
+      );
+    });
+    if (!original) return null;
+    const now = new Date().toISOString();
+    const corr: ShockEvent = {
+      id: `sk-${crypto.randomUUID().slice(0, 8)}`,
+      classroomId: original.classroomId,
+      kind: "correction",
+      title: correction.title,
+      description: correction.description,
+      marketIds: original.marketIds,
+      confidence: "high",
+      urgency: "breaking",
+      visibility: original.visibility,
+      audienceUserIds: original.audienceUserIds,
+      truthStatus: "true",
+      status: "released",
+      scheduledFor: null,
+      releasedAt: now,
+      correctsShockId: originalId,
+      createdAt: now,
+    };
+    setShockEvents((prev) => [corr, ...prev]);
+    logAction("Correct shock event", `${originalId} → ${corr.id}`);
+    return corr;
+  }, [logAction]);
+
+  const deleteShockEvent = useCallback((id: string) => {
+    setShockEvents((prev) => prev.filter((s) => s.id !== id));
+    logAction("Delete shock event", id);
+  }, [logAction]);
+
+  const updateShockTruthStatus = useCallback((id: string, truthStatus: ShockTruth) => {
+    setShockEvents((prev) => prev.map((s) => s.id === id ? { ...s, truthStatus } : s));
+    logAction("Update shock truth", `${id} → ${truthStatus}`);
+  }, [logAction]);
+
+  // Auto-release scheduled shocks when their time arrives.
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      setShockEvents((prev) => prev.map((s) => {
+        if (s.status === "scheduled" && s.scheduledFor && new Date(s.scheduledFor).getTime() <= now) {
+          return { ...s, status: "released", releasedAt: new Date().toISOString() };
+        }
+        return s;
+      }));
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getShocksForUser = useCallback((userId: string): ShockEvent[] => {
+    return shockEvents.filter((s) =>
+      s.classroomId === activeClassroomId &&
+      s.status === "released" &&
+      (s.visibility === "everyone" || s.audienceUserIds.includes(userId)),
+    );
+  }, [shockEvents, activeClassroomId]);
+
+  const getShocksForMarket = useCallback((marketId: string, userId?: string): ShockEvent[] => {
+    return shockEvents.filter((s) =>
+      s.classroomId === activeClassroomId &&
+      s.status === "released" &&
+      (s.marketIds.length === 0 || s.marketIds.includes(marketId)) &&
+      (!userId || s.visibility === "everyone" || s.audienceUserIds.includes(userId)),
+    );
+  }, [shockEvents, activeClassroomId]);
+
 
   return (
     <MarketContext.Provider
@@ -1702,6 +1922,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         biasExperiments, createBiasExperiment, updateBiasExperiment,
         deleteBiasExperiment, setBiasExperimentMarkets, setBiasFraming,
         getBiasExperimentsForMarket,
+        shockEvents, createShockEvent, releaseShockEvent, cancelShockEvent,
+        correctShockEvent, deleteShockEvent, updateShockTruthStatus,
+        getShocksForUser, getShocksForMarket,
       }}
     >
       {children}

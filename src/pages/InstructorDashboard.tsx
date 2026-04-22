@@ -25,6 +25,7 @@ import { calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { InstructorEducationControls } from "@/components/education/EducationToggle";
 import { EthicsControlPanel } from "@/components/admin/EthicsControlPanel";
 import { BehavioralExperimentPanel } from "@/components/admin/BehavioralExperimentPanel";
+import { ShockEventConsole } from "@/components/admin/ShockEventConsole";
 import type { Market } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -562,6 +563,11 @@ export default function InstructorDashboard() {
             {/* Behavioral Finance Experiments (full width) */}
             <div className="md:col-span-2">
               <BehavioralExperimentPanel />
+            </div>
+
+            {/* Shock Event Console (full width) */}
+            <div className="md:col-span-2">
+              <ShockEventConsole />
             </div>
 
             {/* Presentation Links */}

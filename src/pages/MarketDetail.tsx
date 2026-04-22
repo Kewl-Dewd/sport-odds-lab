@@ -19,6 +19,7 @@ import { ReferenceOddsCard } from "@/components/markets/ReferenceOddsCard";
 import { LiveSourceBadge } from "@/components/markets/LiveSourceBadge";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { BehavioralFraming } from "@/components/student/BehavioralFraming";
+import { MarketNewsFeed, BreakingNewsBanner } from "@/components/student/MarketNewsFeed";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
 
@@ -152,6 +153,10 @@ export default function MarketDetail() {
           )}
 
           {market.status === "open" && <BehavioralFraming marketId={market.id} />}
+
+          {market.status === "open" && <BreakingNewsBanner marketId={market.id} />}
+
+          <MarketNewsFeed marketId={market.id} />
 
           {/* Market Info Bar — liquidity, engine, fees */}
           <div className="flex flex-wrap gap-2 text-xs">
