@@ -184,9 +184,11 @@ export function Navbar() {
                 </Link>
               </>
             )}
-            <div className="px-3 py-2">
-              <EducationModeToggle />
-            </div>
+            {user && (
+              <div className="px-3 py-2">
+                <EducationModeToggle />
+              </div>
+            )}
             {isInstructorAccount && (
               <div className="px-3 py-2">
                 <Button
