@@ -1346,6 +1346,43 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     [infoPackets, activeClassroomId],
   );
 
+  // Periodically auto-release scheduled packets whose time has come.
+  useEffect(() => {
+    const tick = () => {
+      setInfoPackets((prev) => {
+        const now = Date.now();
+        let changed = false;
+        const next = prev.map((p) => {
+          if (
+            !p.releasedAt &&
+            p.scheduledFor &&
+            new Date(p.scheduledFor).getTime() <= now
+          ) {
+            changed = true;
+            const recipientIds = resolveAudience(p.audience);
+            const released = new Date().toISOString();
+            return {
+              ...p,
+              releasedAt: released,
+              scheduledFor: null,
+              receipts: recipientIds.map((userId) => ({
+                userId,
+                releasedAt: released,
+                openedAt: null,
+                acknowledgedAt: null,
+              })),
+            };
+          }
+          return p;
+        });
+        return changed ? next : prev;
+      });
+    };
+    tick();
+    const t = setInterval(tick, 15_000);
+    return () => clearInterval(t);
+  }, [resolveAudience]);
+
   return (
     <MarketContext.Provider
       value={{
