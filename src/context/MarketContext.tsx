@@ -2110,6 +2110,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         shockEvents, createShockEvent, releaseShockEvent, cancelShockEvent,
         correctShockEvent, deleteShockEvent, updateShockTruthStatus,
         getShocksForUser, getShocksForMarket,
+        reflectionAssignments, reflectionResponses,
+        createReflectionAssignment, updateReflectionAssignment, deleteReflectionAssignment,
+        setReflectionStatus, submitReflectionResponse, gradeReflectionResponse,
+        getReflectionsForUser, getReflectionResponse, getReflectionResponses,
       }}
     >
       {children}
