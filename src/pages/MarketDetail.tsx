@@ -151,6 +151,8 @@ export default function MarketDetail() {
             <MarketDebrief marketId={market.id} />
           )}
 
+          {market.status === "open" && <BehavioralFraming marketId={market.id} />}
+
           {/* Market Info Bar — liquidity, engine, fees */}
           <div className="flex flex-wrap gap-2 text-xs">
             <div className="flex items-center gap-1 rounded-md border px-2 py-1">
