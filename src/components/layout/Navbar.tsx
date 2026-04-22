@@ -3,11 +3,13 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
-  Users, LogOut, LogIn, Eye, EyeOff,
+  Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { useAuth } from "@/context/AuthContext";
+import { useMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const authedLinks = [
