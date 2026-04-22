@@ -8,7 +8,13 @@ interface AuthState {
   session: Session | null;
   user: User | null;
   role: AppRole | null;
+  /** True only if user has the instructor role AND is not currently previewing as a student. */
   isInstructor: boolean;
+  /** True if the underlying account is an instructor (regardless of preview toggle). */
+  isInstructorAccount: boolean;
+  /** True when an instructor has toggled "View as student". */
+  viewAsStudent: boolean;
+  setViewAsStudent: (v: boolean) => void;
   loading: boolean;
   signOut: () => Promise<void>;
 }
@@ -16,15 +22,26 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 const INSTRUCTOR_EMAIL = "kurtspady@gmail.com";
+const VIEW_AS_STUDENT_KEY = "sml.viewAsStudent";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [viewAsStudent, setViewAsStudentState] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(VIEW_AS_STUDENT_KEY) === "1";
+  });
+
+  const setViewAsStudent = (v: boolean) => {
+    setViewAsStudentState(v);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(VIEW_AS_STUDENT_KEY, v ? "1" : "0");
+    }
+  };
 
   useEffect(() => {
-    // Set listener BEFORE getSession (per Supabase guidance)
     const { data: subscription } = supabase.auth.onAuthStateChange((_evt, newSession) => {
       setSession(newSession);
       setUser(newSession?.user ?? null);
@@ -33,7 +50,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
         return;
       }
-      // Defer role fetch to avoid running auth callback inside callback
       setTimeout(() => fetchRole(newSession.user.id, newSession.user.email), 0);
     });
 
@@ -74,14 +90,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    setViewAsStudent(false);
     await supabase.auth.signOut();
   };
 
-  const isInstructor =
+  const isInstructorAccount =
     role === "instructor" || (user?.email?.toLowerCase() === INSTRUCTOR_EMAIL);
+  const isInstructor = isInstructorAccount && !viewAsStudent;
 
   return (
-    <AuthContext.Provider value={{ session, user, role, isInstructor, loading, signOut }}>
+    <AuthContext.Provider
+      value={{
+        session, user, role,
+        isInstructor, isInstructorAccount,
+        viewAsStudent, setViewAsStudent,
+        loading, signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
