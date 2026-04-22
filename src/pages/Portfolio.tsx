@@ -42,7 +42,18 @@ function StatRow({ label, value, icon, className }: { label: string; value: stri
 }
 
 export default function Portfolio() {
-  const { portfolio, portfolioStats, realizedPnL, markets, trades, classroom, students } = useMarket();
+  const { portfolio: rawPortfolio, portfolioStats, realizedPnL, markets: allMarkets, trades: allTrades, classroom, students } = useMarket();
+  const { mode } = useMode();
+  const modeMarketIds = useMemo(
+    () => new Set(mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)).map((m) => m.id) : allMarkets.map((m) => m.id)),
+    [allMarkets, mode],
+  );
+  const markets = useMemo(() => allMarkets.filter((m) => modeMarketIds.has(m.id)), [allMarkets, modeMarketIds]);
+  const trades = useMemo(() => allTrades.filter((t) => modeMarketIds.has(t.marketId)), [allTrades, modeMarketIds]);
+  const portfolio = useMemo(
+    () => ({ ...rawPortfolio, holdings: rawPortfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)) }),
+    [rawPortfolio, modeMarketIds],
+  );
   const { cash, holdingsValue, totalValue, unrealizedPnL } = portfolioStats;
   const { educationEnabled, pushNudge } = useEducation();
 
