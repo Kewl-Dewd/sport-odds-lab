@@ -21,11 +21,11 @@ export default function Auth() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate("/dashboard", { replace: true });
+    if (!loading && user) navigate("/choose-mode", { replace: true });
   }, [loading, user, navigate]);
 
   if (loading) return null;
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/choose-mode" replace />;
 
   const signIn = async () => {
     setSubmitting(true);
