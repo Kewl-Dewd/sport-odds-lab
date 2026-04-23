@@ -106,7 +106,6 @@ export default function Auth() {
                 </div>
               </div>
               <Button variant="hero" className="w-full" onClick={signUp} disabled={submitting}>Create Account</Button>
-              <Button variant="outline" className="w-full" onClick={signInWithGoogle}>Continue with Google</Button>
             </TabsContent>
           </Tabs>
         </CardContent>
