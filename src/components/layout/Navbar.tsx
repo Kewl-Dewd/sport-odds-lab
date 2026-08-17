@@ -4,6 +4,7 @@ import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
+  NotebookPen, ShieldCheck, School,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,8 @@ const authedLinks = [
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Portfolio", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
+  { label: "Journal", href: "/journal", icon: NotebookPen },
+  { label: "Responsible Play", href: "/responsible-play", icon: ShieldCheck },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
@@ -82,6 +85,18 @@ export function Navbar() {
           ))}
           {isInstructor && (
             <>
+              <Link
+                to="/instructor/classes"
+                className={cn(
+                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  location.pathname.startsWith("/instructor/classes")
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <School className="h-4 w-4" />
+                Classes
+              </Link>
               <Link
                 to="/experiments"
                 className={cn(
@@ -193,6 +208,9 @@ export function Navbar() {
             ))}
             {isInstructor && (
               <>
+                <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                  <School className="h-4 w-4" /> Classes
+                </Link>
                 <Link to="/experiments" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <FlaskConical className="h-4 w-4" /> Experiments
                 </Link>

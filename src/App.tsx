@@ -28,6 +28,12 @@ import Auth from "./pages/Auth.tsx";
 import ChooseMode from "./pages/ChooseMode.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import JoinClassPage from "@/features/classes/JoinClassPage";
+import JournalPage from "@/features/journal/JournalPage";
+import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
+import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
+import ClassDetailPage from "@/features/classes/ClassDetailPage";
+import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +47,7 @@ const App = () => (
               <EducationProvider>
                 <Toaster />
                 <Sonner />
+                <PersistenceBridge />
                 <LearningNudgeBar />
                 <Routes>
                   <Route element={<AppLayout />}>
@@ -59,6 +66,11 @@ const App = () => (
                     <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
                     <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
+                    <Route path="/join" element={<ProtectedRoute><JoinClassPage /></ProtectedRoute>} />
+                    <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
+                    <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />
+                    <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />
+                    <Route path="/instructor/classes/:id" element={<ProtectedRoute requireInstructor><ClassDetailPage /></ProtectedRoute>} />
                     <Route path="/auth" element={<Auth />} />
                   </Route>
                   {/* Presentation mode — no navbar/footer */}
