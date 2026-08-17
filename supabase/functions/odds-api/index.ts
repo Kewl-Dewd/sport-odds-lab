@@ -1,5 +1,11 @@
 // Edge function proxy for odds-api.io
 // Keeps the API key server-side and exposes only the endpoints we need.
+//
+// Adds a shared read-through cache (public.odds_cache) so an entire class
+// shares one upstream request per unique query instead of one per student.
+// The free tier allows 100 req/hr — without this, 30 students refreshing a
+// markets page would exhaust the budget in minutes.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +18,19 @@ const ODDS_BASE = "https://api.odds-api.io/v3";
 
 type Action = "sports" | "events" | "odds" | "scores";
 
+// How long each response type stays fresh. Sports list barely changes;
+// live odds move fastest but 3 minutes is fine for classroom pacing.
+const TTL_SECONDS: Record<Action, number> = {
+  sports: 24 * 60 * 60,
+  events: 10 * 60,
+  odds: 3 * 60,
+  scores: 2 * 60,
+};
+
+// If the upstream API errors (rate limit, outage), serve a stale cached
+// copy up to this old rather than failing the classroom session.
+const STALE_GRACE_SECONDS = 6 * 60 * 60;
+
 interface RequestBody {
   action: Action;
   sport?: string;
@@ -20,6 +39,25 @@ interface RequestBody {
   limit?: number;
   eventId?: string | number;
   status?: string;
+}
+
+function cacheKeyFor(body: RequestBody): string {
+  return [
+    body.action,
+    body.sport ?? "",
+    body.league ?? "",
+    body.date ?? "",
+    body.limit ?? "",
+    body.eventId ?? "",
+    body.status ?? "",
+  ].join("|");
+}
+
+function adminClient() {
+  const url = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !serviceRoleKey) return null;
+  return createClient(url, serviceRoleKey);
 }
 
 Deno.serve(async (req: Request) => {
@@ -49,6 +87,24 @@ Deno.serve(async (req: Request) => {
       return json({ error: `Unsupported action: ${body.action}` }, 400);
     }
 
+    const admin = adminClient();
+    const key = cacheKeyFor(body);
+
+    // 1. Fresh cache hit → no upstream request at all.
+    let cachedRow: { payload: unknown; fetched_at: string; expires_at: string } | null = null;
+    if (admin) {
+      const { data } = await admin
+        .from("odds_cache")
+        .select("payload, fetched_at, expires_at")
+        .eq("cache_key", key)
+        .maybeSingle();
+      cachedRow = data ?? null;
+      if (cachedRow && new Date(cachedRow.expires_at).getTime() > Date.now()) {
+        return json({ data: cachedRow.payload, cached: true, fetchedAt: cachedRow.fetched_at });
+      }
+    }
+
+    // 2. Miss or expired → hit upstream.
     const upstream = await fetch(url, {
       headers: { Accept: "application/json" },
     });
@@ -63,13 +119,38 @@ Deno.serve(async (req: Request) => {
 
     if (!upstream.ok) {
       console.error(`odds-api ${body.action} failed`, upstream.status, text.slice(0, 200));
+      // 3. Upstream failure → serve stale copy if we have one recent enough.
+      if (cachedRow) {
+        const ageMs = Date.now() - new Date(cachedRow.fetched_at).getTime();
+        if (ageMs < STALE_GRACE_SECONDS * 1000) {
+          return json({ data: cachedRow.payload, cached: "stale", fetchedAt: cachedRow.fetched_at });
+        }
+      }
       return json(
         { error: `odds-api responded ${upstream.status}`, details: data },
         upstream.status,
       );
     }
 
-    return json({ data });
+    if (admin) {
+      const now = Date.now();
+      const expiresAt = new Date(now + TTL_SECONDS[body.action] * 1000).toISOString();
+      await admin.from("odds_cache").upsert({
+        cache_key: key,
+        payload: data,
+        fetched_at: new Date(now).toISOString(),
+        expires_at: expiresAt,
+      });
+      // Opportunistic cleanup of long-dead rows (~2% of requests).
+      if (Math.random() < 0.02) {
+        await admin
+          .from("odds_cache")
+          .delete()
+          .lt("expires_at", new Date(now - STALE_GRACE_SECONDS * 1000).toISOString());
+      }
+    }
+
+    return json({ data, cached: false });
   } catch (err) {
     console.error("odds-api edge function error:", err);
     const message = err instanceof Error ? err.message : "Unknown error";
