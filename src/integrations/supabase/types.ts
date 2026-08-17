@@ -14,6 +14,104 @@ export type Database = {
   }
   public: {
     Tables: {
+      class_members: {
+        Row: {
+          bankroll: number
+          class_id: string
+          id: string
+          joined_at: string
+          member_role: string
+          user_id: string
+        }
+        Insert: {
+          bankroll?: number
+          class_id: string
+          id?: string
+          joined_at?: string
+          member_role?: string
+          user_id: string
+        }
+        Update: {
+          bankroll?: number
+          class_id?: string
+          id?: string
+          joined_at?: string
+          member_role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_members_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classes: {
+        Row: {
+          allow_self_join: boolean
+          allowed_bet_kinds: string[] | null
+          allowed_sports: string[] | null
+          created_at: string
+          description: string
+          id: string
+          is_archived: boolean
+          join_code: string
+          max_bets_per_day: number | null
+          max_stake_per_bet: number | null
+          name: string
+          owner_id: string
+          require_journal: boolean
+          semester_end: string | null
+          semester_start: string | null
+          starting_bankroll: number
+          term: string | null
+          updated_at: string
+        }
+        Insert: {
+          allow_self_join?: boolean
+          allowed_bet_kinds?: string[] | null
+          allowed_sports?: string[] | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_archived?: boolean
+          join_code?: string
+          max_bets_per_day?: number | null
+          max_stake_per_bet?: number | null
+          name: string
+          owner_id: string
+          require_journal?: boolean
+          semester_end?: string | null
+          semester_start?: string | null
+          starting_bankroll?: number
+          term?: string | null
+          updated_at?: string
+        }
+        Update: {
+          allow_self_join?: boolean
+          allowed_bet_kinds?: string[] | null
+          allowed_sports?: string[] | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_archived?: boolean
+          join_code?: string
+          max_bets_per_day?: number | null
+          max_stake_per_bet?: number | null
+          name?: string
+          owner_id?: string
+          require_journal?: boolean
+          semester_end?: string | null
+          semester_start?: string | null
+          starting_bankroll?: number
+          term?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       odds_cache: {
         Row: {
           cache_key: string
@@ -139,6 +237,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_join_code: { Args: never; Returns: string }
       get_user_stats: {
         Args: never
         Returns: {
@@ -159,6 +258,9 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_class_member: { Args: { _class_id: string }; Returns: boolean }
+      is_class_owner: { Args: { _class_id: string }; Returns: boolean }
+      join_class_by_code: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       app_role: "instructor" | "student"
