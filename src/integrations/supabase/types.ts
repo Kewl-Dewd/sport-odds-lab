@@ -14,6 +14,125 @@ export type Database = {
   }
   public: {
     Tables: {
+      bet_journal: {
+        Row: {
+          bet_id: string
+          class_id: string | null
+          confidence: number | null
+          created_at: string
+          id: string
+          outcome_reflection: string | null
+          rationale: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bet_id: string
+          class_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          outcome_reflection?: string | null
+          rationale: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bet_id?: string
+          class_id?: string | null
+          confidence?: number | null
+          created_at?: string
+          id?: string
+          outcome_reflection?: string | null
+          rationale?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bet_journal_bet_id_fkey"
+            columns: ["bet_id"]
+            isOneToOne: true
+            referencedRelation: "bets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bet_journal_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bets: {
+        Row: {
+          bet_type: string
+          class_id: string | null
+          closing_odds: number | null
+          id: string
+          market_id: string
+          market_title: string
+          mode: string
+          odds_decimal: number | null
+          payout: number | null
+          placed_at: string
+          potential_payout: number | null
+          raw: Json | null
+          selection: string
+          settled_at: string | null
+          stake: number
+          status: string
+          user_id: string
+        }
+        Insert: {
+          bet_type?: string
+          class_id?: string | null
+          closing_odds?: number | null
+          id: string
+          market_id: string
+          market_title?: string
+          mode: string
+          odds_decimal?: number | null
+          payout?: number | null
+          placed_at?: string
+          potential_payout?: number | null
+          raw?: Json | null
+          selection?: string
+          settled_at?: string | null
+          stake: number
+          status?: string
+          user_id: string
+        }
+        Update: {
+          bet_type?: string
+          class_id?: string | null
+          closing_odds?: number | null
+          id?: string
+          market_id?: string
+          market_title?: string
+          mode?: string
+          odds_decimal?: number | null
+          payout?: number | null
+          placed_at?: string
+          potential_payout?: number | null
+          raw?: Json | null
+          selection?: string
+          settled_at?: string | null
+          stake?: number
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bets_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_members: {
         Row: {
           bankroll: number
@@ -157,6 +276,81 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      rg_acknowledgments: {
+        Row: {
+          acknowledged_at: string
+          class_id: string | null
+          id: string
+          lesson_id: string
+          user_id: string
+        }
+        Insert: {
+          acknowledged_at?: string
+          class_id?: string | null
+          id?: string
+          lesson_id: string
+          user_id: string
+        }
+        Update: {
+          acknowledged_at?: string
+          class_id?: string | null
+          id?: string
+          lesson_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rg_acknowledgments_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rg_acknowledgments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "rg_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rg_lessons: {
+        Row: {
+          body_md: string
+          created_at: string
+          id: string
+          is_published: boolean
+          requires_ack: boolean
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          requires_ack?: boolean
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          requires_ack?: boolean
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
