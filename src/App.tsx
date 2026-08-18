@@ -33,6 +33,7 @@ import JournalPage from "@/features/journal/JournalPage";
 import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
 import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
 import ClassDetailPage from "@/features/classes/ClassDetailPage";
+import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 
 const queryClient = new QueryClient();
@@ -67,6 +68,8 @@ const App = () => (
                     <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
                     <Route path="/join" element={<ProtectedRoute><JoinClassPage /></ProtectedRoute>} />
+                    <Route path="/join/:code" element={<ProtectedRoute><JoinClassPage /></ProtectedRoute>} />
+                    <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
                     <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                     <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />
                     <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />

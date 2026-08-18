@@ -12,6 +12,8 @@ interface AuthState {
   isInstructor: boolean;
   /** True if the underlying account is an instructor (regardless of preview toggle). */
   isInstructorAccount: boolean;
+  /** True when the account holds platform-administrator access. */
+  isPlatformAdmin: boolean;
   /** True when an instructor has toggled "View as student". */
   viewAsStudent: boolean;
   setViewAsStudent: (v: boolean) => void;
@@ -28,6 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
+  const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [viewAsStudent, setViewAsStudentState] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
@@ -47,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(newSession?.user ?? null);
       if (!newSession?.user) {
         setRole(null);
+        setIsPlatformAdmin(false);
         setLoading(false);
         return;
       }
@@ -66,7 +70,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.subscription.unsubscribe();
   }, []);
 
+  // RLS lets only platform admins read this table, so a returned row is
+  // itself the proof of access.
+  const fetchPlatformAdmin = async (userId: string) => {
+    try {
+      const { data } = await supabase
+        .from("platform_admins" as never)
+        .select("user_id")
+        .eq("user_id", userId)
+        .maybeSingle();
+      setIsPlatformAdmin(!!data);
+    } catch {
+      setIsPlatformAdmin(false);
+    }
+  };
+
   const fetchRole = async (userId: string, email: string | undefined) => {
+    void fetchPlatformAdmin(userId);
     try {
       const { data } = await supabase
         .from("user_roles")
@@ -103,6 +123,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session, user, role,
         isInstructor, isInstructorAccount,
+        isPlatformAdmin: isPlatformAdmin && !viewAsStudent,
         viewAsStudent, setViewAsStudent,
         loading, signOut,
       }}

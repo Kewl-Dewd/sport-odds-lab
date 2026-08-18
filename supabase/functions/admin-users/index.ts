@@ -1,5 +1,8 @@
 // Admin-only edge function for managing auth users.
-// Verifies the caller is an instructor before performing any action.
+// Verifies the caller is a PLATFORM ADMIN before performing any action.
+// Instructor is deliberately not sufficient: creating accounts and
+// assigning roles crosses tenant boundaries, so one institution's
+// instructor must never be able to reach another's users.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
 const corsHeaders = {
@@ -30,12 +33,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Verify instructor role
+    // Verify platform administrator
     const admin = createClient(supabaseUrl, serviceRoleKey);
-    const { data: roleRows } = await admin.from("user_roles")
-      .select("role").eq("user_id", user.id).eq("role", "instructor").limit(1);
-    if (!roleRows || roleRows.length === 0) {
-      return new Response(JSON.stringify({ error: "Forbidden — instructor role required" }), {
+    const { data: adminRows } = await admin.from("platform_admins")
+      .select("user_id").eq("user_id", user.id).limit(1);
+    if (!adminRows || adminRows.length === 0) {
+      return new Response(JSON.stringify({ error: "Forbidden — platform administrator access required" }), {
         status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

@@ -4,7 +4,7 @@ import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
-  NotebookPen, ShieldCheck, School,
+  NotebookPen, ShieldCheck, School, Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, isInstructorAccount, viewAsStudent, setViewAsStudent, signOut } = useAuth();
+  const { user, isInstructor, isInstructorAccount, isPlatformAdmin, viewAsStudent, setViewAsStudent, signOut } = useAuth();
   const { mode, clearMode } = useMode();
 
   const switchMode = () => {
@@ -135,6 +135,20 @@ export function Navbar() {
               </Link>
             </>
           )}
+          {isPlatformAdmin && (
+            <Link
+              to="/admin/platform"
+              className={cn(
+                "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                location.pathname === "/admin/platform"
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              <Building2 className="h-4 w-4" />
+              Platform
+            </Link>
+          )}
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
@@ -221,6 +235,11 @@ export function Navbar() {
                   <Users className="h-4 w-4" /> Users
                 </Link>
               </>
+            )}
+            {isPlatformAdmin && (
+              <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Building2 className="h-4 w-4" /> Platform
+              </Link>
             )}
             {user && mode && (
               <div className="px-3 py-2">

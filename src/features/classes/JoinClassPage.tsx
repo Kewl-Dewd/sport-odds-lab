@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -9,16 +9,25 @@ import { useActiveMembership, useJoinClass } from "@/features/classes/useClasses
 import { HouseMoneyBanner } from "@/features/HouseMoneyBanner";
 
 export default function JoinClassPage() {
-  const [code, setCode] = useState("");
+  const { code: codeFromLink } = useParams<{ code: string }>();
+  const [code, setCode] = useState(codeFromLink?.toUpperCase() ?? "");
   const navigate = useNavigate();
   const joinClass = useJoinClass();
   const { data: membership } = useActiveMembership();
+  const autoJoined = useRef(false);
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (code.trim().length === 0) return;
+  // An invite link carries the code, so join without making the student
+  // retype what they just clicked.
+  useEffect(() => {
+    if (!codeFromLink || autoJoined.current) return;
+    autoJoined.current = true;
+    void join(codeFromLink);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeFromLink]);
+
+  const join = async (raw: string) => {
     try {
-      const result = await joinClass.mutateAsync(code);
+      const result = await joinClass.mutateAsync(raw);
       if (result.ok) {
         toast.success(`Joined ${result.class_name}`);
         navigate("/dashboard");
@@ -28,6 +37,12 @@ export default function JoinClassPage() {
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not join class");
     }
+  };
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code.trim().length === 0) return;
+    void join(code);
   };
 
   return (
