@@ -252,6 +252,24 @@ export type Database = {
         }
         Relationships: []
       }
+      platform_admins: {
+        Row: {
+          created_at: string
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -454,7 +472,48 @@ export type Database = {
       }
       is_class_member: { Args: { _class_id: string }; Returns: boolean }
       is_class_owner: { Args: { _class_id: string }; Returns: boolean }
+      is_platform_admin: { Args: never; Returns: boolean }
       join_class_by_code: { Args: { _code: string }; Returns: Json }
+      platform_classes: {
+        Args: never
+        Returns: {
+          bet_count: number
+          class_id: string
+          created_at: string
+          is_archived: boolean
+          join_code: string
+          name: string
+          owner_email: string
+          owner_id: string
+          owner_name: string
+          student_count: number
+          term: string
+        }[]
+      }
+      platform_directory: {
+        Args: never
+        Returns: {
+          bets_placed: number
+          classes_joined: number
+          classes_owned: number
+          display_name: string
+          email: string
+          is_admin: boolean
+          joined_at: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }[]
+      }
+      set_user_access: {
+        Args: {
+          _platform_admin?: boolean
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: Json
+      }
+      shares_class_with: { Args: { _user_id: string }; Returns: boolean }
+      teaches_user: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "instructor" | "student"
