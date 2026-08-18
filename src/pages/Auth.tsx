@@ -50,7 +50,6 @@ export default function Auth() {
     toast.success("Account created");
   };
 
-
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
