@@ -50,13 +50,6 @@ export default function Auth() {
     toast.success("Account created");
   };
 
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/choose-mode` },
-    });
-    if (error) toast.error(error.message);
-  };
 
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
@@ -87,7 +80,6 @@ export default function Auth() {
                 </div>
               </div>
               <Button variant="hero" className="w-full" onClick={signIn} disabled={submitting}>Sign In</Button>
-              <Button variant="outline" className="w-full" onClick={signInWithGoogle}>Continue with Google</Button>
             </TabsContent>
 
             <TabsContent value="signup" className="space-y-4 mt-4">
