@@ -22,6 +22,13 @@ export default function ChooseMode() {
     navigate("/dashboard", { replace: true });
   };
 
+  // Only one mode enabled → skip the picker entirely.
+  useEffect(() => {
+    if (SINGLE_MODE) setMode(SINGLE_MODE);
+  }, [setMode]);
+  if (SINGLE_MODE) return <Navigate to="/dashboard" replace />;
+
+
   return (
     <div className="container py-12 max-w-5xl animate-slide-up">
       <div className="text-center mb-10 space-y-2">
