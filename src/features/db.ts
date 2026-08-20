@@ -24,6 +24,8 @@ export interface ClassRow {
   max_bets_per_day: number | null;
   allowed_sports: string[] | null;
   allowed_bet_kinds: string[] | null;
+  allowed_leagues: string[] | null;
+  market_publish_mode: string;
   require_journal: boolean;
   semester_start: string | null;
   semester_end: string | null;
