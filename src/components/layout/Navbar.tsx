@@ -33,7 +33,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, isPlatformAdmin, signOut } = useAuth();
+  const { user, isInstructor, isPlatformAdmin, signOut, viewAs } = useAuth();
   const { mode, clearMode } = useMode();
 
   const switchMode = () => {
