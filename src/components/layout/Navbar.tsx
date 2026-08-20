@@ -9,6 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
+import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
+
 import { useAuth } from "@/context/AuthContext";
 import { useMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
@@ -31,7 +33,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, isInstructorAccount, isPlatformAdmin, viewAsStudent, setViewAsStudent, signOut } = useAuth();
+  const { user, isInstructor, isPlatformAdmin, signOut } = useAuth();
   const { mode, clearMode } = useMode();
 
   const switchMode = () => {
@@ -45,18 +47,6 @@ export function Navbar() {
     navigate("/");
   };
 
-  const toggleViewAs = () => {
-    const next = !viewAsStudent;
-    setViewAsStudent(next);
-    // If switching INTO student view from an instructor-only page, redirect home.
-    if (next && (
-      location.pathname.startsWith("/admin") ||
-      location.pathname.startsWith("/instructor") ||
-      location.pathname.startsWith("/experiments")
-    )) {
-      navigate("/dashboard");
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50 border-b glass">
@@ -246,20 +236,10 @@ export function Navbar() {
                 <EducationModeToggle />
               </div>
             )}
-            {isInstructorAccount && (
-              <div className="px-3 py-2">
-                <Button
-                  variant={viewAsStudent ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => { toggleViewAs(); setMobileOpen(false); }}
-                  className="w-full"
-                >
-                  {viewAsStudent
-                    ? <><EyeOff className="h-4 w-4 mr-1.5" /> Switch to instructor view</>
-                    : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
-                </Button>
-              </div>
-            )}
+            <div className="px-3 py-2">
+              <ViewSwitcher onNavigate={() => setMobileOpen(false)} />
+            </div>
+
             <div className="px-3 py-2">
               {user ? (
                 <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full">
