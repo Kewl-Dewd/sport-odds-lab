@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { BarChart3, Trophy, Zap, ArrowRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useMode, type AppMode, MODE_LABELS, MODE_DESCRIPTIONS } from "@/context/ModeContext";
+import { useMode, type AppMode, MODE_LABELS, MODE_DESCRIPTIONS, ENABLED_MODES, SINGLE_MODE } from "@/context/ModeContext";
 import { useAuth } from "@/context/AuthContext";
 
 const MODES: { id: AppMode; icon: typeof BarChart3; gradient: string }[] = [
