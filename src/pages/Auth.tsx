@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, Link, Navigate } from "react-router-dom";
-import { TrendingUp, Mail, Lock, User } from "lucide-react";
+import { TrendingUp, Mail, Lock, User, GraduationCap, ChalkboardTeacher } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+
+type UserRole = "student" | "instructor";
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -18,6 +20,7 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [role, setRole] = useState<UserRole>("student");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export default function Auth() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/choose-mode`,
-        data: { display_name: displayName },
+        data: { display_name: displayName, role },
       },
     });
     setSubmitting(false);
@@ -96,6 +99,37 @@ export default function Auth() {
                   <Input placeholder="Password (min 8 chars)" type="password" className="pl-9" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium">I am signing up as a:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button
+                    type="button"
+                    variant={role === "student" ? "hero" : "outline"}
+                    className="flex items-center justify-center gap-2 h-auto py-3"
+                    onClick={() => setRole("student")}
+                  >
+                    <GraduationCap className="h-5 w-5" />
+                    <div className="text-left">
+                      <div className="font-semibold">Student</div>
+                      <div className="text-xs opacity-80">Join a class with a code</div>
+                    </div>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={role === "instructor" ? "hero" : "outline"}
+                    className="flex items-center justify-center gap-2 h-auto py-3"
+                    onClick={() => setRole("instructor")}
+                  >
+                    <ChalkboardTeacher className="h-5 w-5" />
+                    <div className="text-left">
+                      <div className="font-semibold">Instructor</div>
+                      <div className="text-xs opacity-80">Create classes and labs</div>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+
               <Button variant="hero" className="w-full" onClick={signUp} disabled={submitting}>Create Account</Button>
             </TabsContent>
           </Tabs>
