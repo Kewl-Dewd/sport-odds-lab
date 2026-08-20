@@ -46,8 +46,8 @@ export function ModeProvider({ children }: { children: ReactNode }) {
     else window.localStorage.removeItem(STORAGE_KEY);
   }, [mode]);
 
-  const setMode = (m: AppMode | null) => setModeState(m);
-  const clearMode = () => setModeState(null);
+  const setMode = (m: AppMode | null) => setModeState(SINGLE_MODE ?? m);
+  const clearMode = () => setModeState(SINGLE_MODE ?? null);
 
   return (
     <ModeContext.Provider value={{ mode, setMode, clearMode }}>
