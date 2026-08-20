@@ -16,6 +16,14 @@ export const MODE_DESCRIPTIONS: Record<AppMode, string> = {
 
 const STORAGE_KEY = "sml.appMode";
 
+/**
+ * Modes currently exposed in the UI. Prediction & racetrack remain fully
+ * implemented but hidden for now — re-add them here to bring them back.
+ */
+export const ENABLED_MODES: AppMode[] = ["sportsbook"];
+export const SINGLE_MODE: AppMode | null =
+  ENABLED_MODES.length === 1 ? ENABLED_MODES[0] : null;
+
 interface ModeState {
   mode: AppMode | null;
   setMode: (m: AppMode | null) => void;
@@ -26,6 +34,7 @@ const ModeContext = createContext<ModeState | undefined>(undefined);
 
 export function ModeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<AppMode | null>(() => {
+    if (SINGLE_MODE) return SINGLE_MODE;
     if (typeof window === "undefined") return null;
     const v = window.localStorage.getItem(STORAGE_KEY);
     return v === "prediction" || v === "sportsbook" || v === "racetrack" ? v : null;
@@ -37,8 +46,8 @@ export function ModeProvider({ children }: { children: ReactNode }) {
     else window.localStorage.removeItem(STORAGE_KEY);
   }, [mode]);
 
-  const setMode = (m: AppMode | null) => setModeState(m);
-  const clearMode = () => setModeState(null);
+  const setMode = (m: AppMode | null) => setModeState(SINGLE_MODE ?? m);
+  const clearMode = () => setModeState(SINGLE_MODE ?? null);
 
   return (
     <ModeContext.Provider value={{ mode, setMode, clearMode }}>
