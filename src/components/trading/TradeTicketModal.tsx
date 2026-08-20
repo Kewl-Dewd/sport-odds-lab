@@ -218,9 +218,14 @@ export function TradeTicketModal({
               </div>
             )}
 
-            <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
-              Review {type === "BUY" ? "Purchase" : "Sale"}<ArrowRight className="ml-1.5 h-4 w-4" />
-            </Button>
+            {isPaywalled ? (
+              <AccessRequired action="place trades" />
+            ) : (
+              <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
+                Review {type === "BUY" ? "Purchase" : "Sale"}<ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            )}
+
           </div>
         )}
 
