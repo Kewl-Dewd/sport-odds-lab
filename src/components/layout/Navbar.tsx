@@ -33,7 +33,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, isPlatformAdmin, signOut } = useAuth();
+  const { user, isInstructor, isPlatformAdmin, signOut, viewAs } = useAuth();
   const { mode, clearMode } = useMode();
 
   const switchMode = () => {
@@ -165,7 +165,7 @@ export function Navbar() {
               <Repeat className="h-3 w-3 opacity-60" />
             </button>
           )}
-          {user && <EducationModeToggle />}
+          {user && viewAs === "student" && <EducationModeToggle />}
           <ViewSwitcher />
 
           {user ? (
@@ -246,7 +246,7 @@ export function Navbar() {
                 </Button>
               </div>
             )}
-            {user && (
+            {user && viewAs === "student" && (
               <div className="px-3 py-2">
                 <EducationModeToggle />
               </div>
