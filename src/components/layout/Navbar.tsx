@@ -165,7 +165,7 @@ export function Navbar() {
               <Repeat className="h-3 w-3 opacity-60" />
             </button>
           )}
-          {user && <EducationModeToggle />}
+          {user && viewAs === "student" && <EducationModeToggle />}
           <ViewSwitcher />
 
           {user ? (
