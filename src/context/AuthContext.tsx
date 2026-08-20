@@ -3,6 +3,8 @@ import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
 export type AppRole = "instructor" | "student";
+/** Which console the signed-in person is currently looking at. */
+export type ViewAs = "student" | "instructor" | "admin";
 
 interface AuthState {
   session: Session | null;
@@ -14,7 +16,12 @@ interface AuthState {
   isInstructorAccount: boolean;
   /** True when the account holds platform-administrator access. */
   isPlatformAdmin: boolean;
-  /** True when an instructor has toggled "View as student". */
+  /** True when the account holds platform-administrator access, ignoring the view switcher. */
+  isPlatformAdminAccount: boolean;
+  /** Active console: student, instructor, or admin. */
+  viewAs: ViewAs;
+  setViewAs: (v: ViewAs) => void;
+  /** True when an instructor has switched to the student console. */
   viewAsStudent: boolean;
   setViewAsStudent: (v: boolean) => void;
   loading: boolean;
@@ -24,7 +31,7 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 const INSTRUCTOR_EMAIL = "kurtspady@gmail.com";
-const VIEW_AS_STUDENT_KEY = "sml.viewAsStudent";
+const VIEW_AS_KEY = "sml.viewAs";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -32,17 +39,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<AppRole | null>(null);
   const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [viewAsStudent, setViewAsStudentState] = useState<boolean>(() => {
-    if (typeof window === "undefined") return false;
-    return window.localStorage.getItem(VIEW_AS_STUDENT_KEY) === "1";
+  const [viewAs, setViewAsState] = useState<ViewAs>(() => {
+    if (typeof window === "undefined") return "instructor";
+    const stored = window.localStorage.getItem(VIEW_AS_KEY);
+    return stored === "student" || stored === "admin" || stored === "instructor"
+      ? stored
+      : "instructor";
   });
 
-  const setViewAsStudent = (v: boolean) => {
-    setViewAsStudentState(v);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(VIEW_AS_STUDENT_KEY, v ? "1" : "0");
-    }
+  const setViewAs = (v: ViewAs) => {
+    setViewAsState(v);
+    if (typeof window !== "undefined") window.localStorage.setItem(VIEW_AS_KEY, v);
   };
+
+  const setViewAsStudent = (v: boolean) => setViewAs(v ? "student" : "instructor");
+
 
   useEffect(() => {
     const { data: subscription } = supabase.auth.onAuthStateChange((_evt, newSession) => {
