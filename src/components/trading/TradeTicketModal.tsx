@@ -8,7 +8,10 @@ import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { AccessRequired } from "@/components/access/AccessGate";
+import { useAccess } from "@/hooks/useAccess";
 import { toast } from "sonner";
+
 
 interface TradeTicketModalProps {
   open: boolean;
@@ -26,8 +29,10 @@ export function TradeTicketModal({
 }: TradeTicketModalProps) {
   const { estimate, validate, trade, getMarket, getHolding, portfolio } = useMarket();
   const { pushNudge, educationEnabled } = useEducation();
+  const { isPaywalled } = useAccess();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   const [quantity, setQuantity] = useState("");
+
   const [step, setStep] = useState<Step>("entry");
   const [lastTrade, setLastTrade] = useState<any>(null);
 
