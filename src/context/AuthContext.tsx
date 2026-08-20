@@ -40,11 +40,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isPlatformAdmin, setIsPlatformAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [viewAs, setViewAsState] = useState<ViewAs>(() => {
-    if (typeof window === "undefined") return "instructor";
+    if (typeof window === "undefined") return "admin";
     const stored = window.localStorage.getItem(VIEW_AS_KEY);
     return stored === "student" || stored === "admin" || stored === "instructor"
       ? stored
-      : "instructor";
+      : "admin";
   });
 
   const setViewAs = (v: ViewAs) => {
