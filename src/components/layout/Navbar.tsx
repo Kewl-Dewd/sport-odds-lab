@@ -246,7 +246,7 @@ export function Navbar() {
                 </Button>
               </div>
             )}
-            {user && (
+            {user && viewAs === "student" && (
               <div className="px-3 py-2">
                 <EducationModeToggle />
               </div>
