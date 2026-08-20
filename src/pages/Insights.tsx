@@ -134,8 +134,11 @@ export default function Insights() {
             </TableHeader>
             <TableBody>
               {rows.map((row) => {
-                const badge = accessLabel(accessById.get(row.user_id));
-                return (
+                const staffRow = row.role === "instructor";
+                const badge = staffRow
+                  ? { label: "Staff — free", variant: "secondary" as const }
+                  : accessLabel(accessById.get(row.user_id));
+
                   <TableRow key={row.user_id}>
                     <TableCell>
                       <div className="font-medium">{row.display_name ?? row.email}</div>
