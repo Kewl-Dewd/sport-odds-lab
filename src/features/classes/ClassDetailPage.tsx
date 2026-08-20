@@ -26,6 +26,8 @@ import {
 import type { BetRow, BetJournalRow } from "@/features/db";
 import { useClassBets, useClassJournal, computeStudentStats } from "@/features/journal/useJournal";
 import { buildBetsCsv, buildStudentSummaryCsv, downloadCsv } from "@/features/exports";
+import { ClassMarketsTab } from "@/features/classes/ClassMarketsTab";
+import { ClassRoundsTab } from "@/features/classes/ClassRoundsTab";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -95,12 +97,22 @@ export default function ClassDetailPage() {
       <Tabs defaultValue="settings">
         <TabsList>
           <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="markets">Markets</TabsTrigger>
+          <TabsTrigger value="rounds">Windows &amp; contests</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
 
         <TabsContent value="settings" className="mt-4">
           <SettingsTab klass={klass} />
+        </TabsContent>
+
+        <TabsContent value="markets" className="mt-4">
+          <ClassMarketsTab klass={klass} />
+        </TabsContent>
+
+        <TabsContent value="rounds" className="mt-4">
+          <ClassRoundsTab classId={klass.id} startingBankroll={Number(klass.starting_bankroll)} />
         </TabsContent>
 
         <TabsContent value="roster" className="mt-4">

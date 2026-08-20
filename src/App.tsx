@@ -33,6 +33,7 @@ import JournalPage from "@/features/journal/JournalPage";
 import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
 import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
 import ClassDetailPage from "@/features/classes/ClassDetailPage";
+import ClassBoardPage from "@/features/classes/ClassBoardPage";
 import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 import GetAccess from "./pages/GetAccess.tsx";
@@ -77,6 +78,7 @@ const App = () => (
                     <Route path="/checkout/return" element={<ProtectedRoute><CheckoutReturn /></ProtectedRoute>} />
                     <Route path="/insights" element={<ProtectedRoute requireInstructor><Insights /></ProtectedRoute>} />
                     <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
+                    <Route path="/class-board" element={<ProtectedRoute><ClassBoardPage /></ProtectedRoute>} />
                     <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                     <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />
                     <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />

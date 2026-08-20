@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 const authedLinks = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Markets", href: "/markets", icon: BarChart3 },
+  { label: "Class Board", href: "/class-board", icon: School },
   { label: "Portfolio", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { label: "Journal", href: "/journal", icon: NotebookPen },
