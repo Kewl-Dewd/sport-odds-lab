@@ -16,6 +16,14 @@ export const MODE_DESCRIPTIONS: Record<AppMode, string> = {
 
 const STORAGE_KEY = "sml.appMode";
 
+/**
+ * Modes currently exposed in the UI. Prediction & racetrack remain fully
+ * implemented but hidden for now — re-add them here to bring them back.
+ */
+export const ENABLED_MODES: AppMode[] = ["sportsbook"];
+export const SINGLE_MODE: AppMode | null =
+  ENABLED_MODES.length === 1 ? ENABLED_MODES[0] : null;
+
 interface ModeState {
   mode: AppMode | null;
   setMode: (m: AppMode | null) => void;
