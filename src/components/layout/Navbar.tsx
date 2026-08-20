@@ -12,7 +12,7 @@ import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
 
 import { useAuth } from "@/context/AuthContext";
-import { useMode, MODE_LABELS } from "@/context/ModeContext";
+import { useMode, MODE_LABELS, SINGLE_MODE } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const authedLinks = [
@@ -154,7 +154,7 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          {user && mode && (
+          {user && mode && !SINGLE_MODE && (
             <button
               onClick={switchMode}
               className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground hover:bg-primary/20 transition-colors"
@@ -236,7 +236,7 @@ export function Navbar() {
                 <Building2 className="h-4 w-4" /> Platform
               </Link>
             )}
-            {user && mode && (
+            {user && mode && !SINGLE_MODE && (
               <div className="px-3 py-2">
                 <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between">
                   <span className="inline-flex items-center gap-1.5">
