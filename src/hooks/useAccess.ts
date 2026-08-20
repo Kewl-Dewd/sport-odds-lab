@@ -15,7 +15,7 @@ export interface AccessRow {
  * entitled; students need a paid purchase or a redeemed course code.
  */
 export function useAccess() {
-  const { user, isInstructorAccount, viewAs } = useAuth();
+  const { user, isInstructorAccount, isPlatformAdminAccount, viewAs } = useAuth();
 
   const query = useQuery({
     queryKey: ["user-access", user?.id],
@@ -39,7 +39,7 @@ export function useAccess() {
 
   // Staff accounts never hit the paywall — except while previewing as a student,
   // where the instructor should see exactly what a student sees.
-  const staffBypass = isInstructorAccount && viewAs !== "student";
+  const staffBypass = (isInstructorAccount || isPlatformAdminAccount) && viewAs !== "student";
 
   return {
     access: row,
