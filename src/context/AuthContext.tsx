@@ -135,7 +135,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         ? "student"
         : viewAs;
   const viewAsStudent = effectiveView === "student";
-  const isInstructor = isInstructorAccount && !viewAsStudent;
+  const isInstructor = isInstructorAccount && effectiveView === "instructor";
+
 
   return (
     <AuthContext.Provider
