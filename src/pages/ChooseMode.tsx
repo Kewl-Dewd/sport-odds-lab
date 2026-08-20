@@ -40,7 +40,7 @@ export default function ChooseMode() {
       </div>
 
       <div className="grid md:grid-cols-3 gap-5">
-        {MODES.map(({ id, icon: Icon, gradient }) => (
+        {MODES.filter((m) => ENABLED_MODES.includes(m.id)).map(({ id, icon: Icon, gradient }) => (
           <Card
             key={id}
             className={`group relative overflow-hidden cursor-pointer border-2 hover:border-primary transition-all hover:shadow-lg bg-gradient-to-br ${gradient}`}
