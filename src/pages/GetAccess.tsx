@@ -53,7 +53,12 @@ export default function GetAccess() {
               <div className="text-sm">
                 <p className="font-medium">Your access is active.</p>
                 <p className="text-muted-foreground">
-                  {access?.source === "code" ? "Redeemed with a course code" : "Paid access"}
+                  {!access
+                    ? "Included with your instructor account"
+                    : access.source === "code"
+                      ? "Redeemed with a course code"
+                      : "Paid access"}
+
                   {expiresAt && ` · expires ${new Date(expiresAt).toLocaleDateString()}`}
                 </p>
               </div>
