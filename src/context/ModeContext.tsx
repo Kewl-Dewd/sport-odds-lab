@@ -34,6 +34,7 @@ const ModeContext = createContext<ModeState | undefined>(undefined);
 
 export function ModeProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<AppMode | null>(() => {
+    if (SINGLE_MODE) return SINGLE_MODE;
     if (typeof window === "undefined") return null;
     const v = window.localStorage.getItem(STORAGE_KEY);
     return v === "prediction" || v === "sportsbook" || v === "racetrack" ? v : null;
