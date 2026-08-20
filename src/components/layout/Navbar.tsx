@@ -4,11 +4,13 @@ import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
-  NotebookPen, ShieldCheck, School, Building2,
+  NotebookPen, ShieldCheck, School, Building2, Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
+import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
+
 import { useAuth } from "@/context/AuthContext";
 import { useMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
@@ -31,7 +33,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isInstructor, isInstructorAccount, isPlatformAdmin, viewAsStudent, setViewAsStudent, signOut } = useAuth();
+  const { user, isInstructor, isPlatformAdmin, signOut } = useAuth();
   const { mode, clearMode } = useMode();
 
   const switchMode = () => {
@@ -45,18 +47,6 @@ export function Navbar() {
     navigate("/");
   };
 
-  const toggleViewAs = () => {
-    const next = !viewAsStudent;
-    setViewAsStudent(next);
-    // If switching INTO student view from an instructor-only page, redirect home.
-    if (next && (
-      location.pathname.startsWith("/admin") ||
-      location.pathname.startsWith("/instructor") ||
-      location.pathname.startsWith("/experiments")
-    )) {
-      navigate("/dashboard");
-    }
-  };
 
   return (
     <header className="sticky top-0 z-50 border-b glass">
@@ -96,6 +86,18 @@ export function Navbar() {
               >
                 <School className="h-4 w-4" />
                 Classes
+              </Link>
+              <Link
+                to="/insights"
+                className={cn(
+                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  location.pathname === "/insights"
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Activity className="h-4 w-4" />
+                Insights
               </Link>
               <Link
                 to="/experiments"
@@ -164,18 +166,8 @@ export function Navbar() {
             </button>
           )}
           {user && <EducationModeToggle />}
-          {isInstructorAccount && (
-            <Button
-              variant={viewAsStudent ? "default" : "outline"}
-              size="sm"
-              onClick={toggleViewAs}
-              title={viewAsStudent ? "Switch back to instructor view" : "Preview the app as a student"}
-            >
-              {viewAsStudent
-                ? <><EyeOff className="h-4 w-4 mr-1.5" /> Student view</>
-                : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
-            </Button>
-          )}
+          <ViewSwitcher />
+
           {user ? (
             <>
               <span className="text-xs text-muted-foreground max-w-[140px] truncate">{user.email}</span>
@@ -225,6 +217,9 @@ export function Navbar() {
                 <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <School className="h-4 w-4" /> Classes
                 </Link>
+                <Link to="/insights" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                  <Activity className="h-4 w-4" /> Insights
+                </Link>
                 <Link to="/experiments" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <FlaskConical className="h-4 w-4" /> Experiments
                 </Link>
@@ -256,20 +251,10 @@ export function Navbar() {
                 <EducationModeToggle />
               </div>
             )}
-            {isInstructorAccount && (
-              <div className="px-3 py-2">
-                <Button
-                  variant={viewAsStudent ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => { toggleViewAs(); setMobileOpen(false); }}
-                  className="w-full"
-                >
-                  {viewAsStudent
-                    ? <><EyeOff className="h-4 w-4 mr-1.5" /> Switch to instructor view</>
-                    : <><Eye className="h-4 w-4 mr-1.5" /> View as student</>}
-                </Button>
-              </div>
-            )}
+            <div className="px-3 py-2">
+              <ViewSwitcher onNavigate={() => setMobileOpen(false)} />
+            </div>
+
             <div className="px-3 py-2">
               {user ? (
                 <Button variant="outline" size="sm" onClick={handleSignOut} className="w-full">

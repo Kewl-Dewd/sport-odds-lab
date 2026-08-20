@@ -35,6 +35,10 @@ import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
 import ClassDetailPage from "@/features/classes/ClassDetailPage";
 import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
+import GetAccess from "./pages/GetAccess.tsx";
+import CheckoutReturn from "./pages/CheckoutReturn.tsx";
+import Insights from "./pages/Insights.tsx";
+import { RequireAccess } from "@/components/access/RequireAccess";
 
 const queryClient = new QueryClient();
 
@@ -67,8 +71,11 @@ const App = () => (
                     <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
                     <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
-                    <Route path="/join" element={<ProtectedRoute><JoinClassPage /></ProtectedRoute>} />
-                    <Route path="/join/:code" element={<ProtectedRoute><JoinClassPage /></ProtectedRoute>} />
+                    <Route path="/join" element={<ProtectedRoute><RequireAccess><JoinClassPage /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/join/:code" element={<ProtectedRoute><RequireAccess><JoinClassPage /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/access" element={<ProtectedRoute><GetAccess /></ProtectedRoute>} />
+                    <Route path="/checkout/return" element={<ProtectedRoute><CheckoutReturn /></ProtectedRoute>} />
+                    <Route path="/insights" element={<ProtectedRoute requireInstructor><Insights /></ProtectedRoute>} />
                     <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
                     <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                     <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />

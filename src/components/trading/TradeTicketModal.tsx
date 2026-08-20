@@ -8,7 +8,10 @@ import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { AccessRequired } from "@/components/access/AccessGate";
+import { useAccess } from "@/hooks/useAccess";
 import { toast } from "sonner";
+
 
 interface TradeTicketModalProps {
   open: boolean;
@@ -26,8 +29,10 @@ export function TradeTicketModal({
 }: TradeTicketModalProps) {
   const { estimate, validate, trade, getMarket, getHolding, portfolio } = useMarket();
   const { pushNudge, educationEnabled } = useEducation();
+  const { isPaywalled } = useAccess();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   const [quantity, setQuantity] = useState("");
+
   const [step, setStep] = useState<Step>("entry");
   const [lastTrade, setLastTrade] = useState<any>(null);
 
@@ -218,9 +223,14 @@ export function TradeTicketModal({
               </div>
             )}
 
-            <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
-              Review {type === "BUY" ? "Purchase" : "Sale"}<ArrowRight className="ml-1.5 h-4 w-4" />
-            </Button>
+            {isPaywalled ? (
+              <AccessRequired action="place trades" />
+            ) : (
+              <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
+                Review {type === "BUY" ? "Purchase" : "Sale"}<ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
+            )}
+
           </div>
         )}
 
