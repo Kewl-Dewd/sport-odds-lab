@@ -138,8 +138,9 @@ export default function Insights() {
                 const badge = staffRow
                   ? { label: "Staff — free", variant: "secondary" as const }
                   : accessLabel(accessById.get(row.user_id));
-
+                return (
                   <TableRow key={row.user_id}>
+
                     <TableCell>
                       <div className="font-medium">{row.display_name ?? row.email}</div>
                       <div className="text-xs text-muted-foreground">{row.email}</div>
