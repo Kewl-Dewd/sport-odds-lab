@@ -121,7 +121,7 @@ export default function Auth() {
                     className="flex items-center justify-center gap-2 h-auto py-3"
                     onClick={() => setRole("instructor")}
                   >
-                    <ChalkboardTeacher className="h-5 w-5" />
+                    <Users className="h-5 w-5" />
                     <div className="text-left">
                       <div className="font-semibold">Instructor</div>
                       <div className="text-xs opacity-80">Create classes and labs</div>
