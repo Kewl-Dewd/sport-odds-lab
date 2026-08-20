@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate, Link, Navigate } from "react-router-dom";
-import { TrendingUp, Mail, Lock, User, GraduationCap, ChalkboardTeacher } from "lucide-react";
+import { TrendingUp, Mail, Lock, User, GraduationCap, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
