@@ -127,6 +127,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isInstructorAccount =
     role === "instructor" || (user?.email?.toLowerCase() === INSTRUCTOR_EMAIL);
+  // The view switcher only offers consoles the account actually holds.
+  const effectiveView: ViewAs =
+    viewAs === "admin" && !isPlatformAdmin
+      ? (isInstructorAccount ? "instructor" : "student")
+      : viewAs === "instructor" && !isInstructorAccount
+        ? "student"
+        : viewAs;
+  const viewAsStudent = effectiveView === "student";
   const isInstructor = isInstructorAccount && !viewAsStudent;
 
   return (
@@ -134,11 +142,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session, user, role,
         isInstructor, isInstructorAccount,
-        isPlatformAdmin: isPlatformAdmin && !viewAsStudent,
+        isPlatformAdmin: isPlatformAdmin && effectiveView === "admin",
+        isPlatformAdminAccount: isPlatformAdmin,
+        viewAs: effectiveView, setViewAs,
         viewAsStudent, setViewAsStudent,
         loading, signOut,
       }}
     >
+
       {children}
     </AuthContext.Provider>
   );
