@@ -124,6 +124,7 @@ export type Database = {
           placed_at: string
           potential_payout: number | null
           raw: Json | null
+          round_id: string | null
           selection: string
           settled_at: string | null
           stake: number
@@ -143,6 +144,7 @@ export type Database = {
           placed_at?: string
           potential_payout?: number | null
           raw?: Json | null
+          round_id?: string | null
           selection?: string
           settled_at?: string | null
           stake: number
@@ -162,6 +164,7 @@ export type Database = {
           placed_at?: string
           potential_payout?: number | null
           raw?: Json | null
+          round_id?: string | null
           selection?: string
           settled_at?: string | null
           stake?: number
@@ -174,6 +177,13 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bets_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "class_rounds"
             referencedColumns: ["id"]
           },
         ]
@@ -213,16 +223,80 @@ export type Database = {
           },
         ]
       }
+      class_rounds: {
+        Row: {
+          class_id: string
+          created_at: string
+          description: string
+          ends_at: string
+          id: string
+          is_active: boolean
+          is_contest: boolean
+          kind: string
+          max_bets: number | null
+          max_stake_per_bet: number | null
+          name: string
+          scoring: string
+          starting_bankroll: number
+          starts_at: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          description?: string
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          is_contest?: boolean
+          kind?: string
+          max_bets?: number | null
+          max_stake_per_bet?: number | null
+          name: string
+          scoring?: string
+          starting_bankroll?: number
+          starts_at?: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          description?: string
+          ends_at?: string
+          id?: string
+          is_active?: boolean
+          is_contest?: boolean
+          kind?: string
+          max_bets?: number | null
+          max_stake_per_bet?: number | null
+          name?: string
+          scoring?: string
+          starting_bankroll?: number
+          starts_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_rounds_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           allow_self_join: boolean
           allowed_bet_kinds: string[] | null
+          allowed_leagues: string[] | null
           allowed_sports: string[] | null
           created_at: string
           description: string
           id: string
           is_archived: boolean
           join_code: string
+          market_publish_mode: string
           max_bets_per_day: number | null
           max_stake_per_bet: number | null
           name: string
@@ -237,12 +311,14 @@ export type Database = {
         Insert: {
           allow_self_join?: boolean
           allowed_bet_kinds?: string[] | null
+          allowed_leagues?: string[] | null
           allowed_sports?: string[] | null
           created_at?: string
           description?: string
           id?: string
           is_archived?: boolean
           join_code?: string
+          market_publish_mode?: string
           max_bets_per_day?: number | null
           max_stake_per_bet?: number | null
           name: string
@@ -257,12 +333,14 @@ export type Database = {
         Update: {
           allow_self_join?: boolean
           allowed_bet_kinds?: string[] | null
+          allowed_leagues?: string[] | null
           allowed_sports?: string[] | null
           created_at?: string
           description?: string
           id?: string
           is_archived?: boolean
           join_code?: string
+          market_publish_mode?: string
           max_bets_per_day?: number | null
           max_stake_per_bet?: number | null
           name?: string
@@ -374,6 +452,84 @@ export type Database = {
         }
         Relationships: []
       }
+      published_markets: {
+        Row: {
+          away_team: string
+          bet_kinds: string[]
+          class_id: string
+          commence_at: string | null
+          created_at: string
+          external_event_id: string
+          home_team: string
+          id: string
+          league_name: string
+          league_slug: string
+          note: string
+          published_by: string | null
+          round_id: string | null
+          sport_name: string
+          sport_slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          away_team?: string
+          bet_kinds?: string[]
+          class_id: string
+          commence_at?: string | null
+          created_at?: string
+          external_event_id: string
+          home_team?: string
+          id?: string
+          league_name?: string
+          league_slug?: string
+          note?: string
+          published_by?: string | null
+          round_id?: string | null
+          sport_name?: string
+          sport_slug?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          away_team?: string
+          bet_kinds?: string[]
+          class_id?: string
+          commence_at?: string | null
+          created_at?: string
+          external_event_id?: string
+          home_team?: string
+          id?: string
+          league_name?: string
+          league_slug?: string
+          note?: string
+          published_by?: string | null
+          round_id?: string | null
+          sport_name?: string
+          sport_slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "published_markets_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "published_markets_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "class_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       rg_acknowledgments: {
         Row: {
           acknowledged_at: string
@@ -448,6 +604,51 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      round_entries: {
+        Row: {
+          bankroll: number
+          class_id: string
+          created_at: string
+          id: string
+          round_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bankroll?: number
+          class_id: string
+          created_at?: string
+          id?: string
+          round_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bankroll?: number
+          class_id?: string
+          created_at?: string
+          id?: string
+          round_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "round_entries_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "round_entries_round_id_fkey"
+            columns: ["round_id"]
+            isOneToOne: false
+            referencedRelation: "class_rounds"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_access: {
         Row: {
