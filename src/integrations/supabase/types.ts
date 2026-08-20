@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          grant_days: number
+          id: string
+          is_active: boolean
+          label: string
+          owner_id: string | null
+          seats_total: number | null
+          seats_used: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          grant_days?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          owner_id?: string | null
+          seats_total?: number | null
+          seats_used?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          grant_days?: number
+          id?: string
+          is_active?: boolean
+          label?: string
+          owner_id?: string | null
+          seats_total?: number | null
+          seats_used?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bet_journal: {
         Row: {
           bet_id: string
@@ -231,6 +276,38 @@ export type Database = {
         }
         Relationships: []
       }
+      code_redemptions: {
+        Row: {
+          code_id: string
+          created_at: string
+          granted_until: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          code_id: string
+          created_at?: string
+          granted_until?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          code_id?: string
+          created_at?: string
+          granted_until?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "access_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       odds_cache: {
         Row: {
           cache_key: string
@@ -372,6 +449,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_access: {
+        Row: {
+          amount_cents: number | null
+          created_at: string
+          expires_at: string | null
+          last_payment_at: string | null
+          source: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number | null
+          created_at?: string
+          expires_at?: string | null
+          last_payment_at?: string | null
+          source?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number | null
+          created_at?: string
+          expires_at?: string | null
+          last_payment_at?: string | null
+          source?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_activity: {
         Row: {
           action: string
@@ -463,6 +579,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      grant_user_access: {
+        Args: { _days?: number; _source?: string; _user_id: string }
+        Returns: Json
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -504,6 +624,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      redeem_access_code: { Args: { _code: string }; Returns: Json }
       set_user_access: {
         Args: {
           _platform_admin?: boolean
