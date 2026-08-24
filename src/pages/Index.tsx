@@ -36,7 +36,28 @@ const models = [
     accent: "from-accent/15 to-accent/5",
     iconBg: "bg-accent/10 text-accent-foreground",
   },
+  {
+    icon: Calculator,
+    badge: "The book",
+    title: "The instructor is the house",
+    description:
+      "Every class runs like a real sportsbook. The instructor takes the action, carries the liability on open bets, and the class sees the book's handle, payouts, profit and hold percentage.",
+    bullets: ["Handle & payouts tracked live", "Open liability on unsettled bets", "Hold % vs. a real book's 4–8%"],
+    accent: "from-warning/15 to-warning/5",
+    iconBg: "bg-warning/10 text-warning",
+  },
+  {
+    icon: Trophy,
+    badge: "Contests",
+    title: "Windows, rounds & leaderboards",
+    description:
+      "Open the book for a weekend, a unit, or a whole semester. Each window has its own bankroll, stake caps and scored leaderboard by profit, ROI or win rate.",
+    bullets: ["Weekend or semester windows", "Per-round bankrolls & caps", "Profit / ROI / wins scoring"],
+    accent: "from-accent/15 to-accent/5",
+    iconBg: "bg-accent/10 text-accent-foreground",
+  },
 ];
+
 
 const features = [
   {
