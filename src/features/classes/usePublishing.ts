@@ -217,3 +217,42 @@ export function buildStandings(
   });
   return rows.sort((a, b) => b.score - a.score);
 }
+
+// ── The class book (house P&L) ────────────────────────────────────
+
+export interface BookSummary {
+  handle: number;
+  open_stake: number;
+  open_liability: number;
+  settled_stake: number;
+  paid_out: number;
+  book_pnl: number;
+  hold_pct: number;
+  bet_count: number;
+  bettor_count: number;
+}
+
+/** House-side economics for a class: what the book took in, paid out and kept. */
+export function useBookSummary(classId: string | undefined) {
+  return useQuery({
+    queryKey: ["book-summary", classId],
+    enabled: !!classId,
+    queryFn: async () => {
+      const { data, error } = await db.rpc("class_book_summary", { _class_id: classId! });
+      if (error) throw new Error(error.message);
+      const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown> | undefined;
+      const num = (v: unknown) => Number(v ?? 0);
+      return {
+        handle: num(row?.handle),
+        open_stake: num(row?.open_stake),
+        open_liability: num(row?.open_liability),
+        settled_stake: num(row?.settled_stake),
+        paid_out: num(row?.paid_out),
+        book_pnl: num(row?.book_pnl),
+        hold_pct: num(row?.hold_pct),
+        bet_count: num(row?.bet_count),
+        bettor_count: num(row?.bettor_count),
+      } satisfies BookSummary;
+    },
+  });
+}

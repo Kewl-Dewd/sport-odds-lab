@@ -121,17 +121,11 @@ export default function MarketDetail() {
         <ArrowLeft className="h-4 w-4" />Back to Markets
       </Link>
 
-      <Tabs defaultValue="prediction" className="w-full">
+      <Tabs defaultValue="sportsbook" className="w-full">
+        {/* Prediction-market and racetrack surfaces are hidden for now (sportsbook-only focus).
+            Their tabs/content remain in the codebase so they can be re-enabled later. */}
         <TabsList className="mb-6">
-          <TabsTrigger value="prediction">Prediction Market</TabsTrigger>
-          <TabsTrigger value="sportsbook" disabled={!market.sportsbook?.enabled}>
-            Sportsbook
-            {!market.sportsbook?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
-          </TabsTrigger>
-          <TabsTrigger value="racetrack" disabled={!market.racetrack?.enabled}>
-            Racetrack
-            {!market.racetrack?.enabled && <span className="ml-1.5 text-[10px] opacity-60">(off)</span>}
-          </TabsTrigger>
+          <TabsTrigger value="sportsbook">Sportsbook</TabsTrigger>
         </TabsList>
 
         <TabsContent value="prediction" className="mt-0">

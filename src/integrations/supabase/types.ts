@@ -766,6 +766,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      class_book_summary: {
+        Args: { _class_id: string }
+        Returns: {
+          bet_count: number
+          bettor_count: number
+          book_pnl: number
+          handle: number
+          hold_pct: number
+          open_liability: number
+          open_stake: number
+          paid_out: number
+          settled_stake: number
+        }[]
+      }
       generate_join_code: { Args: never; Returns: string }
       get_user_stats: {
         Args: never

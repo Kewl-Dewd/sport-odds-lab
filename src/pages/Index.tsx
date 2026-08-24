@@ -36,7 +36,28 @@ const models = [
     accent: "from-accent/15 to-accent/5",
     iconBg: "bg-accent/10 text-accent-foreground",
   },
+  {
+    icon: Calculator,
+    badge: "The book",
+    title: "The instructor is the house",
+    description:
+      "Every class runs like a real sportsbook. The instructor takes the action, carries the liability on open bets, and the class sees the book's handle, payouts, profit and hold percentage.",
+    bullets: ["Handle & payouts tracked live", "Open liability on unsettled bets", "Hold % vs. a real book's 4–8%"],
+    accent: "from-warning/15 to-warning/5",
+    iconBg: "bg-warning/10 text-warning",
+  },
+  {
+    icon: Trophy,
+    badge: "Contests",
+    title: "Windows, rounds & leaderboards",
+    description:
+      "Open the book for a weekend, a unit, or a whole semester. Each window has its own bankroll, stake caps and scored leaderboard by profit, ROI or win rate.",
+    bullets: ["Weekend or semester windows", "Per-round bankrolls & caps", "Profit / ROI / wins scoring"],
+    accent: "from-accent/15 to-accent/5",
+    iconBg: "bg-accent/10 text-accent-foreground",
+  },
 ];
+
 
 const features = [
   {
@@ -61,6 +82,10 @@ const features = [
   },
 ];
 
+// Prediction-market and racetrack models are hidden for now (sportsbook-only focus).
+// Keep them in `models` so they can be re-enabled later.
+const visibleModels = models.filter((m) => m.badge === "Sportsbook" || m.badge === "The book" || m.badge === "Contests");
+
 export default function Index() {
   return (
     <div>
@@ -71,18 +96,16 @@ export default function Index() {
           <div className="mx-auto max-w-3xl text-center space-y-6">
             <div className="badge-live mx-auto w-fit">
               <Zap className="h-3 w-3" />
-              Three markets · One classroom
+              Live odds · One classroom
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
               Learn Markets by{" "}
               <span className="text-gradient">Trading Sports</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              A classroom platform that runs three live market models side-by-side:
-              <span className="text-foreground font-medium"> Prediction Market</span>,
-              <span className="text-foreground font-medium"> Sportsbook</span>, and
-              <span className="text-foreground font-medium"> Racetrack</span>. Math-driven pricing,
-              real strategy, zero risk.
+              A classroom sportsbook that runs on live moneyline, spread and totals odds.
+              Your instructor runs the book, students wager virtual cash, and everyone
+              sees the house&apos;s numbers. Real strategy, zero risk.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
@@ -101,15 +124,15 @@ export default function Index() {
       {/* Three market models */}
       <section className="container py-16 md:py-20">
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-          <h2 className="text-2xl md:text-3xl font-bold">Three market models, one event</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">Run a real book in your classroom</h2>
           <p className="text-muted-foreground">
-            Every game powers all three surfaces. Students compare how price discovery, fixed odds,
-            and pari-mutuel pools each handle the same uncertainty.
+            Instructors publish the games, set the betting windows, and take the action.
+            Students bet the lines and watch the house&apos;s hold add up in real time.
           </p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-5">
-          {models.map((m) => (
+          {visibleModels.map((m) => (
             <div
               key={m.badge}
               className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${m.accent} p-6 space-y-4`}

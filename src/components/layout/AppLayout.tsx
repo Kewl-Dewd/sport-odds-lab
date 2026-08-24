@@ -15,7 +15,7 @@ export function AppLayout() {
 
       <footer className="border-t py-6">
         <div className="container text-center text-sm text-muted-foreground">
-          © 2026 Avason Systems · Classroom Prediction Market Simulator
+          © 2026 Avason Systems · Classroom Sportsbook Simulator
         </div>
       </footer>
     </div>

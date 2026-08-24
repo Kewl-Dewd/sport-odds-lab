@@ -21,6 +21,7 @@ import {
   buildStandings, isRoundOpen, useEnterRound, usePublishedMarkets, useRoundBets,
   useRoundEntries, useRounds,
 } from "@/features/classes/usePublishing";
+import { BookSummaryCard } from "@/features/classes/BookSummaryCard";
 import { db, type ClassRoundRow, type PublishedMarketRow } from "@/features/db";
 import { extractMoneyline, fetchOdds } from "@/lib/oddsApi";
 import { useQueryClient } from "@tanstack/react-query";
@@ -71,6 +72,8 @@ export default function ClassBoardPage() {
           Only markets your instructor published are wagerable here.
         </p>
       </div>
+
+      <BookSummaryCard classId={membership.klass.id} audience="student" />
 
       {/* Window selector */}
       <Card>
