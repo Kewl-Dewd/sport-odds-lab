@@ -12,7 +12,7 @@ import { useAccess, useRedeemCode } from "@/hooks/useAccess";
 import { toast } from "sonner";
 
 const INCLUDED = [
-  "Full access to Sportsbook, Prediction and Racetrack modes",
+  "Full access to the sportsbook simulator",
   "Place simulated trades and track your portfolio",
   "Join your instructor's class with a join code",
   "Bet journal, leaderboards and responsible-play lessons",

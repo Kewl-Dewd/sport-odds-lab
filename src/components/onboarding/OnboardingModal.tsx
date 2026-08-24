@@ -9,7 +9,7 @@ const steps = [
   {
     icon: TrendingUp,
     title: "Welcome to Sports Market Lab!",
-    description: "This is a prediction market simulator where you trade shares on sports outcomes using virtual cash. It's like a stock exchange, but for sports predictions.",
+    description: "This is a classroom sportsbook simulator. You wager virtual cash against live moneyline, spread and totals odds — and your instructor runs the book.",
     tip: "Tip: Prices represent the market's belief about how likely an outcome is.",
   },
   {
