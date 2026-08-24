@@ -56,7 +56,7 @@ const App = () => (
                 <Sonner />
                 <PersistenceBridge />
                 <LearningNudgeBar />
-                <Routes>} />
+                <Routes>
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Index />} />
 
