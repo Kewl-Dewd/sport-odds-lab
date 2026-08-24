@@ -21,7 +21,7 @@ export default function HowItWorks() {
       {/* Prediction-market and racetrack tabs are hidden for now (sportsbook-only focus).
           Their content blocks are kept below so they can be re-enabled later. */}
       <Tabs defaultValue="sportsbook" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-1">
+        <TabsList className="hidden">
           <TabsTrigger value="sportsbook">
             <Target className="h-4 w-4 mr-1.5" /> Sportsbook
           </TabsTrigger>
