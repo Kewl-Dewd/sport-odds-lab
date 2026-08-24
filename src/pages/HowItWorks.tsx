@@ -14,20 +14,16 @@ export default function HowItWorks() {
       <div className="text-center space-y-4">
         <h1 className="text-3xl md:text-4xl font-bold">How It Works</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sports Market Lab teaches three different market structures side by side. Pick a tab to learn how each one works.
+          Sports Market Lab runs a classroom sportsbook on live odds. Your instructor is the house — here&apos;s how the betting and the book work.
         </p>
       </div>
 
-      <Tabs defaultValue="prediction" className="space-y-8">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="prediction">
-            <BarChart3 className="h-4 w-4 mr-1.5" /> Prediction Market
-          </TabsTrigger>
+      {/* Prediction-market and racetrack tabs are hidden for now (sportsbook-only focus).
+          Their content blocks are kept below so they can be re-enabled later. */}
+      <Tabs defaultValue="sportsbook" className="space-y-8">
+        <TabsList className="grid w-full grid-cols-1">
           <TabsTrigger value="sportsbook">
             <Target className="h-4 w-4 mr-1.5" /> Sportsbook
-          </TabsTrigger>
-          <TabsTrigger value="racetrack">
-            <Flag className="h-4 w-4 mr-1.5" /> Racetrack
           </TabsTrigger>
         </TabsList>
 
@@ -188,7 +184,7 @@ export default function HowItWorks() {
             <h3 className="text-xl font-bold text-center">Four Steps to Wagering</h3>
             <div className="grid sm:grid-cols-2 gap-6">
               {[
-                { icon: Wallet, step: "1", title: "Use Your Bankroll", body: "Sportsbook wagers draw from the same virtual cash balance you use for the prediction market and racetrack tabs." },
+                { icon: Wallet, step: "1", title: "Use Your Bankroll", body: "Every student starts a class or contest window with a virtual bankroll. That bankroll is the only thing you can risk." },
                 { icon: Target, step: "2", title: "Pick a Line", body: "Choose a moneyline (who wins), a point spread (who covers), or a total (over/under combined points). Each line has fixed decimal or American odds." },
                 { icon: Coins, step: "3", title: "Place Your Stake", body: "Enter how much you want to risk. Your potential payout = stake × decimal odds. The price is locked the moment you confirm." },
                 { icon: CheckCircle, step: "4", title: "Settle on the Result", body: "When the game finishes the instructor enters the score. Wins pay your full stake plus profit; losses forfeit the stake; pushes refund the stake." },
@@ -297,9 +293,50 @@ export default function HowItWorks() {
               </div>
             </CardContent></Card>
           </section>
+
+          <section className="space-y-6">
+            <div className="text-center space-y-2">
+              <h3 className="text-xl font-bold">Your instructor runs the book</h3>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Every class is its own sportsbook. Students bet against the house, and the house is
+                the instructor — so the class can watch the book&apos;s economics play out in real time.
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card><CardContent className="p-6 space-y-3">
+                <Coins className="h-7 w-7 text-primary" />
+                <h4 className="font-semibold">Handle</h4>
+                <p className="text-sm text-muted-foreground">The total amount wagered into the book. Volume, not profit — a big handle can still be a losing week for the house.</p>
+              </CardContent></Card>
+              <Card><CardContent className="p-6 space-y-3">
+                <ShieldAlert className="h-7 w-7 text-warning" />
+                <h4 className="font-semibold">Liability</h4>
+                <p className="text-sm text-muted-foreground">What the book would owe if every open bet won. Lopsided action on one side is how a book gets hurt.</p>
+              </CardContent></Card>
+              <Card><CardContent className="p-6 space-y-3">
+                <Scale className="h-7 w-7 text-success" />
+                <h4 className="font-semibold">Hold %</h4>
+                <p className="text-sm text-muted-foreground">The share of settled handle the book keeps. Real sportsbooks hold roughly 4–8% over time thanks to the vig.</p>
+              </CardContent></Card>
+            </div>
+            <Card><CardContent className="p-6 md:p-8 space-y-3">
+              <h4 className="font-bold text-lg">Example: a balanced book</h4>
+              <p className="text-sm text-muted-foreground">Two students bet $100 each on opposite sides of a −110 / −110 spread.</p>
+              <div className="rounded-lg bg-muted p-4 font-mono text-sm space-y-1">
+                <div>Handle: $200.00</div>
+                <div>Winner paid: 100 × 1.91 = $191.00</div>
+                <div>Loser&apos;s stake kept: $100.00</div>
+                <div className="font-bold">Book profit: $200.00 − $191.00 = $9.00 (4.5% hold)</div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                That $9 is the vig. The book doesn&apos;t need to predict the game — it needs balanced
+                action. Your class&apos;s live numbers are on the <strong>Class Board</strong> under &quot;The book.&quot;
+              </p>
+            </CardContent></Card>
+          </section>
         </TabsContent>
 
-        {/* ─────────────────────── RACETRACK ─────────────────────── */}
+        {/* ─────────────────────── RACETRACK (hidden) ─────────────────────── */}
         <TabsContent value="racetrack" className="space-y-16">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">Racetrack (Pari-mutuel)</h2>
