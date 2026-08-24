@@ -28,7 +28,6 @@ import Auth from "./pages/Auth.tsx";
 import ChooseMode from "./pages/ChooseMode.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import Unsubscribe from "./pages/Unsubscribe.tsx";
 
 import JoinClassPage from "@/features/classes/JoinClassPage";
 import JournalPage from "@/features/journal/JournalPage";
@@ -57,8 +56,7 @@ const App = () => (
                 <Sonner />
                 <PersistenceBridge />
                 <LearningNudgeBar />
-                <Routes>
-                  <Route path="/unsubscribe" element={<Unsubscribe />} />
+                <Routes>} />
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Index />} />
 
