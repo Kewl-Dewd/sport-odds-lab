@@ -28,6 +28,8 @@ import Auth from "./pages/Auth.tsx";
 import ChooseMode from "./pages/ChooseMode.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Unsubscribe from "./pages/Unsubscribe.tsx";
+
 import JoinClassPage from "@/features/classes/JoinClassPage";
 import JournalPage from "@/features/journal/JournalPage";
 import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
@@ -56,8 +58,10 @@ const App = () => (
                 <PersistenceBridge />
                 <LearningNudgeBar />
                 <Routes>
+                  <Route path="/unsubscribe" element={<Unsubscribe />} />
                   <Route element={<AppLayout />}>
                     <Route path="/" element={<Index />} />
+
                     <Route path="/choose-mode" element={<ProtectedRoute><ChooseMode /></ProtectedRoute>} />
                     <Route path="/dashboard" element={<ProtectedRoute requireMode><Dashboard /></ProtectedRoute>} />
                     <Route path="/markets" element={<ProtectedRoute requireMode><Markets /></ProtectedRoute>} />
