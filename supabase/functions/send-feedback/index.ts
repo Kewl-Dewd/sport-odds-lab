@@ -1,6 +1,7 @@
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { z } from "npm:zod@3";
+import { sendTemplateEmail } from "../_shared/transactional-email-templates/send-email.ts";
 
 const FeedbackSchema = z.object({
   message: z.string().min(3).max(5000),
@@ -35,13 +36,28 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { error } = await supabase.from("feedback").insert({
-      message,
-      category,
-      user_id: null,
-    });
+    const { data: inserted, error } = await supabase
+      .from("feedback")
+      .insert({ message, category, user_id: null })
+      .select("id")
+      .single();
 
     if (error) throw error;
+
+    // Notify support by email (non-blocking for the user).
+    try {
+      await sendTemplateEmail("feedback-notification", "support@avasonsystems.com", {
+        templateData: {
+          category,
+          message,
+          submittedAt: new Date().toUTCString(),
+        },
+        idempotencyKey: `feedback-notification-${inserted?.id ?? crypto.randomUUID()}`,
+      });
+    } catch (e) {
+      console.error("feedback email failed", e);
+    }
+
 
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
