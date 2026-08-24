@@ -1,0 +1,21 @@
+{
+  "short_name": "Sports Market Lab",
+  "name": "Sports Market Lab — Classroom Sportsbook Simulator",
+  "description": "A classroom-friendly sportsbook simulator. Trade outcome shares with virtual money using live odds and instructor-run contests.",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0F172A",
+  "background_color": "#0F172A"
+}
