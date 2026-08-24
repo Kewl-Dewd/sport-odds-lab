@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { AccessBanner } from "@/components/access/AccessGate";
+import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
 
 export function AppLayout() {
@@ -18,6 +19,8 @@ export function AppLayout() {
           © 2026 Avason Systems · Classroom Sportsbook Simulator
         </div>
       </footer>
+
+      <FeedbackButton />
     </div>
   );
 }
