@@ -43,6 +43,28 @@ Deno.serve(async (req) => {
 
     if (error) throw error;
 
+    // Notify support by email (non-blocking for the user).
+    try {
+      const { error: emailError } = await supabase.functions.invoke(
+        "send-transactional-email",
+        {
+          body: {
+            templateName: "feedback-notification",
+            idempotencyKey: crypto.randomUUID(),
+            templateData: {
+              category,
+              message,
+              submittedAt: new Date().toUTCString(),
+            },
+          },
+        },
+      );
+      if (emailError) console.error("feedback email failed", emailError);
+    } catch (e) {
+      console.error("feedback email threw", e);
+    }
+
+
     return new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
