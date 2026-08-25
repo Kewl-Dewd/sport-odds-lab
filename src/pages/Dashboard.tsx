@@ -37,9 +37,9 @@ export default function Dashboard() {
     : portfolioStats.unrealizedPnL;
 
   const stats = [
-    { label: "Available Cash", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
-    { label: mode ? `${MODE_LABELS[mode]} Value` : "Portfolio Value", value: `$${modePortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: modeReturn !== 0 ? `${modeReturn >= 0 ? "+" : ""}$${modeReturn.toFixed(2)}` : null },
-    { label: "Open Positions", value: String(scopedHoldings.length), icon: TrendingUp, change: null },
+    { label: "Bankroll", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
+    { label: mode ? `${MODE_LABELS[mode]} Bets Value` : "Bets Value", value: `$${modePortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: modeReturn !== 0 ? `${modeReturn >= 0 ? "+" : ""}$${modeReturn.toFixed(2)}` : null },
+    { label: "Open Bets", value: String(scopedHoldings.length), icon: TrendingUp, change: null },
     { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null },
   ];
 
@@ -75,7 +75,7 @@ export default function Dashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><CardTitle className="text-lg">Recent Trades</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">Recent Bets</CardTitle></CardHeader>
           <CardContent>
             {scopedRecentTrades.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
@@ -108,7 +108,7 @@ export default function Dashboard() {
           <CardHeader><CardTitle className="text-lg">Top Movers</CardTitle></CardHeader>
           <CardContent>
             {scopedTopMovers.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">Prices will move as trades are placed.</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">Lines will move as bets are placed.</p>
             ) : (
               <div className="space-y-3">
                 {scopedTopMovers.map((m, i) => (
