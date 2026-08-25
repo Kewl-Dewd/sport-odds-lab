@@ -9,28 +9,29 @@ const steps = [
   {
     icon: TrendingUp,
     title: "Welcome to Sports Market Lab!",
-    description: "This is a classroom sportsbook simulator. You wager virtual cash against live moneyline, spread and totals odds — and your instructor runs the book.",
-    tip: "Tip: Prices represent the market's belief about how likely an outcome is.",
+    description: "This is a classroom sportsbook simulator. You place virtual wagers against live moneyline, spread and totals odds — and your instructor runs the book.",
+    tip: "Tip: Odds are the book's estimate of how likely an outcome is.",
   },
   {
     icon: DollarSign,
-    title: "You Start with Virtual Cash",
-    description: "Your instructor has set a starting balance for you. Use it to buy shares in outcomes you think are likely. Sell shares you think are overpriced.",
-    tip: "Tip: Don't go all-in on one trade. Diversify your bets!",
+    title: "You Start with a Virtual Bankroll",
+    description: "Your instructor sets your starting bankroll. Stake it on the games they publish for your class. Your stake is deducted when the bet is placed and returned with winnings if it hits.",
+    tip: "Tip: Don't put your whole bankroll on one game — manage your stake sizes.",
   },
   {
     icon: BarChart3,
-    title: "Prices Move with Every Trade",
-    description: "When you buy shares, the price goes up. When you sell, it goes down. This is how markets discover the true probability of outcomes — through trading activity.",
-    tip: "Tip: A price of 60¢ means the market thinks there's a ~60% chance of that outcome.",
+    title: "Odds Are Locked When You Bet",
+    description: "Odds move as game time approaches, but the price you accept is locked in. Compare the odds you got to the closing line to see whether you found value.",
+    tip: "Tip: Beating the closing line consistently is the best sign of skill.",
   },
   {
     icon: Trophy,
-    title: "Settlement & Scoring",
-    description: "When the event ends, the winning outcome pays $1.00 per share. Losers pay $0. Your goal: build the highest portfolio value through smart predictions.",
-    tip: "Tip: Check the leaderboard to see how you rank against classmates!",
+    title: "Settlement & the House",
+    description: "When games finish, winning bets pay stake × odds and losing bets pay nothing. The class sees the book's handle and profit, so you learn both sides of the counter.",
+    tip: "Tip: Check the leaderboard to see how your bankroll ranks against classmates.",
   },
 ];
+
 
 export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
   const [step, setStep] = useState(0);
@@ -90,7 +91,7 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
               </Button>
             ) : (
               <Button variant="hero" onClick={handleComplete} className="flex-1">
-                Got it — start trading
+                Got it — start betting
               </Button>
             )}
           </div>
