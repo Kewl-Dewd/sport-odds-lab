@@ -101,7 +101,7 @@ export default function Markets() {
     <div className="container py-8 space-y-6 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
-        <p className="text-muted-foreground">Browse and trade on sports events</p>
+        <p className="text-muted-foreground">Browse the board and place your bets</p>
       </div>
 
       {/* Search & Filters */}
@@ -196,7 +196,7 @@ export default function Markets() {
                       </p>
                       {vol && (
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BarChart3 className="h-3 w-3" />${vol.volume.toFixed(0)} vol · {vol.count} trades
+                          <BarChart3 className="h-3 w-3" />${vol.volume.toFixed(0)} handle · {vol.count} bets
                         </p>
                       )}
                     </div>

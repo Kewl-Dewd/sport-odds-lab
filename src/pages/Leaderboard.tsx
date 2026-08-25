@@ -7,13 +7,13 @@ import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const modes: { key: LeaderboardMode; label: string; icon: typeof Trophy; description: string }[] = [
-  { key: "portfolio", label: "Portfolio Value", icon: Trophy, description: "Highest total portfolio value" },
+  { key: "portfolio", label: "Bankroll", icon: Trophy, description: "Biggest total bankroll" },
   { key: "return", label: "Best Return %", icon: TrendingUp, description: "Best percentage return on starting capital" },
   { key: "decision", label: "Decision Quality", icon: Brain, description: "Best decision-making based on timing and edge capture" },
   { key: "risk", label: "Risk Management", icon: Shield, description: "Best diversification and position sizing" },
-  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest return per trade placed" },
-  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win rate on trades" },
-  { key: "activity", label: "Most Active", icon: Zap, description: "Most trades placed" },
+  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest return per bet placed" },
+  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win rate on bets" },
+  { key: "activity", label: "Most Active", icon: Zap, description: "Most bets placed" },
 ];
 
 const rankIcon = (rank: number) => {
@@ -47,11 +47,11 @@ export default function Leaderboard() {
       case "risk":
         return `${entry.riskScore}/100`;
       case "efficiency":
-        return `$${entry.efficiency.toFixed(2)}/trade`;
+        return `$${entry.efficiency.toFixed(2)}/bet`;
       case "accuracy":
         return entry.tradeCount > 0 ? `${((entry.winCount / entry.tradeCount) * 100).toFixed(0)}%` : "—";
       case "activity":
-        return `${entry.tradeCount} trades`;
+        return `${entry.tradeCount} bets`;
     }
   };
 
@@ -98,7 +98,7 @@ export default function Leaderboard() {
                   {formatValue(e)}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {e.tradeCount} trades · ${e.portfolioValue.toFixed(0)} total
+                  {e.tradeCount} bets · ${e.portfolioValue.toFixed(0)} bankroll
                 </p>
               </div>
             );
@@ -109,7 +109,7 @@ export default function Leaderboard() {
       {/* Full Table */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">All Traders</CardTitle>
+          <CardTitle className="text-lg">All Bettors</CardTitle>
         </CardHeader>
         <CardContent>
           {entries.length === 0 ? (
@@ -120,10 +120,10 @@ export default function Leaderboard() {
                 <thead>
                   <tr className="border-b text-left text-muted-foreground">
                     <th className="pb-3 font-medium w-12">Rank</th>
-                    <th className="pb-3 font-medium">Trader</th>
-                    <th className="pb-3 font-medium text-right">Portfolio</th>
+                    <th className="pb-3 font-medium">Bettor</th>
+                    <th className="pb-3 font-medium text-right">Bankroll</th>
                     <th className="pb-3 font-medium text-right">Return</th>
-                    <th className="pb-3 font-medium text-right">Trades</th>
+                    <th className="pb-3 font-medium text-right">Bets</th>
                     <th className="pb-3 font-medium text-right hidden sm:table-cell">Win Rate</th>
                     <th className="pb-3 font-medium text-right hidden md:table-cell">Decision</th>
                     <th className="pb-3 font-medium text-right hidden md:table-cell">Risk</th>

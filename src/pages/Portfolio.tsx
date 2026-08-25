@@ -113,15 +113,15 @@ export default function Portfolio() {
       `Class,${classroom.name}`,
       `Date,${new Date().toLocaleDateString()}`,
       ``,
-      `Portfolio Value,$${totalValue.toFixed(2)}`,
+      `Total Value,$${totalValue.toFixed(2)}`,
       `Return,${returnPct >= 0 ? "+" : ""}${returnPct.toFixed(1)}%`,
       `Cash,$${cash.toFixed(2)}`,
-      `Holdings Value,$${holdingsValue.toFixed(2)}`,
+      `At Risk,$${holdingsValue.toFixed(2)}`,
       `Realized P&L,$${realizedPnL.toFixed(2)}`,
       `Unrealized P&L,$${unrealizedPnL.toFixed(2)}`,
       ``,
-      `Trades,${stats.tradeCount}`,
-      `Markets Engaged,${stats.marketsTraded}`,
+      `Bets,${stats.tradeCount}`,
+      `Games Bet,${stats.marketsTraded}`,
       `Win Rate,${(stats.winRate * 100).toFixed(0)}%`,
       `Decision Score,${stats.decisionQuality.compositeScore}/100`,
       `Risk Score,${stats.riskMetrics.compositeScore}/100`,
@@ -140,8 +140,8 @@ export default function Portfolio() {
     <div className="container py-8 space-y-8 animate-slide-up print:py-2 print:space-y-4">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">Portfolio {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
-          <p className="text-muted-foreground">Your holdings, performance, and decision analytics</p>
+          <h1 className="text-2xl md:text-3xl font-bold">My Bets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
+          <p className="text-muted-foreground">Your open bets, results, and betting analytics</p>
         </div>
         <div className="flex gap-2 print:hidden">
           <Button variant="outline" size="sm" onClick={handleExportPersonalCsv} disabled={!stats}>
@@ -163,11 +163,11 @@ export default function Portfolio() {
           </span>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Cash</span>
+          <span className="text-xs text-muted-foreground">Bankroll</span>
           <p className="text-lg md:text-xl font-bold font-mono">${cash.toFixed(2)}</p>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Holdings</span>
+          <span className="text-xs text-muted-foreground">At Risk</span>
           <p className="text-lg md:text-xl font-bold font-mono">${holdingsValue.toFixed(2)}</p>
         </div>
         <div className="stat-card">
@@ -183,7 +183,7 @@ export default function Portfolio() {
           </p>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Cash Utilization</span>
+          <span className="text-xs text-muted-foreground">Bankroll In Play</span>
           <p className="text-lg md:text-xl font-bold font-mono">{cashUtilization.toFixed(0)}%</p>
           <div className="h-1 rounded-full bg-muted mt-1 overflow-hidden">
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${cashUtilization}%` }} />
@@ -218,7 +218,7 @@ export default function Portfolio() {
               <span className={cn("text-lg font-bold font-mono", stats.behavioral.returnPerTrade >= 0 ? "price-up" : "price-down")}>
                 ${stats.behavioral.returnPerTrade.toFixed(2)}
               </span>
-              <span className="text-[10px] text-muted-foreground block">/trade</span>
+              <span className="text-[10px] text-muted-foreground block">/bet</span>
             </div>
           </div>
         </div>
@@ -227,13 +227,13 @@ export default function Portfolio() {
       {/* Charts row */}
       <div className="grid lg:grid-cols-2 gap-6">
         <Card>
-          <CardHeader><CardTitle className="text-lg">Equity Curve</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">Bankroll History</CardTitle></CardHeader>
           <CardContent>
             <PortfolioPerformanceChart snapshots={portfolioHistory} startingCash={classroom.startingBalance} />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><PieIcon className="h-4 w-4" />Holdings Allocation</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><PieIcon className="h-4 w-4" />Where Your Money Is</CardTitle></CardHeader>
           <CardContent>
             <HoldingsDistribution positions={positions} cash={cash} />
           </CardContent>
@@ -246,8 +246,8 @@ export default function Portfolio() {
           <TabsTrigger value="stats"><BarChart3 className="h-3.5 w-3.5 mr-1" />Personal Stats</TabsTrigger>
           <TabsTrigger value="decisions"><Brain className="h-3.5 w-3.5 mr-1" />Decision Quality</TabsTrigger>
           <TabsTrigger value="settled"><CheckCircle className="h-3.5 w-3.5 mr-1" />Settled Outcomes</TabsTrigger>
-          <TabsTrigger value="timing"><Clock className="h-3.5 w-3.5 mr-1" />Trade Timing</TabsTrigger>
-          <TabsTrigger value="positions"><TrendingUp className="h-3.5 w-3.5 mr-1" />Positions</TabsTrigger>
+          <TabsTrigger value="timing"><Clock className="h-3.5 w-3.5 mr-1" />Bet Timing</TabsTrigger>
+          <TabsTrigger value="positions"><TrendingUp className="h-3.5 w-3.5 mr-1" />Open Bets</TabsTrigger>
         </TabsList>
 
         {/* Personal Stats Tab */}
@@ -257,16 +257,16 @@ export default function Portfolio() {
               <Card>
                 <CardHeader className="pb-2"><CardTitle className="text-sm">Activity</CardTitle></CardHeader>
                 <CardContent className="space-y-0">
-                  <StatRow label="Total trades" value={stats.tradeCount} icon={<Zap className="h-3 w-3" />} />
-                  <StatRow label="Buy orders" value={stats.buyCount} />
-                  <StatRow label="Sell orders" value={stats.sellCount} />
-                  <StatRow label="Avg trade size" value={`$${stats.avgTradeSize.toFixed(2)}`} />
-                  <StatRow label="Total volume" value={`$${stats.totalVolume.toFixed(0)}`} />
-                  <StatRow label="Markets traded" value={stats.marketsTraded} />
-                  <StatRow label="Avg time between" value={stats.behavioral.avgTimeBetweenTrades > 0 ? `${stats.behavioral.avgTimeBetweenTrades.toFixed(1)}m` : "—"} />
+                  <StatRow label="Total bets" value={stats.tradeCount} icon={<Zap className="h-3 w-3" />} />
+                  <StatRow label="Bets placed" value={stats.buyCount} />
+                  <StatRow label="Cash-outs" value={stats.sellCount} />
+                  <StatRow label="Avg stake" value={`$${stats.avgTradeSize.toFixed(2)}`} />
+                  <StatRow label="Total handle" value={`$${stats.totalVolume.toFixed(0)}`} />
+                  <StatRow label="Games bet" value={stats.marketsTraded} />
+                  <StatRow label="Avg time between bets" value={stats.behavioral.avgTimeBetweenTrades > 0 ? `${stats.behavioral.avgTimeBetweenTrades.toFixed(1)}m` : "—"} />
                   {stats.behavioral.overtradingIndicator && (
                     <div className="flex items-center gap-1.5 pt-2 text-xs text-warning">
-                      <AlertTriangle className="h-3 w-3" />Overtrading detected
+                      <AlertTriangle className="h-3 w-3" />Betting too often
                     </div>
                   )}
                   {stats.behavioral.inactivityIndicator && (
@@ -289,7 +289,7 @@ export default function Portfolio() {
                   <StatRow label="Avg win size" value={`$${stats.avgWinSize.toFixed(2)}`} className="price-up" />
                   <StatRow label="Avg loss size" value={`$${stats.avgLossSize.toFixed(2)}`} className="price-down" />
                   <StatRow label="Profit factor" value={stats.profitFactor >= 999 ? "∞" : stats.profitFactor.toFixed(2)} />
-                  <StatRow label="Return/trade" value={`$${stats.behavioral.returnPerTrade.toFixed(2)}`}
+                  <StatRow label="Return/bet" value={`$${stats.behavioral.returnPerTrade.toFixed(2)}`}
                     className={stats.behavioral.returnPerTrade >= 0 ? "price-up" : "price-down"} />
                 </CardContent>
               </Card>
@@ -321,14 +321,14 @@ export default function Portfolio() {
                   )}
                   {stats.strengths.length === 0 && stats.weaknesses.length === 0 && (
                     <p className="text-sm text-muted-foreground text-center py-4">
-                      More trades needed for analysis
+                      More bets needed for analysis
                     </p>
                   )}
                 </CardContent>
               </Card>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Place some trades to see your stats.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Place some bets to see your stats.</p>
           )}
         </TabsContent>
 
@@ -339,13 +339,13 @@ export default function Portfolio() {
               <Card>
                 <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Brain className="h-4 w-4" />Decision Metrics</CardTitle></CardHeader>
                 <CardContent className="space-y-0">
-                  <StatRow label="Early buyer score" value={`${(stats.decisionQuality.earlyBuyerScore * 100).toFixed(0)}%`}
+                  <StatRow label="Early bet score" value={`${(stats.decisionQuality.earlyBuyerScore * 100).toFixed(0)}%`}
                     icon={<TrendingUp className="h-3 w-3" />} />
-                  <StatRow label="Chase buy rate" value={`${(stats.decisionQuality.chaseBuyRate * 100).toFixed(0)}%`}
+                  <StatRow label="Chasing the line rate" value={`${(stats.decisionQuality.chaseBuyRate * 100).toFixed(0)}%`}
                     className={stats.decisionQuality.chaseBuyRate > 0.3 ? "price-down" : ""} />
-                  <StatRow label="Overconfident buy rate" value={`${(stats.decisionQuality.overconfidentBuyRate * 100).toFixed(0)}%`}
+                  <StatRow label="Betting heavy favorites rate" value={`${(stats.decisionQuality.overconfidentBuyRate * 100).toFixed(0)}%`}
                     className={stats.decisionQuality.overconfidentBuyRate > 0.2 ? "price-down" : ""} />
-                  <StatRow label="Early sell rate" value={`${(stats.decisionQuality.earlySellRate * 100).toFixed(0)}%`}
+                  <StatRow label="Early cash-out rate" value={`${(stats.decisionQuality.earlySellRate * 100).toFixed(0)}%`}
                     className={stats.decisionQuality.earlySellRate > 0.4 ? "price-down" : ""} />
                   <StatRow label="Held to settlement" value={`${(stats.decisionQuality.heldToSettlementRate * 100).toFixed(0)}%`} />
                   <StatRow label="Avg edge captured" value={`${(stats.decisionQuality.avgEdgeCaptured * 100).toFixed(1)}¢`}
@@ -411,10 +411,10 @@ export default function Portfolio() {
         {/* Settled Outcomes Tab */}
         <TabsContent value="settled">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Settled Trade Outcomes</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">Settled Bets</CardTitle></CardHeader>
             <CardContent>
               {settledOutcomes.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">No settled positions yet.</p>
+                <p className="text-sm text-muted-foreground text-center py-6">No settled bets yet.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -464,10 +464,10 @@ export default function Portfolio() {
         {/* Trade Timing Tab */}
         <TabsContent value="timing">
           <Card>
-            <CardHeader><CardTitle className="text-sm">Trade Timing Review</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">Bet Timing Review</CardTitle></CardHeader>
             <CardContent>
               {tradeTimings.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">No trades to review.</p>
+                <p className="text-sm text-muted-foreground text-center py-6">No bets to review.</p>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -534,7 +534,7 @@ export default function Portfolio() {
                   </CardHeader>
                   <CardContent>
                     {winners.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">No winning positions yet</p>
+                      <p className="text-sm text-muted-foreground text-center py-4">No winning bets yet</p>
                     ) : (
                       <div className="space-y-2">
                         {winners.slice(0, 5).map((p) => (
@@ -561,7 +561,7 @@ export default function Portfolio() {
                   </CardHeader>
                   <CardContent>
                     {losers.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">No losing positions yet</p>
+                      <p className="text-sm text-muted-foreground text-center py-4">No losing bets yet</p>
                     ) : (
                       <div className="space-y-2">
                         {losers.slice(0, 5).map((p) => (
@@ -585,11 +585,11 @@ export default function Portfolio() {
 
             {/* Open Positions Table */}
             <Card>
-              <CardHeader><CardTitle className="text-lg">Open Positions</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-lg">Open Bets</CardTitle></CardHeader>
               <CardContent>
                 {portfolio.holdings.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-6 text-center">
-                    No positions yet. <Link to="/markets" className="text-primary underline">Browse markets</Link> to start trading.
+                    No open bets yet. <Link to="/markets" className="text-primary underline">Browse the board</Link> to place your first bet.
                   </p>
                 ) : (
                   <div className="overflow-x-auto">
@@ -598,8 +598,8 @@ export default function Portfolio() {
                         <tr className="border-b text-left text-muted-foreground">
                           <th className="pb-3 font-medium">Market</th>
                           <th className="pb-3 font-medium">Outcome</th>
-                          <th className="pb-3 font-medium text-right">Shares</th>
-                          <th className="pb-3 font-medium text-right">Avg Cost</th>
+                          <th className="pb-3 font-medium text-right">Units</th>
+                          <th className="pb-3 font-medium text-right">Avg Price</th>
                           <th className="pb-3 font-medium text-right">Price</th>
                           <th className="pb-3 font-medium text-right">Value</th>
                           <th className="pb-3 font-medium text-right">P&L</th>
@@ -636,7 +636,7 @@ export default function Portfolio() {
       {/* Trade History */}
       {userTrades.length > 0 && (
         <Card>
-          <CardHeader><CardTitle className="text-lg">Trade History ({userTrades.length} total)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-lg">Bet History ({userTrades.length} total)</CardTitle></CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

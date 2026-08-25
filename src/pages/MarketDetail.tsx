@@ -216,14 +216,14 @@ export default function MarketDetail() {
               <div className="stat-card !p-3">
                 <div className="flex items-center gap-1.5 mb-1">
                   <Activity className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Trades</span>
+                  <span className="text-xs text-muted-foreground">Bets</span>
                 </div>
                 <p className="font-bold font-mono text-sm">{analytics.tradeCount}</p>
               </div>
               <div className="stat-card !p-3">
                 <div className="flex items-center gap-1.5 mb-1">
                   <UsersIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">Traders</span>
+                  <span className="text-xs text-muted-foreground">Bettors</span>
                 </div>
                 <p className="font-bold font-mono text-sm">{analytics.uniqueTraders}</p>
               </div>
@@ -358,15 +358,15 @@ export default function MarketDetail() {
 
                       {holding && (
                         <p className="text-sm text-muted-foreground">
-                          You own <span className="font-mono font-medium text-foreground">{holding.shares}</span> shares
+                          You hold <span className="font-mono font-medium text-foreground">{holding.shares}</span> units
                           (avg {(holding.avgCostPerShare * 100).toFixed(1)}¢)
                         </p>
                       )}
 
                       {isOpen && (
                         <div className="flex gap-2">
-                          <Button variant="success" className="flex-1" onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "BUY" })}>Buy</Button>
-                          <Button variant="destructive" className="flex-1" disabled={!holding || holding.shares === 0} onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}>Sell</Button>
+                          <Button variant="success" className="flex-1" onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "BUY" })}>Bet</Button>
+                          <Button variant="destructive" className="flex-1" disabled={!holding || holding.shares === 0} onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}>Cash out</Button>
                         </div>
                       )}
                       {market.status === "settled" && market.resolvedOutcomeId === o.id && (
@@ -391,7 +391,7 @@ export default function MarketDetail() {
                         <th className="p-3 font-medium">Probability</th>
                         <th className="p-3 font-medium text-right">Change</th>
                         <th className="p-3 font-medium text-right">Held</th>
-                        {isOpen && <th className="p-3 font-medium text-center">Trade</th>}
+                        {isOpen && <th className="p-3 font-medium text-center">Bet</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -468,7 +468,7 @@ export default function MarketDetail() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-sm">Trade Volume</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">Handle</CardTitle></CardHeader>
             <CardContent>
               <VolumeChart priceHistory={priceHistory} />
             </CardContent>
@@ -476,7 +476,7 @@ export default function MarketDetail() {
 
           {marketTrades.length > 0 && (
             <Card>
-              <CardHeader><CardTitle className="text-lg">Recent Trades</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-lg">Recent Bets</CardTitle></CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   {marketTrades.map((t) => (
@@ -512,7 +512,7 @@ export default function MarketDetail() {
                 <div><span className="text-muted-foreground">Engine:</span> {engineLabel}</div>
                 <div><span className="text-muted-foreground">Liquidity:</span> {market.config.liquidityParameter}</div>
                 <div><span className="text-muted-foreground">Outcomes:</span> {market.outcomes.length}</div>
-                <div><span className="text-muted-foreground">Max Trade:</span> {market.config.maxTradeSize}</div>
+                <div><span className="text-muted-foreground">Max bet:</span> {market.config.maxTradeSize}</div>
               </div>
             </CardContent>
           </Card>
@@ -541,7 +541,7 @@ export default function MarketDetail() {
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Vol: ${oa.volume.toFixed(0)}</span>
-                      <span>{oa.tradeCount} trades</span>
+                      <span>{oa.tradeCount} bets</span>
                     </div>
                   </div>
                 ))}
