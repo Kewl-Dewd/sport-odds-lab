@@ -71,8 +71,8 @@ export function TradeTicketModal({
     if (result) {
       setLastTrade(result);
       setStep("success");
-      toast.success(`${type} ${qty} shares of ${outcomeName}`, {
-        description: `Executed at ${(result.pricePerShare * 100).toFixed(1)}¢ avg · Total: $${result.totalCost.toFixed(2)}`,
+      toast.success(`${type === "BUY" ? "Bet placed" : "Cashed out"} · ${qty} units on ${outcomeName}`, {
+        description: `Avg price ${(result.pricePerShare * 100).toFixed(1)}¢ · ${type === "BUY" ? "Stake" : "Returns"}: $${Math.abs(result.totalCost).toFixed(2)}`,
       });
 
       // Educational nudges after trade
@@ -85,7 +85,7 @@ export function TradeTicketModal({
         if (type === "BUY" && result.priceBeforeTrade > 0.8) pushNudge(NUDGE_CONTENT.overconfident);
       }
     } else {
-      toast.error("Trade failed", { description: "Something went wrong. Please try again." });
+      toast.error("Bet failed", { description: "Something went wrong. Please try again." });
     }
   };
 
@@ -98,7 +98,7 @@ export function TradeTicketModal({
         {/* Header */}
         <div className="flex items-center justify-between p-5 border-b">
           <div>
-            <h3 className="font-semibold text-lg">Trade Ticket</h3>
+            <h3 className="font-semibold text-lg">Bet Slip</h3>
             <p className="text-sm text-muted-foreground">{market.title}</p>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-md hover:bg-muted transition-colors">
@@ -111,11 +111,11 @@ export function TradeTicketModal({
             {/* Outcome */}
             <div className="rounded-lg border p-3 flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Outcome</p>
+                <p className="text-sm text-muted-foreground">Your pick</p>
                 <p className="font-semibold">{outcomeName}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Current Price</p>
+                <p className="text-sm text-muted-foreground">Line</p>
                 <p className="text-xl font-bold font-mono">{(currentOutcome.price * 100).toFixed(1)}¢</p>
               </div>
             </div>
@@ -125,24 +125,24 @@ export function TradeTicketModal({
               <button
                 className={cn("flex-1 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5", type === "BUY" ? "bg-success text-success-foreground" : "hover:bg-muted")}
                 onClick={() => setType("BUY")}
-              ><TrendingUp className="h-4 w-4" />Buy</button>
+              ><TrendingUp className="h-4 w-4" />Place bet</button>
               <button
                 className={cn("flex-1 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5", type === "SELL" ? "bg-destructive text-destructive-foreground" : "hover:bg-muted")}
                 onClick={() => setType("SELL")}
-              ><TrendingDown className="h-4 w-4" />Sell</button>
+              ><TrendingDown className="h-4 w-4" />Cash out</button>
             </div>
 
             {/* Quantity */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium">Shares</label>
+                <label className="text-sm font-medium">Units ($1 payout each)</label>
                 {type === "BUY" ? (
-                  <span className="text-xs text-muted-foreground">Cash: <span className="font-mono">${portfolio.cash.toFixed(2)}</span></span>
+                  <span className="text-xs text-muted-foreground">Bankroll: <span className="font-mono">${portfolio.cash.toFixed(2)}</span></span>
                 ) : (
-                  <span className="text-xs text-muted-foreground">Owned: <span className="font-mono">{holding?.shares ?? 0}</span></span>
+                  <span className="text-xs text-muted-foreground">Units held: <span className="font-mono">{holding?.shares ?? 0}</span></span>
                 )}
               </div>
-              <Input type="number" min={1} step={1} placeholder="Enter quantity" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="font-mono text-lg" />
+              <Input type="number" min={1} step={1} placeholder="Enter units" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="font-mono text-lg" />
               <div className="flex gap-2">
                 {[10, 25, 50, 100].map((q) => (
                   <button key={q} onClick={() => setQuantity(String(q))} className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">{q}</button>
@@ -153,22 +153,22 @@ export function TradeTicketModal({
             {/* Trade Impact Preview */}
             {tradeEstimate && qty > 0 && (
               <div className="rounded-lg bg-muted p-4 space-y-2.5 text-sm">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Trade Impact Preview</p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bet Slip Preview</p>
                 {educationEnabled && (
                   <p className="text-xs text-muted-foreground -mt-1 mb-1">
-                    Each share costs slightly more than the last because your trade moves the price. This is normal.
+                    Each unit costs slightly more than the last because your bet moves the line. This is normal.
                   </p>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Current Price</span>
+                  <span className="text-muted-foreground">Opening line</span>
                   <span className="font-mono font-semibold">{(currentOutcome.price * 100).toFixed(1)}¢</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Avg. Execution Price</span>
+                  <span className="text-muted-foreground">Your average price</span>
                   <span className="font-mono font-semibold">{(tradeEstimate.avgPrice * 100).toFixed(1)}¢</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">New Market Price</span>
+                  <span className="text-muted-foreground">New line</span>
                   <span className="font-mono font-semibold">
                     {(tradeEstimate.priceAfter * 100).toFixed(1)}¢
                     <span className={cn("ml-1 text-xs", tradeEstimate.priceAfter > tradeEstimate.priceBefore ? "price-up" : "price-down")}>
@@ -178,31 +178,31 @@ export function TradeTicketModal({
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Implied Probability</span>
+                  <span className="text-muted-foreground">Implied chance to win</span>
                   <span className="font-mono text-xs">
                     {(tradeEstimate.impliedProbBefore * 100).toFixed(1)}% → {(tradeEstimate.impliedProbAfter * 100).toFixed(1)}%
                   </span>
                 </div>
                 <div className="border-t pt-2 flex justify-between">
-                  <span className="text-muted-foreground">Slippage</span>
+                  <span className="text-muted-foreground">Line movement cost</span>
                   <span className={cn("font-mono text-xs", highSlippage ? "text-warning font-semibold" : "")}>
                     {(slippage * 100).toFixed(1)}¢ ({slippagePct.toFixed(1)}%)
                   </span>
                 </div>
                 {tradeEstimate.fee > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Transaction Fee</span>
+                    <span className="text-muted-foreground">Bet fee</span>
                     <span className="font-mono text-xs">${tradeEstimate.fee.toFixed(2)}</span>
                   </div>
                 )}
                 {tradeEstimate.spread > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Spread Cost</span>
+                    <span className="text-muted-foreground">Vig / spread</span>
                     <span className="font-mono text-xs">${tradeEstimate.spread.toFixed(2)}</span>
                   </div>
                 )}
                 <div className="border-t pt-2 flex justify-between font-medium">
-                  <span>{type === "BUY" ? "Total Cost" : "Total Credit"}</span>
+                  <span>{type === "BUY" ? "Stake" : "Cash-out returns"}</span>
                   <span className="font-mono font-bold">${Math.abs(tradeEstimate.totalCost).toFixed(2)}</span>
                 </div>
               </div>
@@ -212,7 +212,7 @@ export function TradeTicketModal({
             {highSlippage && qty > 0 && (
               <div className="flex items-center gap-2 text-warning text-sm rounded-lg bg-warning/10 p-3">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
-                <span>High slippage ({slippagePct.toFixed(1)}%). Large orders move prices significantly. Consider splitting into smaller trades.</span>
+                <span>The line moves a lot on this bet ({slippagePct.toFixed(1)}%). Big stakes shift the price — consider a smaller bet.</span>
               </div>
             )}
 
@@ -224,10 +224,10 @@ export function TradeTicketModal({
             )}
 
             {isPaywalled ? (
-              <AccessRequired action="place trades" />
+              <AccessRequired action="place bets" />
             ) : (
               <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
-                Review {type === "BUY" ? "Purchase" : "Sale"}<ArrowRight className="ml-1.5 h-4 w-4" />
+                Review {type === "BUY" ? "bet" : "cash out"}<ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             )}
 
@@ -237,39 +237,39 @@ export function TradeTicketModal({
         {step === "confirm" && tradeEstimate && (
           <div className="p-5 space-y-5">
             <div className="text-center space-y-1">
-              <p className="text-sm text-muted-foreground">Confirm your trade</p>
-              <p className="text-2xl font-bold">{type} {qty} shares</p>
+              <p className="text-sm text-muted-foreground">Confirm your bet</p>
+              <p className="text-2xl font-bold">{type === "BUY" ? "Bet" : "Cash out"} {qty} units</p>
               <p className="text-muted-foreground">{outcomeName}</p>
             </div>
             <div className="rounded-lg border p-4 space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Quantity</span>
-                <span className="font-mono font-semibold">{qty} shares</span>
+                <span className="text-muted-foreground">Units</span>
+                <span className="font-mono font-semibold">{qty}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Current → New Price</span>
+                <span className="text-muted-foreground">Line move</span>
                 <span className="font-mono font-semibold">
                   {(tradeEstimate.priceBefore * 100).toFixed(1)}¢ → {(tradeEstimate.priceAfter * 100).toFixed(1)}¢
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Avg. Execution</span>
+                <span className="text-muted-foreground">Your average price</span>
                 <span className="font-mono font-semibold">{(tradeEstimate.avgPrice * 100).toFixed(1)}¢</span>
               </div>
               {highSlippage && (
                 <div className="flex justify-between text-warning">
-                  <span>Slippage</span>
+                  <span>Line movement cost</span>
                   <span className="font-mono font-semibold">{slippagePct.toFixed(1)}%</span>
                 </div>
               )}
               <div className="flex justify-between border-t pt-3">
-                <span className="font-medium">{type === "BUY" ? "Total Cost" : "Total Credit"}</span>
+                <span className="font-medium">{type === "BUY" ? "Stake" : "Cash-out returns"}</span>
                 <span className="font-mono font-bold text-lg">${Math.abs(tradeEstimate.totalCost).toFixed(2)}</span>
               </div>
             </div>
             <div className="flex gap-3">
               <Button variant="outline" className="flex-1" onClick={() => setStep("entry")}>Back</Button>
-              <Button variant={type === "BUY" ? "success" : "destructive"} className="flex-1" onClick={handleConfirm}>Confirm {type}</Button>
+              <Button variant={type === "BUY" ? "success" : "destructive"} className="flex-1" onClick={handleConfirm}>{type === "BUY" ? "Place bet" : "Cash out"}</Button>
             </div>
           </div>
         )}
@@ -280,9 +280,9 @@ export function TradeTicketModal({
               <Check className="h-7 w-7 text-success" />
             </div>
             <div>
-              <p className="text-lg font-bold">Trade Executed!</p>
+              <p className="text-lg font-bold">{lastTrade.type === "BUY" ? "Bet placed!" : "Cashed out!"}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                {lastTrade.type} {lastTrade.quantity} shares of {lastTrade.outcomeName} at {(lastTrade.pricePerShare * 100).toFixed(1)}¢ avg.
+                {lastTrade.quantity} units on {lastTrade.outcomeName} at {(lastTrade.pricePerShare * 100).toFixed(1)}¢ average price.
               </p>
             </div>
             <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
@@ -291,7 +291,7 @@ export function TradeTicketModal({
                 <span className="font-mono font-semibold">${lastTrade.totalCost.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Price Movement</span>
+                <span className="text-muted-foreground">Line movement</span>
                 <span className="font-mono font-semibold">
                   {(lastTrade.priceBeforeTrade * 100).toFixed(1)}¢ → {(lastTrade.priceAfterTrade * 100).toFixed(1)}¢
                 </span>
