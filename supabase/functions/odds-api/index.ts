@@ -16,6 +16,9 @@ const corsHeaders = {
 
 const ODDS_BASE = "https://api.odds-api.io/v3";
 
+// odds-api.io /odds requires an explicit bookmaker list.
+const DEFAULT_BOOKMAKERS = "pinnacle,bet365,draftkings,fanduel,betmgm";
+
 type Action = "sports" | "events" | "odds" | "scores";
 
 // How long each response type stays fresh. Sports list barely changes;
@@ -39,6 +42,7 @@ interface RequestBody {
   limit?: number;
   eventId?: string | number;
   status?: string;
+  bookmakers?: string;
 }
 
 function cacheKeyFor(body: RequestBody): string {
@@ -50,6 +54,7 @@ function cacheKeyFor(body: RequestBody): string {
     body.limit ?? "",
     body.eventId ?? "",
     body.status ?? "",
+    body.bookmakers ?? "",
   ].join("|");
 }
 
@@ -177,6 +182,8 @@ function buildUrl(body: RequestBody, apiKey: string): string | null {
     case "odds": {
       if (!body.eventId) return null;
       params.set("eventId", String(body.eventId));
+      // odds-api.io requires an explicit bookmaker list on /odds.
+      params.set("bookmakers", body.bookmakers ?? DEFAULT_BOOKMAKERS);
       return `${ODDS_BASE}/odds?${params.toString()}`;
     }
 
