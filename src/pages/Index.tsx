@@ -100,7 +100,7 @@ export default function Index() {
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
               Learn Markets by{" "}
-              <span className="text-gradient">Trading Sports</span>
+              <span className="text-gradient">Running a Sportsbook</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               A classroom sportsbook that runs on live moneyline, spread and totals odds.
@@ -110,13 +110,14 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/auth?tab=signup">
-                  Start Trading <ArrowRight className="ml-1 h-4 w-4" />
+                  Start Betting <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link to="/how-it-works">How It Works</Link>
               </Button>
             </div>
+
           </div>
         </div>
       </section>
