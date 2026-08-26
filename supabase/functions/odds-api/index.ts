@@ -17,7 +17,7 @@ const corsHeaders = {
 const ODDS_BASE = "https://api.odds-api.io/v3";
 
 // odds-api.io /odds requires an explicit bookmaker list.
-const DEFAULT_BOOKMAKERS = "pinnacle,bet365,draftkings,fanduel,betmgm";
+const DEFAULT_BOOKMAKERS = "DraftKings,FanDuel";
 
 type Action = "sports" | "events" | "odds" | "scores" | "bookmakers";
 
