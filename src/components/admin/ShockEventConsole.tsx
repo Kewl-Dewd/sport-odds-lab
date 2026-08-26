@@ -682,7 +682,7 @@ function ReplayDialog({
                   <p className="font-mono font-medium">{reaction.reactorCount}</p>
                 </div>
                 <div className="rounded border p-2">
-                  <p className="text-[10px] text-muted-foreground">Trades after</p>
+                  <p className="text-[10px] text-muted-foreground">Bets after</p>
                   <p className="font-mono font-medium">{reaction.perMarket.reduce((s, m) => s + m.postTrades, 0)}</p>
                 </div>
               </div>

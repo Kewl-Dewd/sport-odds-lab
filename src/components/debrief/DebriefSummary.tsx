@@ -83,7 +83,7 @@ export function DebriefSummary({
             <Metric label="Markets" value={summary.marketCount} />
             <Metric label="Trades" value={summary.totalTrades} />
             <Metric label="Volume" value={`$${summary.totalVolume.toFixed(0)}`} />
-            <Metric label="Active traders" value={summary.activeTraders} />
+            <Metric label="Active bettors" value={summary.activeTraders} />
           </div>
         </CardContent>
       </Card>
@@ -195,7 +195,7 @@ export function DebriefSummary({
         </CardHeader>
         <CardContent>
           {summary.keyTrades.length === 0 ? (
-            <p className="text-xs text-muted-foreground text-center py-4">No notable trades.</p>
+            <p className="text-xs text-muted-foreground text-center py-4">No notable bets.</p>
           ) : (
             <div className="space-y-1.5">
               {summary.keyTrades.map((k) => (

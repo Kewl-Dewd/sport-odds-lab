@@ -95,7 +95,7 @@ export default function ExperimentView() {
           <p className="text-2xl font-bold">{linkedMarkets.length}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-5">
-          <p className="text-xs text-muted-foreground">Trades</p>
+          <p className="text-xs text-muted-foreground">Bets</p>
           <p className="text-2xl font-bold">{expTrades.length}</p>
         </CardContent></Card>
         <Card><CardContent className="pt-5">

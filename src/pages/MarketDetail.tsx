@@ -366,7 +366,7 @@ export default function MarketDetail() {
                       {isOpen && (
                         <div className="flex gap-2">
                           <Button variant="success" className="flex-1" onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "BUY" })}>Bet</Button>
-                          <Button variant="destructive" className="flex-1" disabled={!holding || holding.shares === 0} onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}>Cash out</Button>
+                          <Button variant="destructive" className="flex-1" disabled={!holding || holding.units === 0} onClick={() => setTradeModal({ open: true, outcomeId: o.id, outcomeName: o.name, type: "SELL" })}>Cash out</Button>
                         </div>
                       )}
                       {market.status === "settled" && market.resolvedOutcomeId === o.id && (

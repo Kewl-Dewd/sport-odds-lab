@@ -1100,7 +1100,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         });
         return result.trade;
       } catch (e) {
-        console.error("Trade execution failed:", e);
+        console.error("Bet execution failed:", e);
         return null;
       }
     },
@@ -1356,7 +1356,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         ? { ...m, status: "suspended" as const }
         : m
     ));
-    logAction("Pause all trading", activeClassroomId);
+    logAction("Pause all betting", activeClassroomId);
   }, [activeClassroomId, logAction]);
 
   const resumeAllTrading = useCallback(() => {
@@ -1365,7 +1365,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         ? { ...m, status: "open" as const }
         : m
     ));
-    logAction("Resume all trading", activeClassroomId);
+    logAction("Resume all betting", activeClassroomId);
   }, [activeClassroomId, logAction]);
 
   const batchSettleMarkets = useCallback((settlements: { marketId: string; winningOutcomeId: string }[]) => {
@@ -1482,7 +1482,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         return { ...prev, cash: Math.round(newCash * 100) / 100, holdings: newHoldings };
       });
     }
-    logAction("Reverse trade", `Trade ${tradeId.slice(0, 8)} by ${tradeToReverse.outcomeName}`);
+    logAction("Reverse bet", `Trade ${tradeId.slice(0, 8)} by ${tradeToReverse.outcomeName}`);
   }, [trades, portfolio.userId, logAction]);
 
   const recalculateAll = useCallback(() => {
@@ -1546,7 +1546,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         .filter((t) => t.type === "SELL")
         .reduce((sum, t) => sum + t.totalCost - t.quantity * t.priceBeforeTrade, 0);
 
-      // For mode view, "portfolio value" = startingBalance + scoped P&L (treated as a sub-account).
+      // For mode view, "bankroll value" = startingBalance + scoped P&L (treated as a sub-account).
       // When unfiltered, fall back to the real cash + holdings calc.
       let portfolioValue: number;
       let cash: number;
@@ -2034,10 +2034,10 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         injectedBy: "instructor",
       };
       setScenarioEvents((prev) => [ev, ...prev]);
-      logAction("Whale trade", `${trader.displayName} ${input.type} ${input.quantity}× ${result.trade.outcomeName}`);
+      logAction("Whale bet", `${trader.displayName} ${input.type} ${input.quantity}× ${result.trade.outcomeName}`);
       return result.trade;
     } catch (e) {
-      console.error("Whale trade failed:", e);
+      console.error("Whale bet failed:", e);
       return null;
     }
   }, [markets, students, portfolio.userId, activeClassroomId, logAction]);

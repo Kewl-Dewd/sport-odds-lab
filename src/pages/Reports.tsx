@@ -186,9 +186,9 @@ export default function Reports() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <ExportCard icon={<Trophy className="h-5 w-5 text-warning" />} title="Leaderboard" desc="Portfolio value rankings with key stats"
               onClick={() => exportLeaderboardCsv(students, markets, trades, classroom.startingBalance)} />
-            <ExportCard icon={<Users className="h-5 w-5 text-primary" />} title="Portfolio Summaries" desc="Cash, holdings, P&L for each student"
+            <ExportCard icon={<Users className="h-5 w-5 text-primary" />} title="Bankroll Summaries" desc="Cash, open bets, P&L for each student"
               onClick={() => exportPortfolioSummaryCsv(students, markets, trades, classroom.startingBalance)} />
-            <ExportCard icon={<FileText className="h-5 w-5 text-accent-foreground" />} title="All Trades" desc="Complete chronological trade history"
+            <ExportCard icon={<FileText className="h-5 w-5 text-accent-foreground" />} title="All Bets" desc="Complete chronological bet history"
               onClick={() => exportTradeHistoryByUserCsv(trades, students)} />
             <ExportCard icon={<Activity className="h-5 w-5 text-success" />} title="Participation Summary" desc="Grades, scores, and engagement metrics"
               onClick={() => exportParticipationSummaryCsv(students, trades, markets, classroom.startingBalance, config)} />
@@ -200,7 +200,7 @@ export default function Reports() {
 
           {/* Per-market export */}
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Export Trades by Market</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-sm">Export Bets by Market</CardTitle></CardHeader>
             <CardContent>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {markets.map((m) => (
@@ -217,7 +217,7 @@ export default function Reports() {
 
           {/* Per-student export */}
           <Card>
-            <CardHeader className="pb-3"><CardTitle className="text-sm">Export Trades by Student</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-sm">Export Bets by Student</CardTitle></CardHeader>
             <CardContent>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
                 {students.map((s) => (

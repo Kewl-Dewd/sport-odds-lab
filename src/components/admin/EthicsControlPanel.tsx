@@ -114,7 +114,7 @@ export function EthicsControlPanel() {
 
   const handleWhale = () => {
     if (!whMarketId || !whOutcomeId || !whUserId) {
-      toast.error("Pick market, outcome, and trader");
+      toast.error("Pick market, outcome, and bettor");
       return;
     }
     const qty = Number(whQty);
@@ -123,7 +123,7 @@ export function EthicsControlPanel() {
       return;
     }
     if (!ethicsSettings.allowWhaleTrades) {
-      toast.error("Enable 'Allow whale trades' in settings first");
+      toast.error("Enable 'Allow whale bets' in settings first");
       return;
     }
     const trade = executeWhaleTrade({
@@ -136,7 +136,7 @@ export function EthicsControlPanel() {
     if (trade) {
       toast.success(`Whale ${whType} executed: ${qty}× ${trade.outcomeName}`);
     } else {
-      toast.error("Whale trade failed — check balance / market status");
+      toast.error("Whale bet failed — check balance / market status");
     }
   };
 
@@ -178,7 +178,7 @@ export function EthicsControlPanel() {
               onChange={(v) => updateEthicsSettings({ allowRumorInjection: v })}
             />
             <SettingToggle
-              label="Allow coordinated team trading"
+              label="Allow coordinated team betting"
               checked={ethicsSettings.allowCoordinatedTrading}
               onChange={(v) => updateEthicsSettings({ allowCoordinatedTrading: v })}
             />
@@ -193,7 +193,7 @@ export function EthicsControlPanel() {
               onChange={(v) => updateEthicsSettings({ allowDirectionalGroup: v })}
             />
             <SettingToggle
-              label="Allow whale-style trades"
+              label="Allow whale-style bets"
               checked={ethicsSettings.allowWhaleTrades}
               onChange={(v) => updateEthicsSettings({ allowWhaleTrades: v })}
             />
@@ -287,7 +287,7 @@ export function EthicsControlPanel() {
         <TabsContent value="whale">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm">Simulate a whale-style trade</CardTitle>
+              <CardTitle className="text-sm">Simulate a whale-style bet</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-xs text-muted-foreground">
@@ -320,7 +320,7 @@ export function EthicsControlPanel() {
                   </Select>
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs">Acting trader</Label>
+                  <Label className="text-xs">Acting bettor</Label>
                   <Select value={whUserId} onValueChange={setWhUserId}>
                     <SelectTrigger className="h-9"><SelectValue placeholder="Choose student" /></SelectTrigger>
                     <SelectContent>
@@ -356,7 +356,7 @@ export function EthicsControlPanel() {
                 <ShieldAlert className="h-3.5 w-3.5 mr-1.5" />Execute whale trade
               </Button>
               {!ethicsSettings.allowWhaleTrades && (
-                <p className="text-xs text-warning">Enable "Allow whale-style trades" in settings to use this.</p>
+                <p className="text-xs text-warning">Enable "Allow whale-style bets" in settings to use this.</p>
               )}
             </CardContent>
           </Card>

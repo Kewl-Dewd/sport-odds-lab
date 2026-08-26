@@ -9,9 +9,9 @@ const models = [
   {
     icon: LineChart,
     badge: "Prediction Market",
-    title: "Trade outcome shares",
+    title: "Bet outcome units",
     description:
-      "Buy and sell shares on event outcomes. Prices move with supply and demand using a deterministic LMSR or linear-impact market maker — students see how collective belief becomes a price.",
+      "Buy and sell units on event outcomes. Prices move with supply and demand using a deterministic LMSR or linear-impact market maker — students see how collective belief becomes a price.",
     bullets: ["LMSR & linear-impact engines", "Implied probabilities sum to 100%", "Live order book & price history"],
     accent: "from-primary/15 to-primary/5",
     iconBg: "bg-primary/10 text-primary",

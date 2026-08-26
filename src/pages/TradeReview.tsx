@@ -223,7 +223,7 @@ function MarketReplay({ market, allTrades }: { market: Market; allTrades: Trade[
         <CardHeader className="pb-2"><CardTitle className="text-sm">Complete Trade Log ({marketTrades.length})</CardTitle></CardHeader>
         <CardContent>
           {marketTrades.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-4">No trades in this market.</p>
+            <p className="text-sm text-muted-foreground text-center py-4">No bets in this market.</p>
           ) : (
             <div className="overflow-x-auto max-h-72 overflow-y-auto">
               <table className="w-full text-xs">
@@ -365,10 +365,10 @@ function StudentReview({
       {/* Best & Worst trades + Timing review */}
       <div className="grid md:grid-cols-2 gap-4">
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4 text-success" />Best Trades</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingUp className="h-4 w-4 text-success" />Best Bets</CardTitle></CardHeader>
           <CardContent>
             {bestTrades.filter((t) => t.pnl > 0).length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">No profitable trades yet.</p>
+              <p className="text-sm text-muted-foreground text-center py-4">No profitable bets yet.</p>
             ) : (
               <div className="space-y-2">
                 {bestTrades.filter((t) => t.pnl > 0).map(({ trade: t, pnl }) => (
@@ -386,10 +386,10 @@ function StudentReview({
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingDown className="h-4 w-4 text-destructive" />Worst Trades</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><TrendingDown className="h-4 w-4 text-destructive" />Worst Bets</CardTitle></CardHeader>
           <CardContent>
             {worstTrades.filter((t) => t.pnl < 0).length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">No losing trades yet.</p>
+              <p className="text-sm text-muted-foreground text-center py-4">No losing bets yet.</p>
             ) : (
               <div className="space-y-2">
                 {worstTrades.filter((t) => t.pnl < 0).map(({ trade: t, pnl }) => (
@@ -410,7 +410,7 @@ function StudentReview({
 
       {/* Trade timing & entry/exit quality */}
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" />Trade Timing & Entry Quality</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" />Bet Timing & Entry Quality</CardTitle></CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4 text-center">
             <div>
@@ -537,7 +537,7 @@ function StudentComparison({
     { label: "Decision Score", a: statsA.decisionQuality.compositeScore, b: statsB.decisionQuality.compositeScore },
     { label: "Risk Score", a: statsA.riskMetrics.compositeScore, b: statsB.riskMetrics.compositeScore },
     { label: "Efficiency", a: `$${statsA.behavioral.returnPerTrade.toFixed(2)}`, b: `$${statsB.behavioral.returnPerTrade.toFixed(2)}`, aVal: statsA.behavioral.returnPerTrade, bVal: statsB.behavioral.returnPerTrade },
-    { label: "Markets Traded", a: statsA.marketsTraded, b: statsB.marketsTraded },
+    { label: "Markets Bet", a: statsA.marketsTraded, b: statsB.marketsTraded },
     { label: "Max Drawdown", a: `${statsA.riskMetrics.maxDrawdownPct.toFixed(1)}%`, b: `${statsB.riskMetrics.maxDrawdownPct.toFixed(1)}%`, aVal: -statsA.riskMetrics.maxDrawdownPct, bVal: -statsB.riskMetrics.maxDrawdownPct },
   ];
 
@@ -597,7 +597,7 @@ export default function TradeReview() {
           <Link to="/instructor" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-2">
             <ArrowLeft className="h-4 w-4" />Back to Instructor
           </Link>
-          <h1 className="text-2xl md:text-3xl font-bold">Trade Review & Replay</h1>
+          <h1 className="text-2xl md:text-3xl font-bold">Bet Review & Replay</h1>
           <p className="text-muted-foreground">{classroom.name} — Classroom review tools for instructional use</p>
         </div>
         <Button
@@ -679,7 +679,7 @@ export default function TradeReview() {
         <TabsContent value="compare">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center gap-3">
-              <label className="text-sm font-medium text-muted-foreground">Trader A:</label>
+              <label className="text-sm font-medium text-muted-foreground">Bettor A:</label>
               <Select value={compareA} onValueChange={setCompareA}>
                 <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -691,7 +691,7 @@ export default function TradeReview() {
                 </SelectContent>
               </Select>
               <span className="text-muted-foreground font-medium">vs</span>
-              <label className="text-sm font-medium text-muted-foreground">Trader B:</label>
+              <label className="text-sm font-medium text-muted-foreground">Bettor B:</label>
               <Select value={compareB} onValueChange={setCompareB}>
                 <SelectTrigger className="w-[200px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -713,7 +713,7 @@ export default function TradeReview() {
               />
             )}
             {compareA === compareB && (
-              <p className="text-sm text-muted-foreground text-center py-8">Select two different traders to compare.</p>
+              <p className="text-sm text-muted-foreground text-center py-8">Select two different bettors to compare.</p>
             )}
           </div>
         </TabsContent>

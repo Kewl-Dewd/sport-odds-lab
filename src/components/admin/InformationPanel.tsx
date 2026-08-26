@@ -195,7 +195,7 @@ export function InformationPanel() {
           <Stat label="Recipients" value={`${analysis.recipientCount}`} sub={`${analysis.openedCount} opened`} />
           <Stat label="Acknowledged" value={`${analysis.acknowledgedCount}`} sub={`${Math.round((analysis.acknowledgedCount / Math.max(1, analysis.recipientCount)) * 100)}%`} />
           <Stat
-            label="Avg trades after"
+            label="Avg bets after"
             value={totals.holdersAvgTradesAfter.toFixed(1)}
             sub={`vs ${totals.nonHoldersAvgTradesAfter.toFixed(1)} non-holders`}
             highlight={totals.holdersAvgTradesAfter > totals.nonHoldersAvgTradesAfter}
@@ -267,8 +267,8 @@ function BehaviorTable({ title, rows, highlight }: { title: string; rows: Return
             <tr className="border-b">
               <th className="text-left px-3 py-1.5 font-medium">Student</th>
               <th className="text-right px-3 py-1.5 font-medium">Opened</th>
-              <th className="text-right px-3 py-1.5 font-medium">Trades before</th>
-              <th className="text-right px-3 py-1.5 font-medium">Trades after</th>
+              <th className="text-right px-3 py-1.5 font-medium">Bets before</th>
+              <th className="text-right px-3 py-1.5 font-medium">Bets after</th>
               <th className="text-right px-3 py-1.5 font-medium">Reaction (5m)</th>
               <th className="text-right px-3 py-1.5 font-medium">Vol after</th>
             </tr>

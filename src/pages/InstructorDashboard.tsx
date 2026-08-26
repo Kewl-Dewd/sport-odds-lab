@@ -201,7 +201,7 @@ export default function InstructorDashboard() {
         <div className="stat-card !p-3">
           <div className="flex items-center gap-1.5 mb-1">
             <Activity className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Trades Today</span>
+            <span className="text-xs text-muted-foreground">Bets Today</span>
           </div>
           <p className="text-xl font-bold font-mono">{todayTrades.length}</p>
         </div>
@@ -235,7 +235,7 @@ export default function InstructorDashboard() {
           <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1.5"><Zap className="h-3.5 w-3.5" />Most Volatile</CardTitle></CardHeader>
           <CardContent>
             {marketVolatility.filter((m) => m.tradeCount > 0).length === 0 ? (
-              <p className="text-xs text-muted-foreground">No trading activity</p>
+              <p className="text-xs text-muted-foreground">No betting activity</p>
             ) : (
               <div className="space-y-1.5">
                 {marketVolatility.filter((m) => m.tradeCount > 0).slice(0, 3).map(({ market: m, volatility }) => (
@@ -250,14 +250,14 @@ export default function InstructorDashboard() {
         </Card>
         {/* Most Traded */}
         <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" />Most Traded</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-1.5"><BarChart3 className="h-3.5 w-3.5" />Most Bet</CardTitle></CardHeader>
           <CardContent>
             {(() => {
               const counts = new Map<string, number>();
               for (const t of trades) counts.set(t.marketId, (counts.get(t.marketId) ?? 0) + 1);
               const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
               return sorted.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No trades yet</p>
+                <p className="text-xs text-muted-foreground">No bets yet</p>
               ) : (
                 <div className="space-y-1.5">
                   {sorted.map(([id, count]) => {
@@ -344,7 +344,7 @@ export default function InstructorDashboard() {
                       <th className="pb-3 font-medium">League</th>
                       <th className="pb-3 font-medium">Status</th>
                       <th className="pb-3 font-medium text-right">Outcomes</th>
-                      <th className="pb-3 font-medium text-right">Trades</th>
+                      <th className="pb-3 font-medium text-right">Bets</th>
                       <th className="pb-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -453,8 +453,8 @@ export default function InstructorDashboard() {
                     <tr className="border-b text-left text-muted-foreground">
                       <th className="pb-3 font-medium">Name</th>
                       <th className="pb-3 font-medium text-right">Cash</th>
-                      <th className="pb-3 font-medium text-right">Portfolio</th>
-                      <th className="pb-3 font-medium text-right">Trades</th>
+                      <th className="pb-3 font-medium text-right">Bankroll</th>
+                      <th className="pb-3 font-medium text-right">Bets</th>
                       <th className="pb-3 font-medium text-right">Return</th>
                       <th className="pb-3 font-medium text-right">Actions</th>
                     </tr>
@@ -516,10 +516,10 @@ export default function InstructorDashboard() {
 
             {/* Reverse Trade */}
             <Card>
-              <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><Undo2 className="h-4 w-4" />Recent Trades</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-1.5"><Undo2 className="h-4 w-4" />Recent Bets</CardTitle></CardHeader>
               <CardContent>
                 {trades.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">No trades to reverse</p>
+                  <p className="text-xs text-muted-foreground">No bets to reverse</p>
                 ) : (
                   <div className="space-y-1.5 max-h-48 overflow-y-auto">
                     {trades.slice(0, 10).map((t) => {
@@ -592,7 +592,7 @@ export default function InstructorDashboard() {
                       <Link to="/instructor/present/replay">Market Replay<ChevronRight className="h-3.5 w-3.5" /></Link>
                     </Button>
                     <Button variant="outline" size="sm" className="w-full justify-between" asChild>
-                      <Link to="/instructor/review">Trade Review<ChevronRight className="h-3.5 w-3.5" /></Link>
+                      <Link to="/instructor/review">Bet Review<ChevronRight className="h-3.5 w-3.5" /></Link>
                     </Button>
                     <Button variant="outline" size="sm" className="w-full justify-between" asChild>
                       <Link to="/instructor/reports">Reports & Grading<ChevronRight className="h-3.5 w-3.5" /></Link>

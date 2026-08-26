@@ -337,7 +337,7 @@ function ExperimentEditor({
               <Select value={scoringMode} onValueChange={(v) => setScoringMode(v as ExperimentScoringMode)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="portfolio-return">Portfolio Return</SelectItem>
+                  <SelectItem value="portfolio-return">Bankroll Return</SelectItem>
                   <SelectItem value="prediction-accuracy">Prediction Accuracy</SelectItem>
                   <SelectItem value="decision-quality">Decision Quality</SelectItem>
                   <SelectItem value="risk-adjusted">Risk-Adjusted</SelectItem>
