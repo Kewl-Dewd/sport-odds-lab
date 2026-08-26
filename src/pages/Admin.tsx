@@ -56,7 +56,7 @@ export default function Admin() {
 
   const handleSeedDemo = () => {
     seedDemoData(8, 5);
-    toast.success("Demo data seeded!", { description: "8 sample students with 5 trades each have been added." });
+    toast.success("Demo data seeded!", { description: "8 sample students with 5 bets each have been added." });
   };
 
   const handleAddStudent = () => {
@@ -108,11 +108,11 @@ export default function Admin() {
           <p className="text-2xl font-bold font-mono">{activeMarkets}</p>
         </div>
         <div className="stat-card">
-          <span className="text-sm text-muted-foreground">Total Trades</span>
+          <span className="text-sm text-muted-foreground">Total Bets</span>
           <p className="text-2xl font-bold font-mono">{trades.length}</p>
         </div>
         <div className="stat-card">
-          <span className="text-sm text-muted-foreground">Trade Volume</span>
+          <span className="text-sm text-muted-foreground">Bet Volume</span>
           <p className="text-2xl font-bold font-mono">${totalVolume.toFixed(0)}</p>
         </div>
       </div>
@@ -121,10 +121,10 @@ export default function Admin() {
       <div className="grid md:grid-cols-3 gap-4">
         {/* Most Traded */}
         <Card>
-          <CardHeader className="pb-3"><CardTitle className="text-sm">Most Traded</CardTitle></CardHeader>
+          <CardHeader className="pb-3"><CardTitle className="text-sm">Most Bet</CardTitle></CardHeader>
           <CardContent>
             {mostTraded.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No trades yet</p>
+              <p className="text-sm text-muted-foreground">No bets yet</p>
             ) : (
               <div className="space-y-2">
                 {mostTraded.map(({ market: m, count }) => m && (
@@ -195,7 +195,7 @@ export default function Admin() {
                       <th className="pb-3 font-medium">League</th>
                       <th className="pb-3 font-medium">Status</th>
                       <th className="pb-3 font-medium text-right">Outcomes</th>
-                      <th className="pb-3 font-medium text-right">Trades</th>
+                      <th className="pb-3 font-medium text-right">Bets</th>
                       <th className="pb-3 font-medium text-right">Actions</th>
                     </tr>
                   </thead>
@@ -279,8 +279,8 @@ export default function Admin() {
                     <tr className="border-b text-left text-muted-foreground">
                       <th className="pb-3 font-medium">Name</th>
                       <th className="pb-3 font-medium text-right">Cash</th>
-                      <th className="pb-3 font-medium text-right">Holdings</th>
-                      <th className="pb-3 font-medium text-right">Trades</th>
+                      <th className="pb-3 font-medium text-right">Open Bets</th>
+                      <th className="pb-3 font-medium text-right">Bets</th>
                       <th className="pb-3 font-medium text-right">Return</th>
                       <th className="pb-3 font-medium text-right">Actions</th>
                     </tr>

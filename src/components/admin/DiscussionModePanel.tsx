@@ -74,7 +74,7 @@ export function DiscussionModePanel() {
     if (discussionSettings.revealNames) {
       return students.find((s) => s.userId === uid)?.displayName ?? uid;
     }
-    return aliasMap.get(uid) ?? "Trader ?";
+    return aliasMap.get(uid) ?? "Bettor ?";
   };
 
   const comparison = useMemo(
@@ -116,7 +116,7 @@ export function DiscussionModePanel() {
       <CardContent className="space-y-4">
         <p className="text-xs text-muted-foreground">
           Compare cohorts of traders without singling anyone out. Default is anonymized
-          ("Trader A", "Trader B", …). Toggle name reveal only when needed.
+          ("Bettor A", "Bettor B", …). Toggle name reveal only when needed.
           Pin notable comparisons and save discussion cards for later course use.
         </p>
 
@@ -250,15 +250,15 @@ function CohortCard({
       </div>
 
       <div className="grid grid-cols-2 gap-1.5 text-xs">
-        <Stat label="Trades / trader" value={cohort.avgTradesPerTrader.toFixed(1)} />
-        <Stat label="Positions / trader" value={cohort.avgPositionsPerTrader.toFixed(1)} />
+        <Stat label="Bets / bettor" value={cohort.avgTradesPerTrader.toFixed(1)} />
+        <Stat label="Positions / bettor" value={cohort.avgPositionsPerTrader.toFixed(1)} />
         <Stat
           label="Avg return"
           value={`${cohort.avgReturnPct >= 0 ? "+" : ""}${cohort.avgReturnPct.toFixed(1)}%`}
           tone={cohort.avgReturnPct >= 0 ? "pos" : "neg"}
         />
         <Stat
-          label="Avg portfolio"
+          label="Avg bankroll"
           value={`$${cohort.avgPortfolioValue.toFixed(0)}`}
           hint={`vs $${startingBalance.toFixed(0)} start`}
         />
@@ -417,7 +417,7 @@ function DiscussionCardComposer({
           </div>
 
           <Field label="What happened" required value={fields.whatHappened} onChange={(v) => setField("whatHappened", v)} />
-          <Field label="What the traders appeared to do" value={fields.whatTradersDid} onChange={(v) => setField("whatTradersDid", v)} />
+          <Field label="What the bettors appeared to do" value={fields.whatTradersDid} onChange={(v) => setField("whatTradersDid", v)} />
           <Field label="How prices responded" value={fields.howPricesResponded} onChange={(v) => setField("howPricesResponded", v)} />
           <Field label="Alternative strategy that could have worked" value={fields.alternativeStrategy} onChange={(v) => setField("alternativeStrategy", v)} />
           <Field label="Key takeaway for class discussion" value={fields.keyTakeaway} onChange={(v) => setField("keyTakeaway", v)} />
@@ -500,7 +500,7 @@ function DiscussionCardItem({
       </div>
 
       <CardField label="What happened" value={card.whatHappened} />
-      {card.whatTradersDid && <CardField label="Traders appeared to" value={card.whatTradersDid} />}
+      {card.whatTradersDid && <CardField label="Bettors appeared to" value={card.whatTradersDid} />}
       {card.howPricesResponded && <CardField label="Prices responded" value={card.howPricesResponded} />}
       {card.alternativeStrategy && <CardField label="Alternative strategy" value={card.alternativeStrategy} />}
       {card.keyTakeaway && <CardField label="Key takeaway" value={card.keyTakeaway} highlight />}

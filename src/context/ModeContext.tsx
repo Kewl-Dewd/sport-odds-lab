@@ -9,7 +9,7 @@ export const MODE_LABELS: Record<AppMode, string> = {
 };
 
 export const MODE_DESCRIPTIONS: Record<AppMode, string> = {
-  prediction: "LMSR-style probability markets. Buy outcome shares; price = implied probability.",
+  prediction: "LMSR-style probability markets. Buy outcome units; price = implied probability.",
   sportsbook: "Fixed-odds wagers on moneylines, spreads, and totals. Stake → payout.",
   racetrack: "Pari-mutuel pools for Win / Place / Show. Odds set by the crowd.",
 };

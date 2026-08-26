@@ -77,7 +77,7 @@ export function PriceMeaningPanel({ price, outcomeName }: { price: number; outco
 
 export function TradingImpactPanel() {
   return (
-    <ExpandablePanel icon={TrendingUp} title="How trading changes prices" accentColor="accent">
+    <ExpandablePanel icon={TrendingUp} title="How betting changes prices" accentColor="accent">
       <p>
         Every trade moves the price. When you <strong className="text-foreground">buy</strong> shares of an outcome,
         you're expressing confidence it will happen — the price goes <strong className="price-up">up</strong>.
@@ -87,8 +87,8 @@ export function TradingImpactPanel() {
         price goes <strong className="price-down">down</strong>.
       </p>
       <div className="rounded-lg bg-muted p-3 space-y-1 mt-2">
-        <p className="text-xs"><strong className="text-foreground">Larger trades</strong> move prices more than small ones.</p>
-        <p className="text-xs"><strong className="text-foreground">Higher liquidity</strong> markets absorb trades with less price movement.</p>
+        <p className="text-xs"><strong className="text-foreground">Larger bets</strong> move prices more than small ones.</p>
+        <p className="text-xs"><strong className="text-foreground">Higher liquidity</strong> markets absorb bets with less price movement.</p>
         <p className="text-xs">In binary markets, if one outcome goes up, the other automatically goes down.</p>
       </div>
     </ExpandablePanel>

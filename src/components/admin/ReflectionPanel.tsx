@@ -240,7 +240,7 @@ function AssignmentForm({
     <div className="space-y-3 text-sm">
       <div className="space-y-1.5">
         <Label className="text-xs">Title</Label>
-        <Input value={state.title} onChange={(e) => update({ title: e.target.value })} placeholder="e.g. Week 1 trading session debrief" />
+        <Input value={state.title} onChange={(e) => update({ title: e.target.value })} placeholder="e.g. Week 1 betting session debrief" />
       </div>
       <div className="space-y-1.5">
         <Label className="text-xs">Description (optional)</Label>

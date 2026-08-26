@@ -47,25 +47,25 @@ export const NUDGE_CONTENT = {
     type: "concentration" as const,
     title: "Concentration Risk",
     message:
-      "You placed a large trade in a single market. If this outcome loses, it could significantly impact your portfolio. Consider spreading your capital across multiple markets to reduce risk.",
+      "You placed a large bet in a single market. If this outcome loses, it could significantly impact your bankroll. Consider spreading your capital across multiple markets to reduce risk.",
   },
   slippage: {
     type: "slippage" as const,
     title: "Why Did the Price Slip?",
     message:
-      "Your trade was large relative to the market's liquidity, so each share cost slightly more (or earned slightly less) than the displayed price. This is called slippage. Smaller trades experience less slippage.",
+      "Your bet was large relative to the market's liquidity, so each share cost slightly more (or earned slightly less) than the displayed price. This is called slippage. Smaller bets experience less slippage.",
   },
   settlement: {
     type: "settlement" as const,
     title: "How Payouts Work",
     message:
-      "This market has been settled. Shares in the winning outcome pay $1.00 each. Shares in losing outcomes pay $0.00. Your portfolio has been updated automatically with the payout.",
+      "This market has been settled. Units in the winning outcome pay $1.00 each. Units in losing outcomes pay $0.00. Your bankroll has been updated automatically with the payout.",
   },
   unrealized: {
     type: "unrealized" as const,
     title: "Unrealized vs Realized P&L",
     message:
-      "Unrealized P&L is the gain or loss on shares you still hold, based on current prices. It only becomes 'realized' when you sell the shares or the market settles. Prices can change before then.",
+      "Unrealized P&L is the gain or loss on units you still hold, based on current prices. It only becomes 'realized' when you sell the units or the market settles. Prices can change before then.",
   },
   overconfident: {
     type: "overconfident" as const,
@@ -77,6 +77,6 @@ export const NUDGE_CONTENT = {
     type: "diversification" as const,
     title: "Diversification",
     message:
-      "All your holdings are in one market. By trading across multiple markets, you reduce the chance that a single bad outcome significantly hurts your portfolio.",
+      "All your open bets are in one market. By betting across multiple markets, you reduce the chance that a single bad outcome significantly hurts your bankroll.",
   },
 } as const;

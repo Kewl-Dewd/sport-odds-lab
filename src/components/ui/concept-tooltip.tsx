@@ -36,26 +36,26 @@ export const CONCEPTS = {
   },
   liquidity: {
     term: "Liquidity",
-    explanation: "How much the price moves per trade. Higher liquidity means smaller price changes, making the market more stable.",
+    explanation: "How much the price moves per bet. Higher liquidity means smaller price changes, making the market more stable.",
   },
   slippage: {
     term: "Slippage",
-    explanation: "The difference between the expected price and the actual execution price. Larger trades cause more slippage.",
+    explanation: "The difference between the expected price and the actual execution price. Larger bets cause more slippage.",
   },
   settlement: {
     term: "Settlement",
-    explanation: "When a market closes and payouts are determined. Winning shares pay $1.00, losing shares pay $0.",
+    explanation: "When a market closes and payouts are determined. Winning units pay $1.00, losing units pay $0.",
   },
   unrealizedPnL: {
     term: "Unrealized P&L",
-    explanation: "Profit or loss on shares you still hold, based on current market prices. It becomes 'realized' when you sell.",
+    explanation: "Profit or loss on units you still hold, based on current market prices. It becomes 'realized' when you sell.",
   },
   portfolioValue: {
-    term: "Portfolio Value",
-    explanation: "Your total worth: cash balance plus the current market value of all shares you hold.",
+    term: "Bankroll Value",
+    explanation: "Your total worth: cash balance plus the current market value of all units you hold.",
   },
   marketMaker: {
     term: "Market Maker",
-    explanation: "An automated pricing formula that always offers to buy and sell shares. It ensures you can always trade, even when no other traders are active.",
+    explanation: "An automated pricing formula that always offers to buy and sell units. It ensures you can always bet, even when no other bettors are active.",
   },
 } as const;

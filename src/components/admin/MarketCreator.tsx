@@ -593,7 +593,7 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
               <div className="space-y-1.5">
                 <label className="text-sm font-medium">Liquidity Parameter</label>
                 <Input type="number" value={liquidity} onChange={(e) => setLiquidity(Number(e.target.value))} min={10} max={1000} />
-                <p className="text-xs text-muted-foreground">Higher = less price movement per trade</p>
+                <p className="text-xs text-muted-foreground">Higher = less price movement per bet</p>
               </div>
 
               <button onClick={() => setShowAdvanced(!showAdvanced)} className="text-xs text-muted-foreground hover:text-foreground underline">
@@ -604,7 +604,7 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
                 <div className="space-y-3 rounded-lg border p-3">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium">Max Trade Size</label>
+                      <label className="text-xs font-medium">Max Bet Size</label>
                       <Input type="number" value={maxTradeSize} onChange={(e) => setMaxTradeSize(Number(e.target.value))} min={1} max={10000} />
                     </div>
                     <div className="space-y-1.5">
@@ -622,7 +622,7 @@ export function MarketCreator({ onClose }: { onClose: () => void }) {
                       <Input type="number" value={transactionFeePct} onChange={(e) => setTransactionFeePct(Number(e.target.value))} min={0} max={10} step={0.1} />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium">Spread (¢/share)</label>
+                      <label className="text-xs font-medium">Spread (¢/unit)</label>
                       <Input type="number" value={spread} onChange={(e) => setSpread(Number(e.target.value))} min={0} max={0.05} step={0.001} />
                     </div>
                   </div>

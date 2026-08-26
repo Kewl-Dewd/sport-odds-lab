@@ -23,8 +23,8 @@ export function PresentLeaderboard({ settings }: { settings: PresentationSetting
       <div className="flex-1 flex items-center justify-center p-8">
         <EmptyState
           icon={Trophy}
-          title="No traders yet"
-          description="Add students or wait for trades to appear before projecting the leaderboard."
+          title="No bettors yet"
+          description="Add students or wait for bets to appear before projecting the leaderboard."
         />
       </div>
     );

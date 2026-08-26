@@ -138,7 +138,7 @@ export function ScoringSettingsPanel() {
                     participationGoal: Math.max(1, parseInt(e.target.value) || 10),
                   })}
                 />
-                <span className="text-[11px] text-muted-foreground">trades for full credit</span>
+                <span className="text-[11px] text-muted-foreground">bets for full credit</span>
               </div>
             </div>
 
@@ -291,7 +291,7 @@ export function ScoringSettingsPanel() {
 
             <div className="rounded-md border">
               <div className="grid grid-cols-[1fr_auto_auto_auto] gap-2 px-3 py-1.5 border-b text-[10px] uppercase text-muted-foreground tracking-wide">
-                <span>Student</span><span>Trades</span><span>Badges</span><span>Score</span>
+                <span>Student</span><span>Bets</span><span>Badges</span><span>Score</span>
               </div>
               <div className="max-h-72 overflow-y-auto divide-y">
                 {[...allScores]

@@ -179,7 +179,7 @@ export function PresentationToolbar({
                   </div>
 
                   <div className="flex items-center justify-between">
-                    <span className="text-sm">Show Trade Stats</span>
+                    <span className="text-sm">Show Bet Stats</span>
                     <Switch checked={settings.showTradeStats} onCheckedChange={(v) => update({ showTradeStats: v })} />
                   </div>
 

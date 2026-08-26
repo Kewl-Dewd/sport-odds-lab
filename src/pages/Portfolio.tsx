@@ -404,7 +404,7 @@ export default function Portfolio() {
               </Card>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Place some trades to see decision analytics.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">Place some bets to see decision analytics.</p>
           )}
         </TabsContent>
 
