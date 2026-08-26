@@ -19,12 +19,13 @@ const ODDS_BASE = "https://api.odds-api.io/v3";
 // odds-api.io /odds requires an explicit bookmaker list.
 const DEFAULT_BOOKMAKERS = "pinnacle,bet365,draftkings,fanduel,betmgm";
 
-type Action = "sports" | "events" | "odds" | "scores";
+type Action = "sports" | "events" | "odds" | "scores" | "bookmakers";
 
 // How long each response type stays fresh. Sports list barely changes;
 // live odds move fastest but 3 minutes is fine for classroom pacing.
 const TTL_SECONDS: Record<Action, number> = {
   sports: 24 * 60 * 60,
+  bookmakers: 24 * 60 * 60,
   events: 10 * 60,
   odds: 3 * 60,
   scores: 2 * 60,
@@ -169,6 +170,9 @@ function buildUrl(body: RequestBody, apiKey: string): string | null {
   switch (body.action) {
     case "sports":
       return `${ODDS_BASE}/sports?${params.toString()}`;
+
+    case "bookmakers":
+      return `${ODDS_BASE}/bookmakers?${params.toString()}`;
 
     case "events": {
       if (body.sport) params.set("sport", body.sport);
