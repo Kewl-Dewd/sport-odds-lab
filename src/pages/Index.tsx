@@ -100,7 +100,7 @@ export default function Index() {
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
               Learn Markets by{" "}
-              <span className="text-gradient">Trading Sports</span>
+              <span className="text-gradient">Running a Sportsbook</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               A classroom sportsbook that runs on live moneyline, spread and totals odds.
@@ -110,13 +110,14 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/auth?tab=signup">
-                  Start Trading <ArrowRight className="ml-1 h-4 w-4" />
+                  Start Betting <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link to="/how-it-works">How It Works</Link>
               </Button>
             </div>
+
           </div>
         </div>
       </section>
@@ -184,21 +185,21 @@ export default function Index() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">1</span>
-                <h4 className="font-semibold">Instructor sets up the event</h4>
+                <h4 className="font-semibold">Instructor opens the board</h4>
               </div>
               <p className="text-muted-foreground">
-                Pick a game, pull live lines from the odds API, configure runners, and choose which
-                of the three market surfaces to enable.
+                Pick the games, pull live moneyline, spread and totals lines from the odds API,
+                set the betting window and stake limits.
               </p>
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">2</span>
-                <h4 className="font-semibold">Students trade across all three</h4>
+                <h4 className="font-semibold">Students place their bets</h4>
               </div>
               <p className="text-muted-foreground">
-                Each market opens in its own tab. Students choose how to allocate virtual capital
-                between prediction shares, fixed-odds wagers, and pool tickets.
+                Each student stakes their virtual bankroll on the posted lines. Odds lock the
+                moment a bet is accepted, so they learn how vig and price shape risk.
               </p>
             </div>
             <div className="space-y-2">
@@ -207,10 +208,11 @@ export default function Index() {
                 <h4 className="font-semibold">Settle and debrief</h4>
               </div>
               <p className="text-muted-foreground">
-                The instructor settles outcomes; the platform reconciles every model into a single
-                P&L, leaderboard, and behavioral debrief.
+                The instructor settles the results; the platform pays out winners and shows the
+                book&apos;s handle, hold and the class leaderboard.
               </p>
             </div>
+
           </div>
         </div>
       </section>
@@ -218,18 +220,19 @@ export default function Index() {
       {/* CTA */}
       <section className="container pb-20">
         <div className="rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border p-8 md:p-12 text-center space-y-4">
-          <h2 className="text-2xl md:text-3xl font-bold">Ready to learn by doing?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">Ready to open the book?</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Join your classroom, analyze the same event through three different market lenses, and
-            see which approach rewards your strategy.
+            Join your classroom, bet the board your instructor posts, and see how your bankroll
+            stacks up against the house and your classmates.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button variant="hero" size="lg" asChild>
               <Link to="/auth?tab=signup">Create Free Account</Link>
             </Button>
             <Button variant="outline" size="lg" asChild>
-              <Link to="/how-it-works">Compare the Models</Link>
+              <Link to="/how-it-works">See How Betting Works</Link>
             </Button>
+
           </div>
         </div>
       </section>
