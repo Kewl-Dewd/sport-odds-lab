@@ -1224,15 +1224,17 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         for (const g of games) {
           const extId = String(g.event.id);
           if (existing.has(extId)) continue;
-          const names = Object.keys(g.odds);
+          const names = Object.keys(g.moneyline);
           const id = `m-${crypto.randomUUID().slice(0, 8)}`;
-          const lines: SportsbookLine[] = names.map((name, i) => ({
-            id: `${id}-ml${i + 1}`,
-            kind: "moneyline",
-            label: `${name} ML`,
-            decimalOdds: g.odds[name],
-            side: name === g.event.home ? "home" : name === g.event.away ? "away" : undefined,
+          const lines: SportsbookLine[] = g.lines.map((l, i) => ({
+            id: `${id}-l${i + 1}`,
+            kind: l.kind,
+            label: l.label,
+            decimalOdds: l.decimalOdds,
+            point: l.point,
+            side: l.side,
           }));
+
           created.push({
             id,
             classroomId: activeClassroomId,
