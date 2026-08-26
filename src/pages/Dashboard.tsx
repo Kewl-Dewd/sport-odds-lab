@@ -7,6 +7,7 @@ import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
 import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
+import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
 
@@ -131,6 +132,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <ClassActionTicker />
 
       <StudentScoreCard />
 
