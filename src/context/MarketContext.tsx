@@ -1197,6 +1197,101 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     [activeClassroomId, logAction]
   );
 
+  // ── Live board auto-load ────────────────────────────────────────
+  // The app ships with no seeded markets. Pull a small live sportsbook
+  // board (upcoming games + moneyline odds) so students always see a board.
+  const [liveBoardLoading, setLiveBoardLoading] = useState(false);
+  const [liveBoardError, setLiveBoardError] = useState<string | null>(null);
+
+  const loadLiveMarkets = useCallback(async () => {
+    setLiveBoardLoading(true);
+    setLiveBoardError(null);
+    try {
+      const games = await loadLiveBoard();
+      if (games.length === 0) {
+        setLiveBoardError("No live games available right now.");
+        return;
+      }
+      setMarkets((prev) => {
+        const existing = new Set(
+          prev.map((m) => m.metadata?.externalEventId).filter(Boolean) as string[],
+        );
+        const created: Market[] = [];
+        for (const g of games) {
+          const extId = String(g.event.id);
+          if (existing.has(extId)) continue;
+          const names = Object.keys(g.odds);
+          const id = `m-${crypto.randomUUID().slice(0, 8)}`;
+          const lines: SportsbookLine[] = names.map((name, i) => ({
+            id: `${id}-ml${i + 1}`,
+            kind: "moneyline",
+            label: `${name} ML`,
+            decimalOdds: g.odds[name],
+            side: name === g.event.home ? "home" : name === g.event.away ? "away" : undefined,
+          }));
+          created.push({
+            id,
+            classroomId: activeClassroomId,
+            title: `${g.event.home} vs ${g.event.away}`,
+            league: g.event.league?.name ?? g.event.sport?.name ?? "Live",
+            sport: g.event.sport?.name ?? "Sports",
+            status: "open",
+            startTime: g.event.date,
+            closeTime: null,
+            description: `${g.event.league?.name ?? "Fixture"} — live moneyline odds from odds-api.io.`,
+            outcomes: names.map((name, i) => ({
+              id: `${id}-o${i + 1}`,
+              name,
+              price: Math.min(0.99, Math.max(0.01, g.implied[name] ?? 1 / names.length)),
+            })),
+            config: {
+              engineType: "linear-impact",
+              liquidityParameter: DEFAULT_LIQUIDITY,
+              maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
+              priceFloor: PRICE_FLOOR,
+              priceCeiling: PRICE_CEILING,
+              transactionFeePct: 0,
+              spread: 0,
+            },
+            resolvedOutcomeId: null,
+            settlementResult: null,
+            createdAt: new Date().toISOString(),
+            sportsbook: {
+              enabled: true,
+              source: "odds-api",
+              lastUpdated: new Date().toISOString(),
+              lines,
+            },
+            metadata: {
+              category: "game-winner",
+              difficultyLevel: "beginner",
+              eventDate: g.event.date,
+              teamNames: [g.event.home, g.event.away],
+              dataSource: "odds-api",
+              externalEventId: extId,
+              externalSport: g.event.sport?.slug,
+              externalLeague: g.event.league?.slug,
+            },
+          } as Market);
+        }
+        return created.length > 0 ? [...created, ...prev] : prev;
+      });
+    } catch (e) {
+      setLiveBoardError(e instanceof Error ? e.message : "Failed to load live odds");
+    } finally {
+      setLiveBoardLoading(false);
+    }
+  }, [activeClassroomId]);
+
+  const liveLoadStarted = React.useRef(false);
+  useEffect(() => {
+    if (liveLoadStarted.current) return;
+    liveLoadStarted.current = true;
+    void loadLiveMarkets();
+  }, [loadLiveMarkets]);
+
+
+
   const duplicateMarket = useCallback((marketId: string) => {
     const source = markets.find((m) => m.id === marketId);
     if (!source) return;
