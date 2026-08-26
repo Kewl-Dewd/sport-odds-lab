@@ -26,9 +26,9 @@ type Action = "sports" | "events" | "odds" | "scores" | "bookmakers";
 const TTL_SECONDS: Record<Action, number> = {
   sports: 24 * 60 * 60,
   bookmakers: 24 * 60 * 60,
-  events: 10 * 60,
-  odds: 3 * 60,
-  scores: 2 * 60,
+  events: 30 * 60,
+  odds: 20 * 60,
+  scores: 10 * 60,
 };
 
 // If the upstream API errors (rate limit, outage), serve a stale cached

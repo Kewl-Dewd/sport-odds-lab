@@ -141,10 +141,10 @@ export async function loadLiveBoard(opts?: {
   maxLookups?: number;
 }): Promise<LiveBoardGame[]> {
   const sports = opts?.sports ?? DEFAULT_BOARD_SPORTS;
-  const perSport = opts?.perSport ?? 25;
-  const maxGames = opts?.maxGames ?? 12;
-  // Cap upstream odds lookups; many minor fixtures carry no priced lines.
-  const maxLookups = opts?.maxLookups ?? 60;
+  const perSport = opts?.perSport ?? 12;
+  const maxGames = opts?.maxGames ?? 15;
+  // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
+  const maxLookups = opts?.maxLookups ?? 20;
 
   const eventLists = await Promise.all(
     sports.map((sport) =>
