@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Trash2, UserPlus, Shield, RefreshCw, Activity, Clock } from "lucide-react";
+import { Trash2, UserPlus, Shield, RefreshCw, Activity, Clock, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,13 @@ interface UserStat {
   last_seen_at: string | null;
 }
 
+interface AccessRow {
+  user_id: string;
+  status: string;
+  source: string;
+  expires_at: string | null;
+}
+
 interface ActivityRow {
   id: string;
   action: string;
@@ -64,9 +71,29 @@ function formatRelative(iso: string | null): string {
   return `${d}d ago`;
 }
 
+const SOURCE_LABEL: Record<string, string> = {
+  stripe: "Paid",
+  code: "Course code",
+  comp: "Comped",
+  none: "—",
+};
+
+function accessInfo(a: AccessRow | undefined) {
+  const active =
+    !!a && a.status === "active" && (!a.expires_at || new Date(a.expires_at).getTime() > Date.now());
+  return {
+    active,
+    label: active ? SOURCE_LABEL[a!.source] ?? "Active" : "Unpaid",
+    expires: a?.expires_at ?? null,
+  };
+}
+
 export default function AdminUsers() {
-  const { user, isInstructor, loading: authLoading } = useAuth();
+  const { user, isInstructor, isPlatformAdmin, loading: authLoading } = useAuth();
+  const canManage = isPlatformAdmin; // full CRUD only in the administrator view
   const [stats, setStats] = useState<UserStat[]>([]);
+  const [access, setAccess] = useState<Record<string, AccessRow>>({});
+  const [classesByUser, setClassesByUser] = useState<Record<string, string[]>>({});
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
@@ -77,21 +104,51 @@ export default function AdminUsers() {
   const [activityFor, setActivityFor] = useState<UserStat | null>(null);
   const [activityRows, setActivityRows] = useState<ActivityRow[]>([]);
   const [activityLoading, setActivityLoading] = useState(false);
+  const [search, setSearch] = useState("");
 
   const fetchStats = async () => {
     setLoading(true);
-    const { data, error } = await supabase.rpc("get_user_stats");
-    if (error) {
-      toast.error(error.message);
-    } else {
-      setStats((data ?? []) as UserStat[]);
+    const [statsRes, accessRes, memberRes] = await Promise.all([
+      supabase.rpc("get_user_stats"),
+      supabase.from("user_access").select("user_id, status, source, expires_at"),
+      supabase.from("class_members").select("user_id, classes(name)"),
+    ]);
+    if (statsRes.error) toast.error(statsRes.error.message);
+    setStats((statsRes.data ?? []) as UserStat[]);
+
+    const accMap: Record<string, AccessRow> = {};
+    for (const row of (accessRes.data ?? []) as AccessRow[]) accMap[row.user_id] = row;
+    setAccess(accMap);
+
+    const clsMap: Record<string, string[]> = {};
+    for (const row of (memberRes.data ?? []) as Array<{ user_id: string; classes: { name: string } | null }>) {
+      const name = row.classes?.name;
+      if (!name) continue;
+      clsMap[row.user_id] = [...(clsMap[row.user_id] ?? []), name];
     }
+    setClassesByUser(clsMap);
     setLoading(false);
   };
 
   useEffect(() => {
-    if (isInstructor) fetchStats();
-  }, [isInstructor]);
+    if (isInstructor || isPlatformAdmin) fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isInstructor, isPlatformAdmin]);
+
+  const visible = useMemo(() => {
+    // Instructors only ever see their own students (enforced server-side too).
+    const base = canManage ? stats : stats.filter((s) => s.user_id !== user?.id);
+    const q = search.trim().toLowerCase();
+    if (!q) return base;
+    return base.filter(
+      (s) =>
+        s.email.toLowerCase().includes(q) ||
+        (s.display_name ?? "").toLowerCase().includes(q) ||
+        (classesByUser[s.user_id] ?? []).join(" ").toLowerCase().includes(q)
+    );
+  }, [stats, search, canManage, user?.id, classesByUser]);
+
+  const paidCount = visible.filter((s) => accessInfo(access[s.user_id]).active).length;
 
   const fetchActivity = async (u: UserStat) => {
     setActivityFor(u);
@@ -161,7 +218,7 @@ export default function AdminUsers() {
       </div>
     );
   }
-  if (!isInstructor) {
+  if (!isInstructor && !isPlatformAdmin) {
     return (
       <div className="container py-12">
         <Card>
@@ -171,123 +228,168 @@ export default function AdminUsers() {
     );
   }
 
+  const colCount = canManage ? 8 : 6;
+
   return (
     <div className="container py-8 space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
-          <p className="text-muted-foreground text-sm">Manage accounts, roles, and view activity.</p>
+          <h1 className="text-3xl font-bold tracking-tight">{canManage ? "User Management" : "My Students"}</h1>
+          <p className="text-muted-foreground text-sm">
+            {canManage
+              ? "Every account on the platform — roles, access, and activity."
+              : "Students enrolled in your classes, with their access status and activity."}
+          </p>
         </div>
         <div className="flex items-center gap-2">
+          <Input
+            placeholder="Search name, email or class…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-9 w-[220px]"
+          />
           <Button variant="outline" size="sm" onClick={fetchStats} disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} /> Refresh
           </Button>
-          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-              <Button size="sm"><UserPlus className="h-4 w-4 mr-2" /> Add user</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Create user</DialogTitle></DialogHeader>
-              <div className="space-y-3">
-                <Input placeholder="Display name" value={newName} onChange={(e) => setNewName(e.target.value)} />
-                <Input placeholder="Email" type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
-                <Input placeholder="Temporary password" type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                <Select value={newRole} onValueChange={(v) => setNewRole(v as "student" | "instructor")}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="student">Student</SelectItem>
-                    <SelectItem value="instructor">Instructor</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <DialogFooter>
-                <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
-                <Button onClick={createUser} disabled={creating}>{creating ? "Creating…" : "Create"}</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          {canManage && (
+            <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm"><UserPlus className="h-4 w-4 mr-2" /> Add user</Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader><DialogTitle>Create user</DialogTitle></DialogHeader>
+                <div className="space-y-3">
+                  <Input placeholder="Display name" value={newName} onChange={(e) => setNewName(e.target.value)} />
+                  <Input placeholder="Email" type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+                  <Input placeholder="Temporary password" type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                  <Select value={newRole} onValueChange={(v) => setNewRole(v as "student" | "instructor")}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="instructor">Instructor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setCreateOpen(false)}>Cancel</Button>
+                  <Button onClick={createUser} disabled={creating}>{creating ? "Creating…" : "Create"}</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total users</div><div className="text-2xl font-bold">{stats.length}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total actions</div><div className="text-2xl font-bold">{stats.reduce((a, s) => a + Number(s.total_actions), 0).toLocaleString()}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total active time</div><div className="text-2xl font-bold">{formatDuration(stats.reduce((a, s) => a + Number(s.total_seconds_on_site), 0))}</div></CardContent></Card>
+      <div className="grid gap-3 md:grid-cols-4">
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">{canManage ? "Total users" : "Students"}</div><div className="text-2xl font-bold">{visible.length}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Paid / active access</div><div className="text-2xl font-bold">{paidCount}<span className="text-sm font-normal text-muted-foreground"> / {visible.length}</span></div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total actions</div><div className="text-2xl font-bold">{visible.reduce((a, s) => a + Number(s.total_actions), 0).toLocaleString()}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total active time</div><div className="text-2xl font-bold">{formatDuration(visible.reduce((a, s) => a + Number(s.total_seconds_on_site), 0))}</div></CardContent></Card>
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base">Users</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">{canManage ? "Users" : "Enrolled students"}</CardTitle></CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>User</TableHead>
-                  <TableHead>Role</TableHead>
+                  {canManage ? <TableHead>Role</TableHead> : <TableHead>Class</TableHead>}
+                  <TableHead>Access</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                   <TableHead className="text-right">Active time</TableHead>
                   <TableHead>Last seen</TableHead>
-                  <TableHead>Joined</TableHead>
-                  <TableHead className="text-right">Manage</TableHead>
+                  {canManage && <TableHead>Joined</TableHead>}
+                  {canManage && <TableHead className="text-right">Manage</TableHead>}
+                  {!canManage && <TableHead className="text-right"> </TableHead>}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading && (
-                  <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">Loading…</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={colCount} className="text-center text-muted-foreground py-8">Loading…</TableCell></TableRow>
                 )}
-                {!loading && stats.length === 0 && (
-                  <TableRow><TableCell colSpan={7} className="text-center text-muted-foreground py-8">No users yet.</TableCell></TableRow>
+                {!loading && visible.length === 0 && (
+                  <TableRow><TableCell colSpan={colCount} className="text-center text-muted-foreground py-8">
+                    {canManage ? "No users yet." : "No students have joined your classes yet — share your class join code."}
+                  </TableCell></TableRow>
                 )}
-                {stats.map((u) => (
-                  <TableRow key={u.user_id}>
-                    <TableCell>
-                      <div className="font-medium">{u.display_name ?? u.email.split("@")[0]}</div>
-                      <div className="text-xs text-muted-foreground">{u.email}</div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={u.role === "instructor" ? "default" : "secondary"}>
-                        {u.role === "instructor" ? <><Shield className="h-3 w-3 mr-1" /> Instructor</> : "Student"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums">{Number(u.total_actions).toLocaleString()}</TableCell>
-                    <TableCell className="text-right tabular-nums">{formatDuration(Number(u.total_seconds_on_site))}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{formatRelative(u.last_seen_at)}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{new Date(u.joined_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="inline-flex items-center gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => fetchActivity(u)}>
-                          <Activity className="h-4 w-4" />
-                        </Button>
-                        <Select value={u.role ?? "student"} onValueChange={(v) => setRole(u, v as "student" | "instructor")}>
-                          <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="student">Student</SelectItem>
-                            <SelectItem value="instructor">Instructor</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="sm" disabled={u.user_id === user.id} title={u.user_id === user.id ? "Can't delete yourself" : "Delete user"}>
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete {u.email}?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This permanently removes the account, profile, role, sessions, and activity. This cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => deleteUser(u)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {visible.map((u) => {
+                  const acc = accessInfo(access[u.user_id]);
+                  return (
+                    <TableRow key={u.user_id}>
+                      <TableCell>
+                        <div className="font-medium">{u.display_name ?? u.email.split("@")[0]}</div>
+                        <div className="text-xs text-muted-foreground">{u.email}</div>
+                      </TableCell>
+                      {canManage ? (
+                        <TableCell>
+                          <Badge variant={u.role === "instructor" ? "default" : "secondary"}>
+                            {u.role === "instructor" ? <><Shield className="h-3 w-3 mr-1" /> Instructor</> : "Student"}
+                          </Badge>
+                        </TableCell>
+                      ) : (
+                        <TableCell className="text-sm text-muted-foreground">
+                          {(classesByUser[u.user_id] ?? []).join(", ") || "—"}
+                        </TableCell>
+                      )}
+                      <TableCell>
+                        <Badge variant={acc.active ? "default" : "outline"} className={acc.active ? "" : "text-muted-foreground"}>
+                          {acc.active ? <CheckCircle2 className="h-3 w-3 mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+                          {acc.label}
+                        </Badge>
+                        {acc.active && acc.expires && (
+                          <div className="text-[11px] text-muted-foreground mt-0.5">
+                            until {new Date(acc.expires).toLocaleDateString()}
+                          </div>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">{Number(u.total_actions).toLocaleString()}</TableCell>
+                      <TableCell className="text-right tabular-nums">{formatDuration(Number(u.total_seconds_on_site))}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">{formatRelative(u.last_seen_at)}</TableCell>
+                      {canManage && (
+                        <TableCell className="text-muted-foreground text-sm">{new Date(u.joined_at).toLocaleDateString()}</TableCell>
+                      )}
+                      <TableCell className="text-right">
+                        <div className="inline-flex items-center gap-1">
+                          <Button variant="ghost" size="sm" onClick={() => fetchActivity(u)} title="View activity">
+                            <Activity className="h-4 w-4" />
+                          </Button>
+                          {canManage && (
+                            <>
+                              <Select value={u.role ?? "student"} onValueChange={(v) => setRole(u, v as "student" | "instructor")}>
+                                <SelectTrigger className="h-8 w-[130px]"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="student">Student</SelectItem>
+                                  <SelectItem value="instructor">Instructor</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="ghost" size="sm" disabled={u.user_id === user.id} title={u.user_id === user.id ? "Can't delete yourself" : "Delete user"}>
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete {u.email}?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      This permanently removes the account, profile, role, sessions, and activity. This cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => deleteUser(u)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
