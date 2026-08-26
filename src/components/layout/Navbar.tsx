@@ -134,7 +134,7 @@ export function Navbar() {
                 )}
               >
                 <Users className="h-4 w-4" />
-                Users
+                My Students
               </Link>
             </>
           )}
@@ -150,6 +150,20 @@ export function Navbar() {
             >
               <Building2 className="h-4 w-4" />
               Platform
+            </Link>
+          )}
+          {isPlatformAdmin && (
+            <Link
+              to="/admin/users"
+              className={cn(
+                "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                location.pathname === "/admin/users"
+                  ? "bg-primary/10 text-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              )}
+            >
+              <Users className="h-4 w-4" />
+              Users
             </Link>
           )}
         </nav>
@@ -228,13 +242,18 @@ export function Navbar() {
                   <GraduationCap className="h-4 w-4" /> Instructor
                 </Link>
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
-                  <Users className="h-4 w-4" /> Users
+                  <Users className="h-4 w-4" /> My Students
                 </Link>
               </>
             )}
             {isPlatformAdmin && (
               <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                 <Building2 className="h-4 w-4" /> Platform
+              </Link>
+            )}
+            {isPlatformAdmin && (
+              <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Users className="h-4 w-4" /> Users
               </Link>
             )}
             {user && mode && !SINGLE_MODE && (
