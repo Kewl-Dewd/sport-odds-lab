@@ -760,6 +760,7 @@ export type Database = {
       }
       user_sessions: {
         Row: {
+          active_seconds: number
           ended_at: string | null
           id: string
           last_seen_at: string
@@ -768,6 +769,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          active_seconds?: number
           ended_at?: string | null
           id?: string
           last_seen_at?: string
@@ -776,6 +778,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          active_seconds?: number
           ended_at?: string | null
           id?: string
           last_seen_at?: string

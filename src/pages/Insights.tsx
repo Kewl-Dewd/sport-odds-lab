@@ -82,7 +82,7 @@ export default function Insights() {
 
   const tiles = [
     { label: "People", value: rows.length, icon: Users },
-    { label: "Total time on app", value: formatDuration(totalSeconds), icon: Clock },
+    { label: "Total active time", value: formatDuration(totalSeconds), icon: Clock },
     { label: "Recorded actions", value: totalActions, icon: Activity },
     {
       label: isPlatformAdmin ? "Paid accounts" : "Paid students",
@@ -127,7 +127,7 @@ export default function Insights() {
                 <TableHead>Person</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead>Access</TableHead>
-                <TableHead className="text-right">Time on app</TableHead>
+                <TableHead className="text-right">Active time</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
                 <TableHead className="text-right">Last seen</TableHead>
               </TableRow>
