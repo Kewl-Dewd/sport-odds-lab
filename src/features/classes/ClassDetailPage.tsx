@@ -28,7 +28,7 @@ import { useClassBets, useClassJournal, computeStudentStats } from "@/features/j
 import { buildBetsCsv, buildStudentSummaryCsv, downloadCsv } from "@/features/exports";
 import { ClassMarketsTab } from "@/features/classes/ClassMarketsTab";
 import { ClassRoundsTab } from "@/features/classes/ClassRoundsTab";
-import { BookSummaryCard } from "@/features/classes/BookSummaryCard";
+import { ClassBookLedger } from "@/features/classes/ClassBookLedger";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -95,12 +95,12 @@ export default function ClassDetailPage() {
         </div>
       </div>
 
-      <Tabs defaultValue="settings">
+      <Tabs defaultValue="book">
         <TabsList>
           <TabsTrigger value="settings">Settings</TabsTrigger>
           <TabsTrigger value="markets">Markets</TabsTrigger>
           <TabsTrigger value="rounds">Windows &amp; contests</TabsTrigger>
-          <TabsTrigger value="book">The book</TabsTrigger>
+          <TabsTrigger value="book">Book dashboard</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
@@ -118,7 +118,12 @@ export default function ClassDetailPage() {
         </TabsContent>
 
         <TabsContent value="book" className="mt-4">
-          <BookSummaryCard classId={klass.id} audience="instructor" />
+          <ClassBookLedger
+            classId={klass.id}
+            className={klass.name}
+            bets={bets}
+            nameByUserId={nameByUserId}
+          />
         </TabsContent>
 
         <TabsContent value="roster" className="mt-4">
