@@ -144,7 +144,7 @@ export async function loadLiveBoard(opts?: {
   const perSport = opts?.perSport ?? 25;
   const maxGames = opts?.maxGames ?? 12;
   // Cap upstream odds lookups; many minor fixtures carry no priced lines.
-  const maxLookups = opts?.maxLookups ?? 40;
+  const maxLookups = opts?.maxLookups ?? 60;
 
   const eventLists = await Promise.all(
     sports.map((sport) =>
