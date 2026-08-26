@@ -32,6 +32,8 @@ export const DEFAULT_BOARD_SPORTS = [
   "basketball",
   "baseball",
   "ice-hockey",
+  "football",
+  "tennis",
 ];
 
 function isUpcoming(ev: OddsApiEvent): boolean {
