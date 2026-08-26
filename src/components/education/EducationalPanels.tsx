@@ -103,14 +103,14 @@ export function ImpliedProbabilityPanel() {
         estimated by the market's collective trading activity. It's derived directly from the share price.
       </p>
       <p>
-        A share priced at <strong className="font-mono text-foreground">65¢</strong> implies a 65% probability.
-        In a binary market, two outcome prices always sum to approximately $1.00 (100%).
+        A price of <strong className="font-mono text-foreground">65¢</strong> implies a 65% probability.
+        On a two-way market the two prices sum to a bit over $1.00 — that extra slice is the book's vig.
       </p>
       <div className="rounded-lg bg-muted p-3 mt-2">
         <p className="text-xs">
           <strong className="text-foreground">Key insight:</strong> The market isn't always right! If you have
-          better information or analysis, you can profit by trading against the market's implied probability.
-          This is the core skill in prediction markets.
+          better information or analysis, you can profit by betting against the board's implied chance to win.
+          This is the core skill in beating a sportsbook.
         </p>
       </div>
     </ExpandablePanel>

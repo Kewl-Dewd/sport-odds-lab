@@ -55,8 +55,8 @@ export default function Dashboard() {
       {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
         <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm">
           ⚠️ <strong>Experiment notice:</strong> This classroom is running in
-          ethics-research mode. Trading patterns you see may include rumors,
-          coordinated activity, or large directional trades by other participants.
+          ethics-research mode. Betting patterns you see may include rumors,
+          coordinated action, or large one-sided bets by other students.
         </div>
       )}
 
@@ -79,7 +79,7 @@ export default function Dashboard() {
           <CardContent>
             {scopedRecentTrades.length === 0 ? (
               <p className="text-sm text-muted-foreground py-4 text-center">
-                No trades yet. <Link to="/markets" className="text-primary underline">Browse markets</Link> to start trading.
+                No bets yet. <Link to="/markets" className="text-primary underline">Check the board</Link> to place your first bet.
               </p>
             ) : (
               <div className="space-y-3">

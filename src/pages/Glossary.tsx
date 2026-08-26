@@ -189,7 +189,7 @@ export default function Glossary() {
           <BookOpen className="h-6 w-6 text-primary" />
           <h1 className="text-2xl md:text-3xl font-bold">Glossary</h1>
         </div>
-        <p className="text-muted-foreground">Key prediction market concepts explained in plain language.</p>
+        <p className="text-muted-foreground">Key sportsbook terms explained in plain language.</p>
       </div>
 
       {/* Search & Filter */}

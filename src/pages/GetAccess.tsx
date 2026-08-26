@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 const INCLUDED = [
   "Full access to the sportsbook simulator",
-  "Place simulated trades and track your portfolio",
+  "Place simulated bets and track your bankroll",
   "Join your instructor's class with a join code",
   "Bet journal, leaderboards and responsible-play lessons",
 ];
