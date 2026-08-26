@@ -18,16 +18,15 @@ const VIEW_META: Record<ViewAs, { label: string; icon: typeof User; home: string
 };
 
 export function ViewSwitcher({ onNavigate }: { onNavigate?: () => void }) {
-  const { isInstructorAccount, isPlatformAdminAccount, viewAs, setViewAs } = useAuth();
+  const { isPlatformAdminAccount, viewAs, setViewAs } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Only staff accounts get a switcher — a student has one console.
-  if (!isInstructorAccount && !isPlatformAdminAccount) return null;
+  // Only platform administrators can switch consoles.
+  // Students and instructors each have exactly one console.
+  if (!isPlatformAdminAccount) return null;
 
-  const options: ViewAs[] = ["student"];
-  if (isInstructorAccount) options.push("instructor");
-  if (isPlatformAdminAccount) options.push("admin");
+  const options: ViewAs[] = ["student", "instructor", "admin"];
 
   const current = VIEW_META[viewAs];
   const CurrentIcon = current.icon;
