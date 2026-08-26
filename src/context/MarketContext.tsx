@@ -30,6 +30,7 @@ import {
   type TradeValidation,
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
+import { loadLiveBoard } from "@/lib/liveBoard";
 import { toast } from "sonner";
 // Demo data generator removed — app ships empty for production use.
 import type {
