@@ -136,10 +136,13 @@ export async function loadLiveBoard(opts?: {
   sports?: string[];
   perSport?: number;
   maxGames?: number;
+  maxLookups?: number;
 }): Promise<LiveBoardGame[]> {
   const sports = opts?.sports ?? DEFAULT_BOARD_SPORTS;
-  const perSport = opts?.perSport ?? 15;
+  const perSport = opts?.perSport ?? 25;
   const maxGames = opts?.maxGames ?? 12;
+  // Cap upstream odds lookups; many minor fixtures carry no priced lines.
+  const maxLookups = opts?.maxLookups ?? 40;
 
   const eventLists = await Promise.all(
     sports.map((sport) =>
@@ -158,8 +161,9 @@ export async function loadLiveBoard(opts?: {
 
   const games: LiveBoardGame[] = [];
   const batchSize = 6;
-  for (let i = 0; i < candidates.length && games.length < maxGames; i += batchSize) {
-    const batch = candidates.slice(i, i + batchSize);
+  const pool = candidates.slice(0, maxLookups);
+  for (let i = 0; i < pool.length && games.length < maxGames; i += batchSize) {
+    const batch = pool.slice(i, i + batchSize);
     const results = await Promise.all(
       batch.map(async (event) => {
         try {
