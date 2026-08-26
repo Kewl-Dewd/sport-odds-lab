@@ -1,20 +1,29 @@
-// Auto-loads a live sportsbook board (upcoming games + moneyline odds) from
-// the odds-api edge function so the Markets page is never empty.
+// Auto-loads a live sportsbook board (upcoming games + moneyline / spread /
+// total lines) from the odds-api edge function so the Markets page is never
+// empty. Responses are cached server-side, so a whole class shares one fetch.
 
 import {
   fetchEvents,
   fetchOdds,
-  extractMoneyline,
   normalizeImplied,
   type OddsApiEvent,
 } from "@/lib/oddsApi";
 
+export interface BoardLine {
+  kind: "moneyline" | "spread" | "total";
+  label: string;
+  decimalOdds: number;
+  point?: number;
+  side: "home" | "away" | "over" | "under";
+}
+
 export interface LiveBoardGame {
   event: OddsApiEvent;
-  /** Outcome name → decimal odds (home / away, and Draw when present) */
-  odds: Record<string, number>;
-  /** Outcome name → vig-free implied probability */
+  /** Moneyline decimal odds keyed by team name */
+  moneyline: Record<string, number>;
+  /** Vig-free implied probabilities keyed by team name */
   implied: Record<string, number>;
+  lines: BoardLine[];
 }
 
 /** Sports we pull for the default classroom board, in priority order. */
@@ -33,32 +42,103 @@ function isUpcoming(ev: OddsApiEvent): boolean {
   return t > Date.now() - 3 * 60 * 60 * 1000 && ev.status !== "settled";
 }
 
-/** Map raw bookmaker outcome keys (1/X/2, team names) onto the event teams. */
-function mapOutcomes(
-  ev: OddsApiEvent,
-  ml: { outcome: string; decimal: number }[],
-): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const { outcome, decimal } of ml) {
-    const key = outcome.trim().toLowerCase();
-    if (key === "1" || key === "home" || key === ev.home.toLowerCase()) out[ev.home] = decimal;
-    else if (key === "2" || key === "away" || key === ev.away.toLowerCase()) out[ev.away] = decimal;
-    else if (key === "x" || key === "draw" || key === "tie") out["Draw"] = decimal;
-  }
-  return out;
-}
+const num = (v: unknown): number | null => {
+  const n = typeof v === "string" ? Number(v) : typeof v === "number" ? v : NaN;
+  return Number.isFinite(n) && n > 1 ? n : null;
+};
 
 /**
- * Fetch a handful of upcoming games with moneyline prices.
- * Responses are cached server-side, so repeated calls across a class are cheap.
+ * odds-api.io /v3/odds shape:
+ * bookmakers: { DraftKings: [{ name: "ML"|"Spread"|"Totals", odds: [{home,away,hdp,points,over,under}] }] }
+ * We average across the books we have access to.
  */
+function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<string, number>; lines: BoardLine[] } {
+  const books = (payload as { bookmakers?: Record<string, unknown> })?.bookmakers;
+  const ml: Record<string, { sum: number; n: number }> = {};
+  const spread: Record<string, { sum: number; n: number; point: number }> = {};
+  const totals: Record<string, { sum: number; n: number; point: number }> = {};
+
+  if (books && typeof books === "object") {
+    for (const entries of Object.values(books)) {
+      if (!Array.isArray(entries)) continue;
+      for (const market of entries) {
+        const name = String((market as { name?: string })?.name ?? "").toLowerCase();
+        const rows = (market as { odds?: unknown[] })?.odds;
+        if (!Array.isArray(rows) || rows.length === 0) continue;
+        const row = rows[0] as Record<string, unknown>;
+
+        if (name === "ml" || name === "moneyline" || name === "1x2") {
+          const h = num(row.home), a = num(row.away);
+          if (h) (ml[event.home] ??= { sum: 0, n: 0 }), (ml[event.home].sum += h, ml[event.home].n += 1);
+          if (a) (ml[event.away] ??= { sum: 0, n: 0 }), (ml[event.away].sum += a, ml[event.away].n += 1);
+        } else if (name === "spread" || name === "handicap") {
+          const point = Number(row.hdp);
+          const h = num(row.home), a = num(row.away);
+          if (Number.isFinite(point)) {
+            if (h) (spread.home ??= { sum: 0, n: 0, point }), (spread.home.sum += h, spread.home.n += 1);
+            if (a) (spread.away ??= { sum: 0, n: 0, point: -point }), (spread.away.sum += a, spread.away.n += 1);
+          }
+        } else if (name === "totals" || name === "total" || name === "over/under") {
+          const point = Number(row.points ?? row.hdp ?? row.total);
+          const o = num(row.over), u = num(row.under);
+          if (Number.isFinite(point)) {
+            if (o) (totals.over ??= { sum: 0, n: 0, point }), (totals.over.sum += o, totals.over.n += 1);
+            if (u) (totals.under ??= { sum: 0, n: 0, point }), (totals.under.sum += u, totals.under.n += 1);
+          }
+        }
+      }
+    }
+  }
+
+  const moneyline: Record<string, number> = {};
+  for (const [team, v] of Object.entries(ml)) if (v.n > 0) moneyline[team] = v.sum / v.n;
+
+  const lines: BoardLine[] = [];
+  for (const [team, dec] of Object.entries(moneyline)) {
+    lines.push({
+      kind: "moneyline",
+      label: `${team} ML`,
+      decimalOdds: dec,
+      side: team === event.home ? "home" : "away",
+    });
+  }
+  for (const side of ["home", "away"] as const) {
+    const s = spread[side];
+    if (s && s.n > 0) {
+      const team = side === "home" ? event.home : event.away;
+      lines.push({
+        kind: "spread",
+        label: `${team} ${s.point > 0 ? "+" : ""}${s.point}`,
+        decimalOdds: s.sum / s.n,
+        point: s.point,
+        side,
+      });
+    }
+  }
+  for (const side of ["over", "under"] as const) {
+    const t = totals[side];
+    if (t && t.n > 0) {
+      lines.push({
+        kind: "total",
+        label: `${side === "over" ? "Over" : "Under"} ${t.point}`,
+        decimalOdds: t.sum / t.n,
+        point: t.point,
+        side,
+      });
+    }
+  }
+
+  return { moneyline, lines };
+}
+
+/** Fetch a handful of upcoming games that actually have priced lines. */
 export async function loadLiveBoard(opts?: {
   sports?: string[];
   perSport?: number;
   maxGames?: number;
 }): Promise<LiveBoardGame[]> {
   const sports = opts?.sports ?? DEFAULT_BOARD_SPORTS;
-  const perSport = opts?.perSport ?? 6;
+  const perSport = opts?.perSport ?? 15;
   const maxGames = opts?.maxGames ?? 12;
 
   const eventLists = await Promise.all(
@@ -67,8 +147,8 @@ export async function loadLiveBoard(opts?: {
     ),
   );
 
-  const candidates: OddsApiEvent[] = [];
   // Interleave sports so the board isn't all one league.
+  const candidates: OddsApiEvent[] = [];
   for (let i = 0; i < perSport; i += 1) {
     for (const list of eventLists) {
       const ev = list[i];
@@ -76,22 +156,26 @@ export async function loadLiveBoard(opts?: {
     }
   }
 
-  const picked = candidates.slice(0, maxGames);
+  const games: LiveBoardGame[] = [];
+  const batchSize = 6;
+  for (let i = 0; i < candidates.length && games.length < maxGames; i += batchSize) {
+    const batch = candidates.slice(i, i + batchSize);
+    const results = await Promise.all(
+      batch.map(async (event) => {
+        try {
+          const odds = await fetchOdds(event.id);
+          const { moneyline, lines } = parseBook(odds, event);
+          if (Object.keys(moneyline).length < 2) return null;
+          return { event, moneyline, implied: normalizeImplied(moneyline), lines } as LiveBoardGame;
+        } catch {
+          return null;
+        }
+      }),
+    );
+    for (const g of results) {
+      if (g && games.length < maxGames) games.push(g);
+    }
+  }
 
-  const games = await Promise.all(
-    picked.map(async (event): Promise<LiveBoardGame | null> => {
-      try {
-        const odds = await fetchOdds(event.id);
-        const ml = extractMoneyline(odds);
-        if (!ml) return null;
-        const mapped = mapOutcomes(event, ml);
-        if (Object.keys(mapped).length < 2) return null;
-        return { event, odds: mapped, implied: normalizeImplied(mapped) };
-      } catch {
-        return null;
-      }
-    }),
-  );
-
-  return games.filter((g): g is LiveBoardGame => g !== null);
+  return games;
 }
