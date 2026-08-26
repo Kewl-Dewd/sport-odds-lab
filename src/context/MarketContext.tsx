@@ -949,6 +949,9 @@ interface MarketContextValue {
   getMyRaceWagers: () => RaceWager[];
   getRacePoolTotals: (marketId: string) => PoolTotals | null;
   settleRace: (marketId: string, finishOrder: string[]) => void;
+  liveBoardLoading: boolean;
+  liveBoardError: string | null;
+  loadLiveMarkets: () => Promise<void>;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -2875,6 +2878,7 @@ export function MarketProvider({ children }: { children: ReactNode }) {
         raceWagers, setRacetrackSurface, toggleRacetrackEnabled, upsertRunners,
         placeRaceWager, getRaceWagersForMarket, getMyRaceWagers,
         getRacePoolTotals, settleRace,
+        liveBoardLoading, liveBoardError, loadLiveMarkets,
       }}
     >
       {children}
