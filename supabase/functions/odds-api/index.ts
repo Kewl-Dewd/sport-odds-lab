@@ -16,12 +16,16 @@ const corsHeaders = {
 
 const ODDS_BASE = "https://api.odds-api.io/v3";
 
-type Action = "sports" | "events" | "odds" | "scores";
+// odds-api.io /odds requires an explicit bookmaker list.
+const DEFAULT_BOOKMAKERS = "DraftKings,FanDuel";
+
+type Action = "sports" | "events" | "odds" | "scores" | "bookmakers";
 
 // How long each response type stays fresh. Sports list barely changes;
 // live odds move fastest but 3 minutes is fine for classroom pacing.
 const TTL_SECONDS: Record<Action, number> = {
   sports: 24 * 60 * 60,
+  bookmakers: 24 * 60 * 60,
   events: 10 * 60,
   odds: 3 * 60,
   scores: 2 * 60,
@@ -39,6 +43,7 @@ interface RequestBody {
   limit?: number;
   eventId?: string | number;
   status?: string;
+  bookmakers?: string;
 }
 
 function cacheKeyFor(body: RequestBody): string {
@@ -50,6 +55,7 @@ function cacheKeyFor(body: RequestBody): string {
     body.limit ?? "",
     body.eventId ?? "",
     body.status ?? "",
+    body.bookmakers ?? "",
   ].join("|");
 }
 
@@ -165,6 +171,9 @@ function buildUrl(body: RequestBody, apiKey: string): string | null {
     case "sports":
       return `${ODDS_BASE}/sports?${params.toString()}`;
 
+    case "bookmakers":
+      return `${ODDS_BASE}/bookmakers?${params.toString()}`;
+
     case "events": {
       if (body.sport) params.set("sport", body.sport);
       if (body.league) params.set("league", body.league);
@@ -177,6 +186,8 @@ function buildUrl(body: RequestBody, apiKey: string): string | null {
     case "odds": {
       if (!body.eventId) return null;
       params.set("eventId", String(body.eventId));
+      // odds-api.io requires an explicit bookmaker list on /odds.
+      params.set("bookmakers", body.bookmakers ?? DEFAULT_BOOKMAKERS);
       return `${ODDS_BASE}/odds?${params.toString()}`;
     }
 

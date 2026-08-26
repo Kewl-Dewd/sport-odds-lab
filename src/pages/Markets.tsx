@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Search, Clock, ChevronRight, Filter, SlidersHorizontal, TrendingUp, BarChart3, Zap } from "lucide-react";
+import { Search, Clock, ChevronRight, Filter, SlidersHorizontal, TrendingUp, BarChart3, Zap, Loader2, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,7 +43,7 @@ const diffBadgeStyle: Record<string, string> = {
 };
 
 export default function Markets() {
-  const { markets: allMarkets, trades } = useMarket();
+  const { markets: allMarkets, trades, liveBoardLoading, liveBoardError, loadLiveMarkets } = useMarket();
   const { mode } = useMode();
   const markets = useMemo(
     () => mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets,
@@ -102,6 +102,15 @@ export default function Markets() {
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">Browse the board and place your bets</p>
+      </div>
+
+      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+        {liveBoardLoading && <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading live odds…</span>}
+        {!liveBoardLoading && liveBoardError && <span className="text-destructive">{liveBoardError}</span>}
+        <Button variant="outline" size="sm" onClick={() => void loadLiveMarkets()} disabled={liveBoardLoading}>
+          <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", liveBoardLoading && "animate-spin")} />
+          Refresh board
+        </Button>
       </div>
 
       {/* Search & Filters */}
@@ -276,7 +285,7 @@ export default function Markets() {
           markets.length === 0 ? (
             <EmptyState
               icon={BarChart3}
-              title={mode ? `No ${MODE_LABELS[mode]} markets yet` : "No markets yet"}
+              title={liveBoardLoading ? "Loading the board…" : mode ? `No ${MODE_LABELS[mode]} markets yet` : "No markets yet"}
               description={mode
                 ? `Your instructor hasn't published any ${MODE_LABELS[mode]} markets. Switch modes from the top nav or check back later.`
                 : "Your instructor hasn't published any markets for this class. Check back once a market opens."}
