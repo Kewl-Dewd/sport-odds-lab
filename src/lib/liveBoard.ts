@@ -26,14 +26,11 @@ export interface LiveBoardGame {
   lines: BoardLine[];
 }
 
-/** Sports we pull for the default classroom board, in priority order. */
+/** Sports we pull for the default classroom board: MLB, NBA, NHL. */
 export const DEFAULT_BOARD_SPORTS = [
-  "american-football",
-  "basketball",
   "baseball",
+  "basketball",
   "ice-hockey",
-  "football",
-  "tennis",
 ];
 
 function isUpcoming(ev: OddsApiEvent): boolean {
