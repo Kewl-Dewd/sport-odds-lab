@@ -212,7 +212,7 @@ export default function AdminUsers() {
       <div className="grid gap-3 md:grid-cols-3">
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total users</div><div className="text-2xl font-bold">{stats.length}</div></CardContent></Card>
         <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total actions</div><div className="text-2xl font-bold">{stats.reduce((a, s) => a + Number(s.total_actions), 0).toLocaleString()}</div></CardContent></Card>
-        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total time on site</div><div className="text-2xl font-bold">{formatDuration(stats.reduce((a, s) => a + Number(s.total_seconds_on_site), 0))}</div></CardContent></Card>
+        <Card><CardContent className="p-4"><div className="text-xs text-muted-foreground">Total active time</div><div className="text-2xl font-bold">{formatDuration(stats.reduce((a, s) => a + Number(s.total_seconds_on_site), 0))}</div></CardContent></Card>
       </div>
 
       <Card>
@@ -225,7 +225,7 @@ export default function AdminUsers() {
                   <TableHead>User</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
-                  <TableHead className="text-right">Time on site</TableHead>
+                  <TableHead className="text-right">Active time</TableHead>
                   <TableHead>Last seen</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead className="text-right">Manage</TableHead>
@@ -305,7 +305,7 @@ export default function AdminUsers() {
             {activityFor && (
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div className="rounded border p-2"><div className="text-xs text-muted-foreground">Total actions</div><div className="font-semibold">{Number(activityFor.total_actions).toLocaleString()}</div></div>
-                <div className="rounded border p-2"><div className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Time on site</div><div className="font-semibold">{formatDuration(Number(activityFor.total_seconds_on_site))}</div></div>
+                <div className="rounded border p-2"><div className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" /> Active time</div><div className="font-semibold">{formatDuration(Number(activityFor.total_seconds_on_site))}</div></div>
                 <div className="rounded border p-2"><div className="text-xs text-muted-foreground">Last seen</div><div className="font-semibold">{formatRelative(activityFor.last_seen_at)}</div></div>
               </div>
             )}
