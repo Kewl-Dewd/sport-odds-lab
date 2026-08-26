@@ -185,21 +185,21 @@ export default function Index() {
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">1</span>
-                <h4 className="font-semibold">Instructor sets up the event</h4>
+                <h4 className="font-semibold">Instructor opens the board</h4>
               </div>
               <p className="text-muted-foreground">
-                Pick a game, pull live lines from the odds API, configure runners, and choose which
-                of the three market surfaces to enable.
+                Pick the games, pull live moneyline, spread and totals lines from the odds API,
+                set the betting window and stake limits.
               </p>
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="h-7 w-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-xs">2</span>
-                <h4 className="font-semibold">Students trade across all three</h4>
+                <h4 className="font-semibold">Students place their bets</h4>
               </div>
               <p className="text-muted-foreground">
-                Each market opens in its own tab. Students choose how to allocate virtual capital
-                between prediction shares, fixed-odds wagers, and pool tickets.
+                Each student stakes their virtual bankroll on the posted lines. Odds lock the
+                moment a bet is accepted, so they learn how vig and price shape risk.
               </p>
             </div>
             <div className="space-y-2">
@@ -208,10 +208,11 @@ export default function Index() {
                 <h4 className="font-semibold">Settle and debrief</h4>
               </div>
               <p className="text-muted-foreground">
-                The instructor settles outcomes; the platform reconciles every model into a single
-                P&L, leaderboard, and behavioral debrief.
+                The instructor settles the results; the platform pays out winners and shows the
+                book&apos;s handle, hold and the class leaderboard.
               </p>
             </div>
+
           </div>
         </div>
       </section>
