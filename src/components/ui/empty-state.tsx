@@ -39,9 +39,9 @@ export function NoHoldings() {
   return (
     <EmptyState
       icon={Briefcase}
-      title="No positions yet"
-      description="You haven't bought any shares. Browse open markets and start trading to build your portfolio."
-      actionLabel="Browse Markets"
+      title="No open bets yet"
+      description="You haven't placed a bet. Check the board and back a side to get started."
+      actionLabel="See the Board"
       actionHref="/markets"
     />
   );
@@ -51,9 +51,9 @@ export function NoTrades() {
   return (
     <EmptyState
       icon={TrendingUp}
-      title="No trades yet"
-      description="Place your first trade to see it here. Each trade is recorded with full price and quantity details."
-      actionLabel="Start Trading"
+      title="No bets yet"
+      description="Place your first bet to see it here. Every bet is logged with the line, stake and payout."
+      actionLabel="Place a Bet"
       actionHref="/markets"
     />
   );
@@ -63,8 +63,8 @@ export function NoMarkets() {
   return (
     <EmptyState
       icon={BarChart3}
-      title="No markets available"
-      description="There are no markets to trade on right now. Your instructor will create markets for upcoming events."
+      title="Board is closed"
+      description="There are no games on the board right now. Your instructor will post lines for upcoming events."
     />
   );
 }
