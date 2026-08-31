@@ -22,6 +22,7 @@ import {
   useClassCourseworkProgress, useClassLessons, useCreateLesson, useDeleteLesson, useUpdateLesson,
 } from "@/features/coursework/useCoursework";
 import type { CourseworkKind } from "@/features/db";
+import { CurriculumLibrary } from "@/components/learn/CurriculumLibrary";
 
 export function ClassCourseworkTab({ classId }: { classId: string }) {
   const { data: lessons = [] } = useClassLessons(classId);
@@ -104,6 +105,8 @@ export function ClassCourseworkTab({ classId }: { classId: string }) {
   };
 
   return (
+    <div className="space-y-6">
+    <CurriculumLibrary classId={classId} />
     <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
       <Card>
         <CardHeader>
@@ -252,6 +255,7 @@ export function ClassCourseworkTab({ classId }: { classId: string }) {
           </CardContent>
         </Card>
       </div>
+    </div>
     </div>
   );
 }

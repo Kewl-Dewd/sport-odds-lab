@@ -31,6 +31,7 @@ import NotFound from "./pages/NotFound.tsx";
 
 import JoinClassPage from "@/features/classes/JoinClassPage";
 import JournalPage from "@/features/journal/JournalPage";
+import Learn from "@/pages/Learn";
 import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
 import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
 import ClassDetailPage from "@/features/classes/ClassDetailPage";
@@ -82,6 +83,7 @@ const App = () => (
                     <Route path="/insights" element={<ProtectedRoute requireInstructor><Insights /></ProtectedRoute>} />
                     <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
                     <Route path="/class-board" element={<ProtectedRoute><ClassBoardPage /></ProtectedRoute>} />
+                    <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
                     <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                     <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />
                     <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />

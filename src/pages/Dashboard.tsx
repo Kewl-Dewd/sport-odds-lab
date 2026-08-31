@@ -10,7 +10,7 @@ import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
-import { StudentCourseworkPanel } from "@/features/coursework/StudentCourseworkPanel";
+import { AssignedLearning } from "@/components/learn/AssignedLearning";
 import { useActiveClass } from "@/context/ClassContext";
 
 export default function Dashboard() {
@@ -137,7 +137,7 @@ export default function Dashboard() {
         </Card>
         </div>
 
-        <StudentCourseworkPanel />
+        <AssignedLearning compact />
       </div>
 
 
