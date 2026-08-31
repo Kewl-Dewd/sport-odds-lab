@@ -77,6 +77,8 @@ export function useCreateClass() {
       term?: string;
       description?: string;
       starting_bankroll: number;
+      semester_start?: string;
+      semester_end?: string;
     }) =>
       unwrap<ClassRow>(
         await db
