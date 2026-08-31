@@ -93,6 +93,14 @@ export default function Auth() {
                 </div>
               </div>
               <Button variant="hero" className="w-full" onClick={signIn} disabled={submitting}>Sign In</Button>
+              <button
+                type="button"
+                onClick={forgotPassword}
+                disabled={submitting}
+                className="w-full text-sm text-muted-foreground hover:text-primary underline underline-offset-4"
+              >
+                Forgot password?
+              </button>
             </TabsContent>
 
             <TabsContent value="signup" className="space-y-4 mt-4">
