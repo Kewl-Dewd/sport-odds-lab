@@ -7,6 +7,7 @@ import { MarketProvider } from "@/context/MarketContext";
 import { EducationProvider } from "@/context/EducationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ModeProvider } from "@/context/ModeContext";
+import { ClassProvider } from "@/context/ClassContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LearningNudgeBar } from "@/components/education/LearningNudges";
@@ -48,6 +49,7 @@ const App = () => (
     <TooltipProvider>
       <BrowserRouter>
         <AuthProvider>
+          <ClassProvider>
           <ModeProvider>
             <MarketProvider>
               <EducationProvider>
@@ -94,6 +96,7 @@ const App = () => (
               </EducationProvider>
             </MarketProvider>
           </ModeProvider>
+          </ClassProvider>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

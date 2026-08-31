@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EducationModeToggle } from "@/components/education/EducationToggle";
+import { ClassSwitcher } from "@/components/student/ClassSwitcher";
 import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
 
 import { useAuth } from "@/context/AuthContext";
@@ -159,6 +160,7 @@ export function Navbar() {
               <Repeat className="h-3 w-3 opacity-60" />
             </button>
           )}
+          {user && viewAs === "student" && <ClassSwitcher />}
           {user && viewAs === "student" && <EducationModeToggle />}
           <ViewSwitcher />
 
@@ -239,6 +241,7 @@ export function Navbar() {
                 </Button>
               </div>
             )}
+            {user && viewAs === "student" && <ClassSwitcher />}
             {user && viewAs === "student" && (
               <div className="px-3 py-2">
                 <EducationModeToggle />
