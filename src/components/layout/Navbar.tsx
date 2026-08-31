@@ -195,8 +195,8 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t animate-slide-up">
-          <nav className="container flex flex-col gap-1 py-3">
+        <div className="md:hidden border-t animate-slide-up max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+          <nav className="container flex flex-col gap-1 py-3 pb-6">
             {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
                 key={link.href}
