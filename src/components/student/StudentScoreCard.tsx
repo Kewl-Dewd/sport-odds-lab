@@ -67,6 +67,34 @@ export function StudentScoreCard() {
     );
   }
 
+  const hasActivity = score.metrics.trades > 0
+    || score.metrics.reflectionsAssigned > 0
+    || (activeExperiment && activeExperiment.status === "active");
+
+  if (!hasActivity) {
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <GraduationCap className="h-4 w-4 text-info" />
+            Your class score
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="py-6 text-center space-y-3">
+          <div className="mx-auto w-10 h-10 rounded-full bg-info/10 flex items-center justify-center">
+            <Sparkles className="h-5 w-5 text-info" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium">No score yet</p>
+            <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+              Place your first bet or complete assigned coursework to start earning your class score.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const totalWeight = (Object.values(scoringSettings.weights) as number[]).reduce((a, b) => a + b, 0);
   const participationProgress = Math.min(100,
     (score.metrics.trades / Math.max(1, scoringSettings.participationGoal)) * 100,
