@@ -126,6 +126,11 @@ export default function ClassDetailPage() {
           <ClassCourseworkTab classId={klass.id} />
         </TabsContent>
 
+        <TabsContent value="progress" className="mt-4">
+          <ClassProgressTab classId={klass.id} roster={roster} bets={bets} journal={journal} />
+        </TabsContent>
+
+
         <TabsContent value="book" className="mt-4">
           <ClassBookLedger
             classId={klass.id}
