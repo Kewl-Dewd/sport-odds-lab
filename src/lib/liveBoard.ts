@@ -26,12 +26,34 @@ export interface LiveBoardGame {
   lines: BoardLine[];
 }
 
-/** Sports we pull for the default classroom board: MLB, NBA, NHL. */
-export const DEFAULT_BOARD_SPORTS = [
-  "baseball",
-  "basketball",
-  "ice-hockey",
+/** The four major North American leagues we run the classroom board on. */
+export interface MajorLeague {
+  key: string;
+  label: string;
+  sport: string;
+  league: string;
+}
+
+export const MAJOR_LEAGUES: MajorLeague[] = [
+  { key: "usa-mlb", label: "MLB", sport: "baseball", league: "usa-mlb" },
+  { key: "usa-nba", label: "NBA", sport: "basketball", league: "usa-nba" },
+  { key: "usa-nfl", label: "NFL", sport: "american-football", league: "usa-nfl" },
+  { key: "usa-nhl", label: "NHL", sport: "ice-hockey", league: "usa-nhl" },
 ];
+
+export const DEFAULT_BOARD_LEAGUES = MAJOR_LEAGUES.map((l) => l.key);
+
+/** Legacy export kept for compatibility. */
+export const DEFAULT_BOARD_SPORTS = MAJOR_LEAGUES.map((l) => l.sport);
+
+function isSameLocalDay(iso: string, ref = new Date()): boolean {
+  const d = new Date(iso);
+  return (
+    d.getFullYear() === ref.getFullYear() &&
+    d.getMonth() === ref.getMonth() &&
+    d.getDate() === ref.getDate()
+  );
+}
 
 function isUpcoming(ev: OddsApiEvent): boolean {
   if (!ev.date) return false;
@@ -132,29 +154,40 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
 
 /** Fetch a handful of upcoming games that actually have priced lines. */
 export async function loadLiveBoard(opts?: {
-  sports?: string[];
-  perSport?: number;
+  /** League keys from MAJOR_LEAGUES; defaults to all four. */
+  leagues?: string[];
+  perLeague?: number;
   maxGames?: number;
   maxLookups?: number;
+  /** Only include games starting today (local time). Defaults to true. */
+  todayOnly?: boolean;
 }): Promise<LiveBoardGame[]> {
-  const sports = opts?.sports ?? DEFAULT_BOARD_SPORTS;
-  const perSport = opts?.perSport ?? 12;
-  const maxGames = opts?.maxGames ?? 15;
+  const keys = opts?.leagues?.length ? opts.leagues : DEFAULT_BOARD_LEAGUES;
+  const leagues = MAJOR_LEAGUES.filter((l) => keys.includes(l.key));
+  const perLeague = opts?.perLeague ?? 15;
+  const maxGames = opts?.maxGames ?? 20;
+  const todayOnly = opts?.todayOnly ?? true;
   // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
-  const maxLookups = opts?.maxLookups ?? 20;
+  const maxLookups = opts?.maxLookups ?? 24;
 
   const eventLists = await Promise.all(
-    sports.map((sport) =>
-      fetchEvents({ sport, limit: perSport }).catch(() => [] as OddsApiEvent[]),
+    leagues.map((l) =>
+      fetchEvents({ sport: l.sport, league: l.league, limit: perLeague }).catch(
+        () => [] as OddsApiEvent[],
+      ),
     ),
   );
 
-  // Interleave sports so the board isn't all one league.
+  // Interleave leagues so the board isn't all one league.
   const candidates: OddsApiEvent[] = [];
-  for (let i = 0; i < perSport; i += 1) {
-    for (const list of eventLists) {
+  for (let i = 0; i < perLeague; i += 1) {
+    for (const [idx, list] of eventLists.entries()) {
       const ev = list[i];
-      if (ev && isUpcoming(ev)) candidates.push(ev);
+      if (!ev || !isUpcoming(ev)) continue;
+      // Defensive: the upstream filter can be loose, so pin the league.
+      if (ev.league?.slug && ev.league.slug !== leagues[idx].league) continue;
+      if (todayOnly && !isSameLocalDay(ev.date)) continue;
+      candidates.push(ev);
     }
   }
 
