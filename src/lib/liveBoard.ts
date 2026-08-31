@@ -46,14 +46,16 @@ export const DEFAULT_BOARD_LEAGUES = MAJOR_LEAGUES.map((l) => l.key);
 /** Legacy export kept for compatibility. */
 export const DEFAULT_BOARD_SPORTS = MAJOR_LEAGUES.map((l) => l.sport);
 
-function isSameLocalDay(iso: string, ref = new Date()): boolean {
+/** True when `iso` falls within the next `days` local calendar days (0 = today only). */
+function isWithinLocalDays(iso: string, days: number, ref = new Date()): boolean {
   const d = new Date(iso);
-  return (
-    d.getFullYear() === ref.getFullYear() &&
-    d.getMonth() === ref.getMonth() &&
-    d.getDate() === ref.getDate()
-  );
+  if (!Number.isFinite(d.getTime())) return false;
+  const start = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + days + 1); // exclusive end of the last included day
+  return d >= start && d < end;
 }
+
 
 function isUpcoming(ev: OddsApiEvent): boolean {
   if (!ev.date) return false;
@@ -159,16 +161,17 @@ export async function loadLiveBoard(opts?: {
   perLeague?: number;
   maxGames?: number;
   maxLookups?: number;
-  /** Only include games starting today (local time). Defaults to true. */
-  todayOnly?: boolean;
+  /** How many extra calendar days past today to include. Defaults to 2 (today + next 2 days). */
+  daysAhead?: number;
 }): Promise<LiveBoardGame[]> {
   const keys = opts?.leagues?.length ? opts.leagues : DEFAULT_BOARD_LEAGUES;
   const leagues = MAJOR_LEAGUES.filter((l) => keys.includes(l.key));
   const perLeague = opts?.perLeague ?? 40;
-  const maxGames = opts?.maxGames ?? 20;
-  const todayOnly = opts?.todayOnly ?? true;
+  const maxGames = opts?.maxGames ?? 36;
+  const daysAhead = opts?.daysAhead ?? 2;
   // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
-  const maxLookups = opts?.maxLookups ?? 24;
+  const maxLookups = opts?.maxLookups ?? 42;
+
 
   const eventLists = await Promise.all(
     leagues.map((l) =>
@@ -186,10 +189,13 @@ export async function loadLiveBoard(opts?: {
       if (!ev || !isUpcoming(ev)) continue;
       // Defensive: the upstream filter can be loose, so pin the league.
       if (ev.league?.slug && ev.league.slug !== leagues[idx].league) continue;
-      if (todayOnly && !isSameLocalDay(ev.date)) continue;
+      if (!isWithinLocalDays(ev.date, daysAhead)) continue;
       candidates.push(ev);
     }
   }
+  // Soonest games first so the board reads today → tomorrow → day after.
+  candidates.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
 
   const games: LiveBoardGame[] = [];
   const batchSize = 6;
