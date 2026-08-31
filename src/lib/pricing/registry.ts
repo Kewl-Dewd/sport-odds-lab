@@ -11,11 +11,13 @@
 import type { PricingEngine, PricingEngineType } from "./types";
 import { linearImpactEngine } from "./linearImpactEngine";
 import { lmsrEngine } from "./lmsrEngine";
+import { fixedOddsEngine } from "./fixedOddsEngine";
 
 const engines = new Map<PricingEngineType, PricingEngine>();
 
 engines.set("linear-impact", linearImpactEngine);
 engines.set("lmsr", lmsrEngine);
+engines.set("fixed-odds", fixedOddsEngine);
 
 export function getEngine(type: PricingEngineType): PricingEngine {
   const engine = engines.get(type);

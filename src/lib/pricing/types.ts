@@ -6,7 +6,7 @@
  * - Future support for limit orders, order books, fees, volatility controls
  */
 
-export type PricingEngineType = "linear-impact" | "lmsr";
+export type PricingEngineType = "linear-impact" | "lmsr" | "fixed-odds";
 
 export interface PricingEngineConfig {
   type: PricingEngineType;
@@ -107,5 +107,10 @@ export const ENGINE_TYPE_OPTIONS: { value: PricingEngineType; label: string; des
     value: "lmsr",
     label: "LMSR Market Maker",
     description: "Logarithmic scoring rule. More realistic price curves.",
+  },
+  {
+    value: "fixed-odds",
+    label: "Fixed Odds (Sportsbook)",
+    description: "Posted odds never move on a bet. The house vig is baked into the price.",
   },
 ];
