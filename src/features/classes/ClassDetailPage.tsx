@@ -31,6 +31,7 @@ import { ClassRoundsTab } from "@/features/classes/ClassRoundsTab";
 import { ClassBookLedger } from "@/features/classes/ClassBookLedger";
 import { ClassInviteCard } from "@/features/classes/ClassInviteCard";
 import { ClassCourseworkTab } from "@/features/classes/ClassCourseworkTab";
+import { ClassProgressTab } from "@/features/classes/ClassProgressTab";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
