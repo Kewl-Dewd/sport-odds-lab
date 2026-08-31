@@ -189,10 +189,13 @@ export async function loadLiveBoard(opts?: {
       if (!ev || !isUpcoming(ev)) continue;
       // Defensive: the upstream filter can be loose, so pin the league.
       if (ev.league?.slug && ev.league.slug !== leagues[idx].league) continue;
-      if (todayOnly && !isSameLocalDay(ev.date)) continue;
+      if (!isWithinLocalDays(ev.date, daysAhead)) continue;
       candidates.push(ev);
     }
   }
+  // Soonest games first so the board reads today → tomorrow → day after.
+  candidates.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
 
   const games: LiveBoardGame[] = [];
   const batchSize = 6;
