@@ -30,7 +30,7 @@ import {
   type TradeValidation,
 } from "@/lib/tradingEngine";
 import type { PricingEngineType } from "@/lib/pricing";
-import { loadLiveBoard } from "@/lib/liveBoard";
+import { loadLiveBoard, DEFAULT_BOARD_LEAGUES } from "@/lib/liveBoard";
 import { toast } from "sonner";
 // Demo data generator removed — app ships empty for production use.
 import type {
@@ -951,7 +951,7 @@ interface MarketContextValue {
   settleRace: (marketId: string, finishOrder: string[]) => void;
   liveBoardLoading: boolean;
   liveBoardError: string | null;
-  loadLiveMarkets: () => Promise<void>;
+  loadLiveMarkets: (leagues?: string[]) => Promise<void>;
 }
 
 const MarketContext = createContext<MarketContextValue | null>(null);
@@ -1207,13 +1207,23 @@ export function MarketProvider({ children }: { children: ReactNode }) {
   const [liveBoardLoading, setLiveBoardLoading] = useState(false);
   const [liveBoardError, setLiveBoardError] = useState<string | null>(null);
 
-  const loadLiveMarkets = useCallback(async () => {
+  const loadLiveMarkets = useCallback(async (leagues?: string[]) => {
+    const enabled = leagues?.length ? leagues : DEFAULT_BOARD_LEAGUES;
     setLiveBoardLoading(true);
     setLiveBoardError(null);
     try {
-      const games = await loadLiveBoard();
+      const games = await loadLiveBoard({ leagues: enabled });
+      // Drop any previously loaded feed markets outside the enabled leagues
+      // (e.g. minor/international leagues pulled by older versions).
+      setMarkets((prev) =>
+        prev.filter(
+          (m) =>
+            m.metadata?.dataSource !== "odds-api" ||
+            enabled.includes(m.metadata?.externalLeague ?? ""),
+        ),
+      );
       if (games.length === 0) {
-        setLiveBoardError("No live games available right now.");
+        setLiveBoardError("No games on the board for today in the selected leagues.");
         return;
       }
       setMarkets((prev) => {
