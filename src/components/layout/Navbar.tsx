@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { EducationModeToggle } from "@/components/education/EducationToggle";
 import { ClassSwitcher } from "@/components/student/ClassSwitcher";
 import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
 
@@ -22,6 +21,7 @@ const authedLinks = [
   { label: "Class Board", href: "/class-board", icon: School },
   { label: "My Bets", href: "/portfolio", icon: Briefcase },
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
+  { label: "Learning", href: "/learn", icon: GraduationCap },
   { label: "Journal", href: "/journal", icon: NotebookPen },
   { label: "Responsible Play", href: "/responsible-play", icon: ShieldCheck },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
@@ -161,7 +161,6 @@ export function Navbar() {
             </button>
           )}
           {user && viewAs === "student" && <ClassSwitcher />}
-          {user && viewAs === "student" && <EducationModeToggle />}
           <ViewSwitcher />
 
           {user ? (
@@ -242,11 +241,6 @@ export function Navbar() {
               </div>
             )}
             {user && viewAs === "student" && <ClassSwitcher />}
-            {user && viewAs === "student" && (
-              <div className="px-3 py-2">
-                <EducationModeToggle />
-              </div>
-            )}
             <div className="px-3 py-2">
               <ViewSwitcher onNavigate={() => setMobileOpen(false)} />
             </div>
