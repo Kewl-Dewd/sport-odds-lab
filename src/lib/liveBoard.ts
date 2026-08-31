@@ -46,14 +46,16 @@ export const DEFAULT_BOARD_LEAGUES = MAJOR_LEAGUES.map((l) => l.key);
 /** Legacy export kept for compatibility. */
 export const DEFAULT_BOARD_SPORTS = MAJOR_LEAGUES.map((l) => l.sport);
 
-function isSameLocalDay(iso: string, ref = new Date()): boolean {
+/** True when `iso` falls within the next `days` local calendar days (0 = today only). */
+function isWithinLocalDays(iso: string, days: number, ref = new Date()): boolean {
   const d = new Date(iso);
-  return (
-    d.getFullYear() === ref.getFullYear() &&
-    d.getMonth() === ref.getMonth() &&
-    d.getDate() === ref.getDate()
-  );
+  if (!Number.isFinite(d.getTime())) return false;
+  const start = new Date(ref.getFullYear(), ref.getMonth(), ref.getDate());
+  const end = new Date(start);
+  end.setDate(end.getDate() + days + 1); // exclusive end of the last included day
+  return d >= start && d < end;
 }
+
 
 function isUpcoming(ev: OddsApiEvent): boolean {
   if (!ev.date) return false;
