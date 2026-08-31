@@ -50,7 +50,7 @@ export default function Dashboard() {
   return (
     <>
       {showOnboarding && <OnboardingModal onComplete={completeOnboarding} />}
-    <div className="container py-8 space-y-8 animate-slide-up">
+    <div className="container py-5 md:py-8 space-y-6 md:space-y-8 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? classroom.name} · {portfolio.displayName}</p>
@@ -64,15 +64,15 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {stats.map((s) => (
           <div key={s.label} className="stat-card">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-muted-foreground">{s.label}</span>
-              <s.icon className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center justify-between gap-2 mb-1.5 md:mb-2">
+              <span className="text-xs md:text-sm text-muted-foreground leading-tight">{s.label}</span>
+              <s.icon className="h-4 w-4 shrink-0 text-muted-foreground" />
             </div>
-            <div className="text-xl md:text-2xl font-bold font-mono">{s.value}</div>
-            {s.change && <span className={`text-sm font-medium ${s.change.startsWith("+") ? "price-up" : "price-down"}`}>{s.change}</span>}
+            <div className="text-lg md:text-2xl font-bold font-mono truncate">{s.value}</div>
+            {s.change && <span className={`text-xs md:text-sm font-medium ${s.change.startsWith("+") ? "price-up" : "price-down"}`}>{s.change}</span>}
           </div>
         ))}
       </div>
