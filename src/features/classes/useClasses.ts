@@ -48,13 +48,15 @@ export function useRoster(classId: string | undefined) {
     queryKey: ["roster", classId],
     enabled: !!classId,
     queryFn: async (): Promise<RosterEntry[]> => {
-      const members = unwrap<ClassMemberRow[]>(
+      const all = unwrap<ClassMemberRow[]>(
         await db
           .from("class_members")
           .select("*")
           .eq("class_id", classId!)
           .order("joined_at", { ascending: true }),
       );
+      // The instructor's own seat exists only for student-view previews.
+      const members = all.filter((m) => m.member_role !== "instructor");
       if (members.length === 0) return [];
       const profiles = unwrap<ProfileRow[]>(
         await db
