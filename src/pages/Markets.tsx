@@ -129,34 +129,43 @@ export default function Markets() {
       </div>
 
       {canEdit && classId && (
-        <div className="rounded-lg border bg-card p-4 space-y-2">
-          <p className="text-sm font-medium">Leagues on the board (instructor only)</p>
-          <p className="text-xs text-muted-foreground">
-            Turn leagues on or off for your students. Only today&apos;s games are listed.
+        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-5 space-y-3">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-primary" />
+            <p className="text-base font-semibold">Instructor controls · Leagues on the board</p>
+            <Badge variant="secondary" className="text-[10px]">Instructor only</Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Turn leagues on or off for your students. The board shows games for today and the next two days.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
             {MAJOR_LEAGUES.map((l) => {
               const on = enabledLeagues.includes(l.key);
+              const toggle = () => {
+                const next = on
+                  ? enabledLeagues.filter((k) => k !== l.key)
+                  : [...enabledLeagues, l.key];
+                if (next.length === 0) return;
+                setBoardLeagues.mutate({ classId, leagues: next });
+              };
               return (
-                <Badge
+                <label
                   key={l.key}
-                  variant={on ? "default" : "outline"}
-                  className="cursor-pointer select-none"
-                  onClick={() => {
-                    const next = on
-                      ? enabledLeagues.filter((k) => k !== l.key)
-                      : [...enabledLeagues, l.key];
-                    if (next.length === 0) return;
-                    setBoardLeagues.mutate({ classId, leagues: next });
-                  }}
+                  className={cn(
+                    "flex items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 cursor-pointer transition-colors",
+                    on ? "border-primary" : "border-border opacity-70",
+                  )}
                 >
-                  {l.label}
-                </Badge>
+                  <span className="text-sm font-medium">{l.label}</span>
+                  <Switch checked={on} onCheckedChange={toggle} disabled={setBoardLeagues.isPending} />
+                </label>
               );
             })}
           </div>
+          <p className="text-xs text-muted-foreground">At least one league must stay on.</p>
         </div>
       )}
+
 
       {/* Search & Filters */}
       <div className="space-y-3">
