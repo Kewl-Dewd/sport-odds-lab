@@ -22,6 +22,7 @@ import {
   type StudentStats,
 } from "@/lib/studentAnalytics";
 import { cn } from "@/lib/utils";
+import { toAmerican } from "@/lib/oddsFormat";
 
 function ScoreBadge({ score, label }: { score: number; label?: string }) {
   const color = score >= 70 ? "bg-success/15 text-success" : score >= 40 ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive";
@@ -423,7 +424,7 @@ export default function Portfolio() {
                         <th className="pb-3 font-medium">Market</th>
                         <th className="pb-3 font-medium">Outcome</th>
                         <th className="pb-3 font-medium text-right">Type</th>
-                        <th className="pb-3 font-medium text-right">Price</th>
+                        <th className="pb-3 font-medium text-right">Current odds</th>
                         <th className="pb-3 font-medium text-right">Settlement</th>
                         <th className="pb-3 font-medium text-right">Edge</th>
                         <th className="pb-3 font-medium text-right">P&L</th>
@@ -437,7 +438,7 @@ export default function Portfolio() {
                           <td className="py-3 text-right">
                             <span className={cn("font-semibold", o.type === "BUY" ? "price-up" : "price-down")}>{o.type}</span>
                           </td>
-                          <td className="py-3 text-right font-mono">{(o.pricePerShare * 100).toFixed(1)}¢</td>
+                          <td className="py-3 text-right font-mono">{toAmerican(o.pricePerShare)}</td>
                           <td className="py-3 text-right">
                             {o.settlementValue === 1 ? (
                               <Badge variant="outline" className="text-success text-xs">Won</Badge>
@@ -495,7 +496,7 @@ export default function Portfolio() {
                             <span className={cn("font-semibold", t.type === "BUY" ? "price-up" : "price-down")}>{t.type}</span>
                           </td>
                           <td className="py-3 text-right font-mono text-xs">
-                            {(t.priceBefore * 100).toFixed(1)}→{(t.priceAfter * 100).toFixed(1)}¢
+                            {toAmerican(t.priceBefore)} → {toAmerican(t.priceAfter)}
                           </td>
                           <td className="py-3 text-right">
                             {t.priceMoveFavorable ? (
@@ -598,9 +599,9 @@ export default function Portfolio() {
                         <tr className="border-b text-left text-muted-foreground">
                           <th className="pb-3 font-medium">Market</th>
                           <th className="pb-3 font-medium">Outcome</th>
-                          <th className="pb-3 font-medium text-right">Units</th>
-                          <th className="pb-3 font-medium text-right">Avg Price</th>
-                          <th className="pb-3 font-medium text-right">Price</th>
+                          <th className="pb-3 font-medium text-right">Payout if win</th>
+                          <th className="pb-3 font-medium text-right">Your odds</th>
+                          <th className="pb-3 font-medium text-right">Current odds</th>
                           <th className="pb-3 font-medium text-right">Value</th>
                           <th className="pb-3 font-medium text-right">P&L</th>
                         </tr>
@@ -614,9 +615,9 @@ export default function Portfolio() {
                               </Link>
                             </td>
                             <td className="py-3">{p.outcomeName}</td>
-                            <td className="py-3 text-right font-mono">{p.shares}</td>
-                            <td className="py-3 text-right font-mono">{((p.costBasis / p.shares) * 100).toFixed(1)}¢</td>
-                            <td className="py-3 text-right font-mono">{((p.currentValue / p.shares) * 100).toFixed(1)}¢</td>
+                            <td className="py-3 text-right font-mono">${p.shares.toFixed(2)}</td>
+                            <td className="py-3 text-right font-mono">{toAmerican(p.costBasis / p.shares)}</td>
+                            <td className="py-3 text-right font-mono">{toAmerican(p.currentValue / p.shares)}</td>
                             <td className="py-3 text-right font-mono">${p.currentValue.toFixed(2)}</td>
                             <td className={cn("py-3 text-right font-mono font-medium", p.pnl >= 0 ? "price-up" : "price-down")}>
                               {p.pnl >= 0 ? "+" : ""}${p.pnl.toFixed(2)} ({p.pnlPct > 0 ? "+" : ""}{p.pnlPct.toFixed(1)}%)
@@ -646,7 +647,7 @@ export default function Portfolio() {
                     <th className="pb-3 font-medium">Market</th>
                     <th className="pb-3 font-medium">Type</th>
                     <th className="pb-3 font-medium text-right">Qty</th>
-                    <th className="pb-3 font-medium text-right">Price</th>
+                    <th className="pb-3 font-medium text-right">Current odds</th>
                     <th className="pb-3 font-medium text-right">Total</th>
                     <th className="pb-3 font-medium text-right">Impact</th>
                   </tr>
@@ -664,11 +665,11 @@ export default function Portfolio() {
                       <td className="py-3">
                         <span className={cn("font-semibold", t.type === "BUY" ? "price-up" : "price-down")}>{t.type}</span>
                       </td>
-                      <td className="py-3 text-right font-mono">{t.quantity}</td>
-                      <td className="py-3 text-right font-mono">{(t.pricePerShare * 100).toFixed(1)}¢</td>
+                      <td className="py-3 text-right font-mono">${t.quantity.toFixed(2)}</td>
+                      <td className="py-3 text-right font-mono">{toAmerican(t.pricePerShare)}</td>
                       <td className="py-3 text-right font-mono">${t.totalCost.toFixed(2)}</td>
                       <td className="py-3 text-right font-mono text-xs">
-                        {(t.priceBeforeTrade * 100).toFixed(1)}→{(t.priceAfterTrade * 100).toFixed(1)}¢
+                        {toAmerican(t.priceBeforeTrade)} → {toAmerican(t.priceAfterTrade)}
                       </td>
                     </tr>
                   ))}
