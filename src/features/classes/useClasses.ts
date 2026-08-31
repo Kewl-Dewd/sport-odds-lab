@@ -48,13 +48,15 @@ export function useRoster(classId: string | undefined) {
     queryKey: ["roster", classId],
     enabled: !!classId,
     queryFn: async (): Promise<RosterEntry[]> => {
-      const members = unwrap<ClassMemberRow[]>(
+      const all = unwrap<ClassMemberRow[]>(
         await db
           .from("class_members")
           .select("*")
           .eq("class_id", classId!)
           .order("joined_at", { ascending: true }),
       );
+      // The instructor's own seat exists only for student-view previews.
+      const members = all.filter((m) => m.member_role !== "instructor");
       if (members.length === 0) return [];
       const profiles = unwrap<ProfileRow[]>(
         await db
@@ -80,14 +82,28 @@ export function useCreateClass() {
       semester_start?: string;
       semester_end?: string;
     }) =>
-      unwrap<ClassRow>(
+    {
+      const klass = unwrap<ClassRow>(
         await db
           .from("classes")
           .insert({ ...input, owner_id: user!.id })
           .select("*")
           .single(),
-      ),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["classes"] }),
+      );
+      // Seat the instructor in their own class so they can preview the
+      // student console (bankroll, coursework, board) for that section.
+      await db.from("class_members").insert({
+        class_id: klass.id,
+        user_id: user!.id,
+        member_role: "instructor",
+        bankroll: input.starting_bankroll,
+      });
+      return klass;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["classes"] });
+      qc.invalidateQueries({ queryKey: ["enrollments"] });
+    },
   });
 }
 
