@@ -40,11 +40,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   "custom": "Custom",
 };
 
-const diffBadgeStyle: Record<string, string> = {
-  beginner: "bg-success/15 text-success",
-  intermediate: "bg-warning/15 text-warning",
-  advanced: "bg-destructive/15 text-destructive",
-};
 
 export default function Markets() {
   const { markets: allMarkets, trades, liveBoardLoading, liveBoardError, loadLiveMarkets } = useMarket();
@@ -298,7 +293,7 @@ export default function Markets() {
                             <div className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-primary" : "bg-primary/50")}
                               style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="font-mono font-bold text-sm w-14 text-right">{(o.price * 100).toFixed(1)}¢</span>
+                          <span className="font-mono font-bold text-sm w-14 text-right">{toAmerican(o.price)}</span>
                           <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
                         </div>
                       );
@@ -326,7 +321,7 @@ export default function Markets() {
                         }}
                       >
                         <TrendingUp className="mr-1 h-3 w-3" />
-                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {(o.price * 100).toFixed(0)}¢
+                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {toAmerican(o.price)}
                       </Button>
                     ))}
                   </div>
