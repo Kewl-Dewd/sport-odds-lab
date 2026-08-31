@@ -130,7 +130,9 @@ export function CurriculumLibrary({ classId }: { classId: string }) {
                                   <Badge variant="outline" className="text-xs">Acknowledgment</Badge>
                                 )}
                               </div>
-                              <p className="mt-0.5 text-xs text-muted-foreground">{m.minutes} min read</p>
+                              <p className="mt-0.5 text-xs text-muted-foreground">
+                                ~{m.minutes} min {m.kind === "assignment" ? "to complete" : "read"}
+                              </p>
                             </div>
                             <Button
                               size="sm"
