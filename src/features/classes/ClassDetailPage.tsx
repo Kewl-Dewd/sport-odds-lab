@@ -105,6 +105,7 @@ export default function ClassDetailPage() {
           <TabsTrigger value="rounds">Windows &amp; contests</TabsTrigger>
           <TabsTrigger value="book">Book dashboard</TabsTrigger>
           <TabsTrigger value="coursework">Coursework</TabsTrigger>
+          <TabsTrigger value="progress">Student progress</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
