@@ -243,56 +243,18 @@ function SettingsTab({ klass }: { klass: Klass }) {
       </Card>
 
       <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Invite students</CardTitle>
-            <CardDescription>
-              Share the link (one click to join) or have students enter the code at /join.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center gap-2">
-              <code className="flex-1 truncate rounded-lg border bg-muted/40 px-3 py-2 text-xs">
-                {`${window.location.origin}/join/${klass.join_code}`}
-              </code>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  navigator.clipboard.writeText(`${window.location.origin}/join/${klass.join_code}`);
-                  toast.success("Invite link copied");
-                }}
-                title="Copy invite link"
-              >
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="flex items-center gap-2">
-            <code className="flex-1 rounded-lg border bg-muted/40 px-3 py-2 font-mono text-lg tracking-widest">
-              {klass.join_code}
-            </code>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => { navigator.clipboard.writeText(klass.join_code); toast.success("Copied"); }}
-              title="Copy code"
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => regenCode.mutate(undefined, {
-                onSuccess: () => toast.success("New join code generated"),
-                onError: (e) => toast.error(e.message),
-              })}
-              title="Regenerate code (old code and link stop working)"
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <ClassInviteCard classId={klass.id} joinCode={klass.join_code} className={klass.name} />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => regenCode.mutate(undefined, {
+            onSuccess: () => toast.success("New join code generated"),
+            onError: (e) => toast.error(e.message),
+          })}
+        >
+          <RefreshCw className="mr-1.5 h-4 w-4" /> Regenerate course code
+        </Button>
+
 
         <Card>
           <CardHeader>
