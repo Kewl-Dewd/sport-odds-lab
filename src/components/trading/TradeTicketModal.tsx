@@ -351,9 +351,11 @@ ${Math.abs(lastTrade.totalCost).toFixed(2)} on {lastTrade.outcomeName} at {toAme
                 <span className="font-mono font-semibold">${Math.abs(lastTrade.totalCost).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Line movement</span>
+                <span className="text-muted-foreground">{fixedOdds ? "Odds you got" : "Line movement"}</span>
                 <span className="font-mono font-semibold">
-                  {toAmerican(lastTrade.priceBeforeTrade)} → {toAmerican(lastTrade.priceAfterTrade)}
+                  {fixedOdds
+                    ? toAmerican(lastTrade.pricePerShare)
+                    : `${toAmerican(lastTrade.priceBeforeTrade)} → ${toAmerican(lastTrade.priceAfterTrade)}`}
                 </span>
               </div>
             </div>
