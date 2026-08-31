@@ -283,7 +283,9 @@ export type Database = {
           class_id: string
           created_at: string
           created_by: string | null
+          curriculum_key: string | null
           due_at: string | null
+          estimated_minutes: number | null
           id: string
           is_published: boolean
           kind: string
@@ -291,6 +293,7 @@ export type Database = {
           sort_order: number
           source_rg_lesson_id: string | null
           title: string
+          topic: string
           updated_at: string
           url: string | null
         }
@@ -299,7 +302,9 @@ export type Database = {
           class_id: string
           created_at?: string
           created_by?: string | null
+          curriculum_key?: string | null
           due_at?: string | null
+          estimated_minutes?: number | null
           id?: string
           is_published?: boolean
           kind?: string
@@ -307,6 +312,7 @@ export type Database = {
           sort_order?: number
           source_rg_lesson_id?: string | null
           title: string
+          topic?: string
           updated_at?: string
           url?: string | null
         }
@@ -315,7 +321,9 @@ export type Database = {
           class_id?: string
           created_at?: string
           created_by?: string | null
+          curriculum_key?: string | null
           due_at?: string | null
+          estimated_minutes?: number | null
           id?: string
           is_published?: boolean
           kind?: string
@@ -323,6 +331,7 @@ export type Database = {
           sort_order?: number
           source_rg_lesson_id?: string | null
           title?: string
+          topic?: string
           updated_at?: string
           url?: string | null
         }
