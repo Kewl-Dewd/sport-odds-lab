@@ -25,6 +25,7 @@ import Experiments from "./pages/Experiments.tsx";
 import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import ChooseMode from "./pages/ChooseMode.tsx";
 import AdminUsers from "./pages/AdminUsers.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -86,6 +87,7 @@ const App = () => (
                     <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />
                     <Route path="/instructor/classes/:id" element={<ProtectedRoute requireInstructor><ClassDetailPage /></ProtectedRoute>} />
                     <Route path="/auth" element={<Auth />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                   </Route>
                   {/* Presentation mode — no navbar/footer */}
                   <Route path="/instructor/present/:view" element={<ProtectedRoute requireInstructor><PresentationMode /></ProtectedRoute>} />
