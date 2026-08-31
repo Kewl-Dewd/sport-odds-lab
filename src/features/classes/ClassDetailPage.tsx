@@ -29,6 +29,8 @@ import { buildBetsCsv, buildStudentSummaryCsv, downloadCsv } from "@/features/ex
 import { ClassMarketsTab } from "@/features/classes/ClassMarketsTab";
 import { ClassRoundsTab } from "@/features/classes/ClassRoundsTab";
 import { ClassBookLedger } from "@/features/classes/ClassBookLedger";
+import { ClassInviteCard } from "@/features/classes/ClassInviteCard";
+import { ClassCourseworkTab } from "@/features/classes/ClassCourseworkTab";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -101,6 +103,7 @@ export default function ClassDetailPage() {
           <TabsTrigger value="markets">Markets</TabsTrigger>
           <TabsTrigger value="rounds">Windows &amp; contests</TabsTrigger>
           <TabsTrigger value="book">Book dashboard</TabsTrigger>
+          <TabsTrigger value="coursework">Coursework</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
@@ -115,6 +118,10 @@ export default function ClassDetailPage() {
 
         <TabsContent value="rounds" className="mt-4">
           <ClassRoundsTab classId={klass.id} startingBankroll={Number(klass.starting_bankroll)} />
+        </TabsContent>
+
+        <TabsContent value="coursework" className="mt-4">
+          <ClassCourseworkTab classId={klass.id} />
         </TabsContent>
 
         <TabsContent value="book" className="mt-4">
