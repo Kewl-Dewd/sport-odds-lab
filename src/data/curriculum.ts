@@ -250,7 +250,7 @@ Three legs at \u2212110 (1.909 each): 1.909³ = **6.96** fair-ish decimal, but t
         kind: "lesson",
         body: `## Why the number changes
 
-Prices move for two reasons:
+In this app the line only moves when the **live odds feed** moves — your own bet never changes the price (see "How the book makes money"). Out in the market, prices move for two reasons:
 1. **Information** — an injury, a lineup scratch, weather, a goalie announcement.
 2. **Money** — the book adjusts to balance its exposure.
 
