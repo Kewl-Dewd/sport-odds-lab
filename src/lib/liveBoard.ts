@@ -164,7 +164,7 @@ export async function loadLiveBoard(opts?: {
 }): Promise<LiveBoardGame[]> {
   const keys = opts?.leagues?.length ? opts.leagues : DEFAULT_BOARD_LEAGUES;
   const leagues = MAJOR_LEAGUES.filter((l) => keys.includes(l.key));
-  const perLeague = opts?.perLeague ?? 15;
+  const perLeague = opts?.perLeague ?? 40;
   const maxGames = opts?.maxGames ?? 20;
   const todayOnly = opts?.todayOnly ?? true;
   // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
