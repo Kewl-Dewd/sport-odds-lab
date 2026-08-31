@@ -53,6 +53,17 @@ export default function Auth() {
     toast.success("Account created");
   };
 
+  const forgotPassword = async () => {
+    if (!email) return toast.error("Enter your email first, then tap Forgot password");
+    setSubmitting(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    toast.success("Password reset link sent — check your email");
+  };
+
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
