@@ -114,13 +114,13 @@ export default function Markets() {
   const activeFilters = [statusFilter !== "all", leagueFilter !== "all", sportFilter !== "all", categoryFilter !== "all"].filter(Boolean).length;
 
   return (
-    <div className="container py-8 space-y-6 animate-slide-up">
+    <div className="container py-5 md:py-8 space-y-5 md:space-y-6 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">Browse the board and place your bets</p>
       </div>
 
-      <div className="flex items-center gap-3 text-sm text-muted-foreground">
+      <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
         {liveBoardLoading && <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading live odds…</span>}
         {!liveBoardLoading && liveBoardError && <span className="text-destructive">{liveBoardError}</span>}
         <Button variant="outline" size="sm" onClick={() => void loadLiveMarkets(enabledLeagues)} disabled={liveBoardLoading}>
@@ -130,7 +130,7 @@ export default function Markets() {
       </div>
 
       {canEdit && classId && (
-        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-5 space-y-3">
+        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4 sm:p-5 space-y-3">
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4 text-primary" />
             <p className="text-base font-semibold">Instructor controls · Leagues on the board</p>
@@ -139,7 +139,7 @@ export default function Markets() {
           <p className="text-sm text-muted-foreground">
             Turn leagues on or off for your students. The board shows games for today and the next two days.
           </p>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 pt-1">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 pt-1">
             {MAJOR_LEAGUES.map((l) => {
               const on = enabledLeagues.includes(l.key);
               const toggle = () => {
@@ -175,42 +175,42 @@ export default function Markets() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search markets, outcomes, leagues..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
           </div>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 overflow-x-auto -mx-1 px-1 pb-1 sm:flex-wrap sm:overflow-visible sm:mx-0 sm:px-0">
             {(["all", "open", "suspended", "settled"] as const).map((f) => (
-              <Button key={f} variant={statusFilter === f ? "default" : "outline"} size="sm" onClick={() => setStatusFilter(f)} className="capitalize">
+              <Button key={f} variant={statusFilter === f ? "default" : "outline"} size="sm" onClick={() => setStatusFilter(f)} className="capitalize shrink-0">
                 {f}
               </Button>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-3 items-center">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="flex gap-2 sm:gap-3 items-center overflow-x-auto -mx-1 px-1 pb-1 sm:flex-wrap sm:overflow-visible sm:mx-0 sm:px-0">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
             <Filter className="h-3.5 w-3.5" />Filters{activeFilters > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{activeFilters}</Badge>}
           </div>
           <Select value={leagueFilter} onValueChange={setLeagueFilter}>
-            <SelectTrigger className="w-32 h-8 text-xs"><SelectValue placeholder="League" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="League" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Leagues</SelectItem>
               {leagues.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={sportFilter} onValueChange={setSportFilter}>
-            <SelectTrigger className="w-32 h-8 text-xs"><SelectValue placeholder="Sport" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="Sport" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sports</SelectItem>
               {sports.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36 h-8 text-xs"><SelectValue placeholder="Category" /></SelectTrigger>
+            <SelectTrigger className="w-36 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((c) => <SelectItem key={c!} value={c!}>{CATEGORY_LABELS[c!] ?? c}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-            <SelectTrigger className="w-32 h-8 text-xs">
+            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0">
               <SlidersHorizontal className="h-3 w-3 mr-1" /><SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -242,7 +242,7 @@ export default function Markets() {
 
           return (
             <div key={market.id} className="market-card">
-              <Link to={`/markets/${market.id}`} className="block p-5">
+              <Link to={`/markets/${market.id}`} className="block p-4 sm:p-5">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -253,8 +253,8 @@ export default function Markets() {
                       {diff && <Badge className={`text-[10px] border-0 ${diffBadgeStyle[diff] ?? ""}`}>{diff}</Badge>}
                       {isMulti && <Badge variant="secondary" className="text-xs">{market.outcomes.length} outcomes</Badge>}
                     </div>
-                    <h3 className="text-lg font-semibold">{market.title}</h3>
-                    <div className="flex items-center gap-3 mt-0.5">
+                    <h3 className="text-base sm:text-lg font-semibold">{market.title}</h3>
+                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                       <p className="text-sm text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3.5 w-3.5" />{market.startTime}
                       </p>
@@ -272,7 +272,7 @@ export default function Markets() {
                 {market.outcomes.length <= 3 ? (
                   <div className="flex gap-3 flex-wrap">
                     {market.outcomes.map((o) => (
-                      <div key={o.id} className="flex-1 min-w-[100px] rounded-lg border p-3">
+                      <div key={o.id} className="flex-1 min-w-[calc(50%-0.375rem)] sm:min-w-[100px] rounded-lg border p-3">
                         <div className="flex items-center justify-between mb-1.5">
                           <p className="text-sm font-medium truncate">{o.name}</p>
                           <span className="text-lg font-bold font-mono ml-2">{(o.price * 100).toFixed(1)}¢</span>
@@ -313,14 +313,14 @@ export default function Markets() {
 
               {/* Quick Trade Buttons */}
               {market.status === "open" && (
-                <div className="px-5 pb-4 pt-0">
+                <div className="px-4 sm:px-5 pb-4 pt-0">
                   <div className="flex gap-2 flex-wrap">
                     {market.outcomes.slice(0, 4).map((o) => (
                       <Button
                         key={o.id}
                         variant="outline"
                         size="sm"
-                        className="text-xs flex-1 min-w-[80px]"
+                        className="text-xs flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[80px] h-9"
                         onClick={(e) => {
                           e.preventDefault();
                           setTradeModal({ marketId: market.id, outcomeId: o.id });
