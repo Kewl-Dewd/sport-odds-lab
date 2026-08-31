@@ -161,16 +161,17 @@ export async function loadLiveBoard(opts?: {
   perLeague?: number;
   maxGames?: number;
   maxLookups?: number;
-  /** Only include games starting today (local time). Defaults to true. */
-  todayOnly?: boolean;
+  /** How many extra calendar days past today to include. Defaults to 2 (today + next 2 days). */
+  daysAhead?: number;
 }): Promise<LiveBoardGame[]> {
   const keys = opts?.leagues?.length ? opts.leagues : DEFAULT_BOARD_LEAGUES;
   const leagues = MAJOR_LEAGUES.filter((l) => keys.includes(l.key));
   const perLeague = opts?.perLeague ?? 40;
-  const maxGames = opts?.maxGames ?? 20;
-  const todayOnly = opts?.todayOnly ?? true;
+  const maxGames = opts?.maxGames ?? 36;
+  const daysAhead = opts?.daysAhead ?? 2;
   // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
-  const maxLookups = opts?.maxLookups ?? 24;
+  const maxLookups = opts?.maxLookups ?? 42;
+
 
   const eventLists = await Promise.all(
     leagues.map((l) =>
