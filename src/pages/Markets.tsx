@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Clock, ChevronRight, Filter, SlidersHorizontal, TrendingUp, BarChart3, Zap, Loader2, RefreshCw } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,8 @@ import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import type { MarketStatus } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
+import { MAJOR_LEAGUES } from "@/lib/liveBoard";
+import { useBoardLeagues, useSetBoardLeagues } from "@/features/classes/useBoardLeagues";
 
 const statusBadge = (status: MarketStatus) => {
   switch (status) {
@@ -45,10 +47,23 @@ const diffBadgeStyle: Record<string, string> = {
 export default function Markets() {
   const { markets: allMarkets, trades, liveBoardLoading, liveBoardError, loadLiveMarkets } = useMarket();
   const { mode } = useMode();
-  const markets = useMemo(
-    () => mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets,
-    [allMarkets, mode],
-  );
+  const { leagues: enabledLeagues, classId, canEdit } = useBoardLeagues();
+  const setBoardLeagues = useSetBoardLeagues();
+  const enabledKey = enabledLeagues.join(",");
+
+  useEffect(() => {
+    void loadLiveMarkets(enabledKey.split(","));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledKey]);
+
+  const markets = useMemo(() => {
+    const scoped = mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets;
+    return scoped.filter((m) => {
+      const slug = m.metadata?.externalLeague;
+      // Feed markets must be in an enabled league; manual markets always show.
+      return m.metadata?.dataSource !== "odds-api" || (slug ? enabledLeagues.includes(slug) : false);
+    });
+  }, [allMarkets, mode, enabledLeagues]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketStatus | "all">("all");
   const [leagueFilter, setLeagueFilter] = useState<string>("all");
@@ -107,11 +122,40 @@ export default function Markets() {
       <div className="flex items-center gap-3 text-sm text-muted-foreground">
         {liveBoardLoading && <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading live odds…</span>}
         {!liveBoardLoading && liveBoardError && <span className="text-destructive">{liveBoardError}</span>}
-        <Button variant="outline" size="sm" onClick={() => void loadLiveMarkets()} disabled={liveBoardLoading}>
+        <Button variant="outline" size="sm" onClick={() => void loadLiveMarkets(enabledLeagues)} disabled={liveBoardLoading}>
           <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", liveBoardLoading && "animate-spin")} />
           Refresh board
         </Button>
       </div>
+
+      {canEdit && classId && (
+        <div className="rounded-lg border bg-card p-4 space-y-2">
+          <p className="text-sm font-medium">Leagues on the board (instructor only)</p>
+          <p className="text-xs text-muted-foreground">
+            Turn leagues on or off for your students. Only today&apos;s games are listed.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1">
+            {MAJOR_LEAGUES.map((l) => {
+              const on = enabledLeagues.includes(l.key);
+              return (
+                <Badge
+                  key={l.key}
+                  variant={on ? "default" : "outline"}
+                  className="cursor-pointer select-none"
+                  onClick={() => {
+                    const next = on
+                      ? enabledLeagues.filter((k) => k !== l.key)
+                      : [...enabledLeagues, l.key];
+                    setBoardLeagues.mutate({ classId, leagues: next });
+                  }}
+                >
+                  {l.label}
+                </Badge>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Search & Filters */}
       <div className="space-y-3">
