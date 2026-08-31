@@ -15,7 +15,7 @@ export interface AccessRow {
  * entitled; students need a paid purchase or a redeemed course code.
  */
 export function useAccess() {
-  const { user, isInstructorAccount, isPlatformAdminAccount, viewAs } = useAuth();
+  const { user, isInstructorAccount, isPlatformAdminAccount } = useAuth();
 
   const query = useQuery({
     queryKey: ["user-access", user?.id],
