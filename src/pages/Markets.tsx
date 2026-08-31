@@ -146,6 +146,7 @@ export default function Markets() {
                     const next = on
                       ? enabledLeagues.filter((k) => k !== l.key)
                       : [...enabledLeagues, l.key];
+                    if (next.length === 0) return;
                     setBoardLeagues.mutate({ classId, leagues: next });
                   }}
                 >
