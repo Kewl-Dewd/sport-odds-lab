@@ -69,10 +69,10 @@ const App = () => (
                     <Route path="/leaderboard" element={<ProtectedRoute requireMode><Leaderboard /></ProtectedRoute>} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
-                    <Route path="/instructor" element={<ProtectedRoute requireInstructor><InstructorDashboard /></ProtectedRoute>} />
+                    <Route path="/instructor" element={<Navigate to="/instructor/classes" replace />} />
                     <Route path="/instructor/review" element={<ProtectedRoute requireInstructor><TradeReview /></ProtectedRoute>} />
                     <Route path="/instructor/reports" element={<ProtectedRoute requireInstructor><Reports /></ProtectedRoute>} />
-                    <Route path="/experiments" element={<ProtectedRoute requireInstructor><Experiments /></ProtectedRoute>} />
+                    <Route path="/experiments" element={<Navigate to="/instructor/classes" replace />} />
                     <Route path="/experiments/:id" element={<ProtectedRoute requireInstructor><ExperimentView /></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute requireInstructor><AdminUsers /></ProtectedRoute>} />
                     <Route path="/join" element={<ProtectedRoute><RequireAccess><JoinClassPage /></RequireAccess></ProtectedRoute>} />
