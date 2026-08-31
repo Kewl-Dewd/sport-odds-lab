@@ -31,7 +31,8 @@ export function TradeTicketModal({
   const { pushNudge, educationEnabled } = useEducation();
   const { isPaywalled } = useAccess();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
-  const [quantity, setQuantity] = useState("");
+  // For BUY this is a dollar stake; for SELL it's how much of the position to cash out (dollars of payout).
+  const [amount, setAmount] = useState("");
 
   const [step, setStep] = useState<Step>("entry");
   const [lastTrade, setLastTrade] = useState<any>(null);
@@ -41,10 +42,24 @@ export function TradeTicketModal({
   const currentOutcome = market?.outcomes.find((o) => o.id === outcomeId);
 
   useEffect(() => {
-    if (open) { setType(initialType); setQuantity(""); setStep("entry"); setLastTrade(null); }
+    if (open) { setType(initialType); setAmount(""); setStep("entry"); setLastTrade(null); }
   }, [open, initialType]);
 
-  const qty = Math.floor(Number(quantity) || 0);
+  const dollars = Math.max(0, Number(amount) || 0);
+
+  // Convert a dollar stake into the engine's contract quantity.
+  const qty = useMemo(() => {
+    if (dollars <= 0 || !currentOutcome) return 0;
+    if (type === "SELL") return Math.min(holding?.shares ?? 0, Math.floor(dollars));
+    const maxQty = Math.max(1, Math.ceil(dollars / Math.max(currentOutcome.price, 0.01)) + 50);
+    let lo = 0, hi = maxQty;
+    while (lo < hi) {
+      const mid = Math.ceil((lo + hi) / 2);
+      const est = estimate(marketId, outcomeId, mid, "BUY");
+      if (est && Math.abs(est.totalCost) <= dollars) lo = mid; else hi = mid - 1;
+    }
+    return lo;
+  }, [dollars, type, currentOutcome, holding, marketId, outcomeId, estimate]);
 
   const tradeEstimate = useMemo(() => {
     if (qty <= 0) return null;
@@ -52,9 +67,10 @@ export function TradeTicketModal({
   }, [qty, marketId, outcomeId, type, estimate]);
 
   const validation = useMemo(() => {
-    if (qty <= 0) return { valid: false, error: "Enter a quantity" };
+    if (dollars <= 0) return { valid: false, error: type === "BUY" ? "Enter a stake" : "Enter an amount" };
+    if (qty <= 0) return { valid: false, error: type === "BUY" ? "Stake is too small for this line" : "You have no position to cash out" };
     return validate(marketId, outcomeId, qty, type);
-  }, [qty, marketId, outcomeId, type, validate]);
+  }, [dollars, qty, marketId, outcomeId, type, validate]);
 
   // Slippage calculation
   const slippage = useMemo(() => {
