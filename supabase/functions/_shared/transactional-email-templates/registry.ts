@@ -12,7 +12,9 @@ export interface TemplateEntry {
 }
 
 import { template as feedbackNotification } from './feedback-notification.tsx'
+import { template as classInvite } from './class-invite.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'feedback-notification': feedbackNotification,
+  'class-invite': classInvite,
 }
