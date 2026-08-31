@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMarket } from "@/context/MarketContext";
-import { MarketCreator } from "@/components/admin/MarketCreator";
+import { NewClassDialog } from "@/features/classes/NewClassDialog";
 import { SettlementModal } from "@/components/admin/SettlementModal";
 import type { Market } from "@/lib/tradingEngine";
 import { toast } from "sonner";
@@ -92,7 +92,7 @@ export default function Admin() {
             <Download className="mr-1.5 h-4 w-4" />Leaderboard CSV
           </Button>
           <Button variant="hero" size="sm" onClick={() => setShowCreator(true)}>
-            <Plus className="mr-1.5 h-4 w-4" />New Market
+            <Plus className="mr-1.5 h-4 w-4" />New Class
           </Button>
         </div>
       </div>
@@ -385,7 +385,7 @@ export default function Admin() {
         </TabsContent>
       </Tabs>
 
-      {showCreator && <MarketCreator onClose={() => setShowCreator(false)} />}
+      <NewClassDialog open={showCreator} onOpenChange={setShowCreator} />
       {settlingMarket && <SettlementModal market={settlingMarket} onClose={() => setSettlingMarket(null)} />}
     </div>
   );

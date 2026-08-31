@@ -16,7 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
-import { MarketCreator } from "@/components/admin/MarketCreator";
+import { NewClassDialog } from "@/features/classes/NewClassDialog";
 import { SettlementModal } from "@/components/admin/SettlementModal";
 import { LiveFixtureImporter } from "@/components/admin/LiveFixtureImporter";
 import { SettlementSuggestions } from "@/components/admin/SettlementSuggestions";
@@ -151,7 +151,7 @@ export default function InstructorDashboard() {
             <Link to="/instructor/present/leaderboard"><MonitorPlay className="mr-1.5 h-4 w-4" />Present</Link>
           </Button>
           <Button variant="hero" size="sm" onClick={() => setShowCreator(true)}>
-            <Plus className="mr-1.5 h-4 w-4" />New Market
+            <Plus className="mr-1.5 h-4 w-4" />New Class
           </Button>
         </div>
       </div>
@@ -706,7 +706,7 @@ export default function InstructorDashboard() {
         </TabsContent>
       </Tabs>
 
-      {showCreator && <MarketCreator onClose={() => setShowCreator(false)} />}
+      <NewClassDialog open={showCreator} onOpenChange={setShowCreator} />
       {settlingMarket && <SettlementModal market={settlingMarket} onClose={() => setSettlingMarket(null)} />}
       <LiveFixtureImporter open={showLiveImporter} onClose={() => setShowLiveImporter(false)} />
     </div>
