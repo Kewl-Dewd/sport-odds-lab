@@ -197,7 +197,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t animate-slide-up">
           <nav className="container flex flex-col gap-1 py-3">
-            {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
+            {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
