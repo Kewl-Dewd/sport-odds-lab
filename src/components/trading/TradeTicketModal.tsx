@@ -79,9 +79,17 @@ export function TradeTicketModal({
     return calculateSlippage(currentOutcome.price, tradeEstimate.avgPrice, type);
   }, [tradeEstimate, currentOutcome, type]);
 
-  const slippagePct = currentOutcome && currentOutcome.price > 0
+  const fixedOdds = market?.config?.engineType === "fixed-odds";
+  const slippagePct = !fixedOdds && currentOutcome && currentOutcome.price > 0
     ? (slippage / currentOutcome.price) * 100 : 0;
-  const highSlippage = slippagePct > 5;
+  const highSlippage = !fixedOdds && slippagePct > 5;
+  // Vig = how much the posted prices sum above 100%.
+  const vigPct = market
+    ? (() => {
+        const sum = market.outcomes.reduce((t, o) => t + o.price, 0);
+        return sum > 0 ? ((sum - 1) / sum) * 100 : 0;
+      })()
+    : 0;
 
   const handleConfirm = () => {
     const result = trade(marketId, outcomeId, qty, type);
@@ -192,7 +200,9 @@ export function TradeTicketModal({
                 )}
                 {educationEnabled && (
                   <p className="text-xs text-muted-foreground -mt-1 mb-1">
-                    Your stake buys a payout at the current price. Larger bets move the line, so the odds you get can be slightly worse than the ones posted. This is normal.
+                    {fixedOdds
+                      ? "You get the posted odds — your bet does not move the line. The house edge (the \"vig\") is already built into the price: add up both sides' implied chances and they total more than 100%."
+                      : "Your stake buys a payout at the current price. Larger bets move the line, so the odds you get can be slightly worse than the ones posted. This is normal."}
                   </p>
                 )}
                 <div className="flex justify-between">
@@ -203,6 +213,7 @@ export function TradeTicketModal({
                   <span className="text-muted-foreground">Your odds</span>
                   <span className="font-mono font-semibold">{toAmerican(tradeEstimate.avgPrice)}</span>
                 </div>
+                {!fixedOdds && (
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Line after your bet</span>
                   <span className="font-mono font-semibold">
@@ -213,16 +224,19 @@ export function TradeTicketModal({
                     </span>
                   </span>
                 </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Implied chance to win</span>
                   <span className="font-mono text-xs">
-                    {(tradeEstimate.impliedProbBefore * 100).toFixed(1)}% → {(tradeEstimate.impliedProbAfter * 100).toFixed(1)}%
+                    {fixedOdds
+                      ? `${(currentOutcome.price * 100).toFixed(1)}%`
+                      : `${(tradeEstimate.impliedProbBefore * 100).toFixed(1)}% → ${(tradeEstimate.impliedProbAfter * 100).toFixed(1)}%`}
                   </span>
                 </div>
                 <div className="border-t pt-2 flex justify-between">
-                  <span className="text-muted-foreground">Line movement cost</span>
-                  <span className={cn("font-mono text-xs", highSlippage ? "text-warning font-semibold" : "")}>
-                    {slippagePct.toFixed(1)}%
+                  <span className="text-muted-foreground">{fixedOdds ? "House vig on this game" : "Line movement cost"}</span>
+                  <span className={cn("font-mono text-xs", !fixedOdds && highSlippage ? "text-warning font-semibold" : "")}>
+                    {fixedOdds ? vigPct.toFixed(1) : slippagePct.toFixed(1)}%
                   </span>
                 </div>
                 {tradeEstimate.fee > 0 && (
@@ -294,12 +308,14 @@ export function TradeTicketModal({
                   </div>
                 </>
               )}
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Line move</span>
-                <span className="font-mono font-semibold">
-                  {toAmerican(tradeEstimate.priceBefore)} → {toAmerican(tradeEstimate.priceAfter)}
-                </span>
-              </div>
+              {!fixedOdds && (
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Line move</span>
+                  <span className="font-mono font-semibold">
+                    {toAmerican(tradeEstimate.priceBefore)} → {toAmerican(tradeEstimate.priceAfter)}
+                  </span>
+                </div>
+              )}
               {highSlippage && (
                 <div className="flex justify-between text-warning">
                   <span>Line movement cost</span>
@@ -335,9 +351,11 @@ ${Math.abs(lastTrade.totalCost).toFixed(2)} on {lastTrade.outcomeName} at {toAme
                 <span className="font-mono font-semibold">${Math.abs(lastTrade.totalCost).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Line movement</span>
+                <span className="text-muted-foreground">{fixedOdds ? "Odds you got" : "Line movement"}</span>
                 <span className="font-mono font-semibold">
-                  {toAmerican(lastTrade.priceBeforeTrade)} → {toAmerican(lastTrade.priceAfterTrade)}
+                  {fixedOdds
+                    ? toAmerican(lastTrade.pricePerShare)
+                    : `${toAmerican(lastTrade.priceBeforeTrade)} → ${toAmerican(lastTrade.priceAfterTrade)}`}
                 </span>
               </div>
             </div>

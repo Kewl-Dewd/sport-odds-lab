@@ -180,6 +180,50 @@ At \u2212110 you must win **52.4%** of bets just to break even. A bettor hitting
 Your edge is not "I think the home team wins." Your edge is "I think the home team wins **more often than 52.4%**, and the price does not reflect that."`,
       },
       {
+        key: "how-the-book-earns",
+        title: "How the book makes money (and why our lines don't move)",
+        minutes: 4,
+        kind: "lesson",
+        body: `## We run this class like a real sportsbook
+
+Every price you see on the Markets board comes **straight from a live odds feed** — the same numbers a commercial book is posting right now. Two things follow from that, and they are the whole point of this module.
+
+### 1. Your bet does not move the line
+On a prediction-market exchange, buying pushes the price up against you. A sportsbook does not work that way. The book **posts a price and honours it** for every ticket it writes until it decides to repost. So in this app:
+
+- The odds on the slip are the odds you get. No slippage, no "line moved on you."
+- The number only changes when the **feed** changes — an injury, a lineup scratch, weather, or sharp money moving the real market.
+- Bet early at a price you like, or wait and see if the feed moves your way. That is a real decision with a real cost.
+
+### 2. The vig is already inside the price
+The book does not charge a commission on the side. It charges by **shading both prices**. Add up the implied chances on a two-way market and you get something above 100%:
+
+| | Posted | Implied |
+|---|---|---|
+| Home | −110 | 52.4% |
+| Away | −110 | 52.4% |
+| **Total** | | **104.8%** |
+
+That extra **4.8%** is the overround. Expressed as a share of the money written, the book's theoretical **hold** is:
+
+> hold = (total implied − 100%) ÷ total implied = 4.8 / 104.8 = **4.6%**
+
+So on a perfectly balanced book — equal money on both sides — the house keeps about **$4.60 of every $100 wagered**, no matter who wins. It never needs to pick a winner.
+
+### 3. Why the book still has risk
+Real books are rarely balanced. If the whole class hammers one side, the instructor's book is **exposed**: it wins big if that side loses and loses big if it wins. Your instructor can see this live on the class Book dashboard — handle, payouts, exposure by game, and hold %.
+
+Watch it over a round and you will see the two forces that run the industry:
+- **Vig** grinds a small, certain edge out of volume.
+- **Imbalance** adds variance the book did not choose.
+
+### What to take away
+- You are always paying the vig. A break-even bettor at −110 needs **52.4%** winners just to stand still.
+- The posted price is not a probability — divide by the total to get the fair (no-vig) number before you decide anything.
+- The book's profit is the mirror image of the class's losses. Watching the house side is the fastest way to understand why "the house always wins" is a statement about **margin and volume**, not luck.`,
+      },
+
+      {
         key: "bet-types",
         title: "Bet types: moneyline, spread, totals and parlays",
         minutes: 4,
@@ -206,7 +250,7 @@ Three legs at \u2212110 (1.909 each): 1.909³ = **6.96** fair-ish decimal, but t
         kind: "lesson",
         body: `## Why the number changes
 
-Prices move for two reasons:
+In this app the line only moves when the **live odds feed** moves — your own bet never changes the price (see "How the book makes money"). Out in the market, prices move for two reasons:
 1. **Information** — an injury, a lineup scratch, weather, a goalie announcement.
 2. **Money** — the book adjusts to balance its exposure.
 

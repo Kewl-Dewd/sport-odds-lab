@@ -19,3 +19,4 @@ export { DEFAULT_ENGINE_CONFIG, ENGINE_TYPE_OPTIONS } from "./types";
 export { getEngine, getAllEngines, getEngineOptions } from "./registry";
 export { linearImpactEngine } from "./linearImpactEngine";
 export { lmsrEngine } from "./lmsrEngine";
+export { fixedOddsEngine, bookVigPct } from "./fixedOddsEngine";

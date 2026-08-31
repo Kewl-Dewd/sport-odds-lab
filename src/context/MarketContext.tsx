@@ -1258,10 +1258,20 @@ export function MarketProvider({ children }: { children: ReactNode }) {
             outcomes: names.map((name, i) => ({
               id: `${id}-o${i + 1}`,
               name,
-              price: Math.min(0.99, Math.max(0.01, g.implied[name] ?? 1 / names.length)),
+              // Vig-inclusive price straight from the book's decimal odds:
+              // 1 / decimal. The set sums above 1.00 — that overround is the vig.
+              price: Math.min(
+                0.99,
+                Math.max(
+                  0.01,
+                  g.moneyline[name] > 1
+                    ? 1 / g.moneyline[name]
+                    : g.implied[name] ?? 1 / names.length,
+                ),
+              ),
             })),
             config: {
-              engineType: "linear-impact",
+              engineType: "fixed-odds",
               liquidityParameter: DEFAULT_LIQUIDITY,
               maxTradeSize: DEFAULT_MAX_TRADE_SIZE,
               priceFloor: PRICE_FLOOR,
