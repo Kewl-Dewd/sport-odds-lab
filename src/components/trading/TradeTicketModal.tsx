@@ -8,6 +8,7 @@ import { NUDGE_CONTENT } from "@/components/education/LearningNudges";
 import { ConceptTooltip, CONCEPTS } from "@/components/ui/concept-tooltip";
 import { calculateSlippage } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { toAmerican, impliedPct } from "@/lib/oddsFormat";
 import { AccessRequired } from "@/components/access/AccessGate";
 import { useAccess } from "@/hooks/useAccess";
 import { toast } from "sonner";
@@ -87,8 +88,8 @@ export function TradeTicketModal({
     if (result) {
       setLastTrade(result);
       setStep("success");
-      toast.success(`${type === "BUY" ? "Bet placed" : "Cashed out"} · ${qty} units on ${outcomeName}`, {
-        description: `Avg price ${(result.pricePerShare * 100).toFixed(1)}¢ · ${type === "BUY" ? "Stake" : "Returns"}: $${Math.abs(result.totalCost).toFixed(2)}`,
+      toast.success(`${type === "BUY" ? "Bet placed" : "Cashed out"} · $${Math.abs(result.totalCost).toFixed(2)} on ${outcomeName}`, {
+        description: `Odds ${toAmerican(result.pricePerShare)}${type === "BUY" ? ` · Pays $${(qty).toFixed(2)} if it wins` : ""}`,
       });
 
       // Educational nudges after trade
@@ -131,8 +132,9 @@ export function TradeTicketModal({
                 <p className="font-semibold">{outcomeName}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-muted-foreground">Line</p>
-                <p className="text-xl font-bold font-mono">{(currentOutcome.price * 100).toFixed(1)}¢</p>
+                <p className="text-sm text-muted-foreground">Odds</p>
+                <p className="text-xl font-bold font-mono">{toAmerican(currentOutcome.price)}</p>
+                <p className="text-[11px] text-muted-foreground">{impliedPct(currentOutcome.price)} implied</p>
               </div>
             </div>
 
@@ -148,21 +150,27 @@ export function TradeTicketModal({
               ><TrendingDown className="h-4 w-4" />Cash out</button>
             </div>
 
-            {/* Quantity */}
+            {/* Stake */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium">Units ($1 payout each)</label>
+                <label className="text-sm font-medium">{type === "BUY" ? "Stake ($)" : "Amount to cash out ($)"}</label>
                 {type === "BUY" ? (
                   <span className="text-xs text-muted-foreground">Bankroll: <span className="font-mono">${portfolio.cash.toFixed(2)}</span></span>
                 ) : (
-                  <span className="text-xs text-muted-foreground">Units held: <span className="font-mono">{holding?.shares ?? 0}</span></span>
+                  <span className="text-xs text-muted-foreground">Position: <span className="font-mono">${(holding?.shares ?? 0).toFixed(2)}</span> to win</span>
                 )}
               </div>
-              <Input type="number" min={1} step={1} placeholder="Enter units" value={quantity} onChange={(e) => setQuantity(e.target.value)} className="font-mono text-lg" />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                <Input type="number" inputMode="decimal" min={1} step={1} placeholder="0.00" value={amount}
+                  onChange={(e) => setAmount(e.target.value)} className="font-mono text-lg pl-7" />
+              </div>
               <div className="flex gap-2">
-                {[10, 25, 50, 100].map((q) => (
-                  <button key={q} onClick={() => setQuantity(String(q))} className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">{q}</button>
+                {[5, 10, 25, 50].map((q) => (
+                  <button key={q} onClick={() => setAmount(String(q))} className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">${q}</button>
                 ))}
+                <button onClick={() => setAmount(String(Math.floor(type === "BUY" ? portfolio.cash : (holding?.shares ?? 0))))}
+                  className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">Max</button>
               </div>
             </div>
 
@@ -170,26 +178,38 @@ export function TradeTicketModal({
             {tradeEstimate && qty > 0 && (
               <div className="rounded-lg bg-muted p-4 space-y-2.5 text-sm">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Bet Slip Preview</p>
+                {type === "BUY" && (
+                  <div className="flex justify-between text-base font-semibold">
+                    <span>To win</span>
+                    <span className="font-mono text-success">${Math.max(0, qty - Math.abs(tradeEstimate.totalCost)).toFixed(2)}</span>
+                  </div>
+                )}
+                {type === "BUY" && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total payout if it wins</span>
+                    <span className="font-mono font-semibold">${qty.toFixed(2)}</span>
+                  </div>
+                )}
                 {educationEnabled && (
                   <p className="text-xs text-muted-foreground -mt-1 mb-1">
-                    Each unit costs slightly more than the last because your bet moves the line. This is normal.
+                    Your stake buys a payout at the current price. Larger bets move the line, so the odds you get can be slightly worse than the ones posted. This is normal.
                   </p>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Opening line</span>
-                  <span className="font-mono font-semibold">{(currentOutcome.price * 100).toFixed(1)}¢</span>
+                  <span className="text-muted-foreground">Posted odds</span>
+                  <span className="font-mono font-semibold">{toAmerican(currentOutcome.price)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Your average price</span>
-                  <span className="font-mono font-semibold">{(tradeEstimate.avgPrice * 100).toFixed(1)}¢</span>
+                  <span className="text-muted-foreground">Your odds</span>
+                  <span className="font-mono font-semibold">{toAmerican(tradeEstimate.avgPrice)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">New line</span>
+                  <span className="text-muted-foreground">Line after your bet</span>
                   <span className="font-mono font-semibold">
-                    {(tradeEstimate.priceAfter * 100).toFixed(1)}¢
+                    {toAmerican(tradeEstimate.priceAfter)}
                     <span className={cn("ml-1 text-xs", tradeEstimate.priceAfter > tradeEstimate.priceBefore ? "price-up" : "price-down")}>
                       ({tradeEstimate.priceAfter > tradeEstimate.priceBefore ? "+" : ""}
-                      {((tradeEstimate.priceAfter - tradeEstimate.priceBefore) * 100).toFixed(1)}¢)
+                      {((tradeEstimate.priceAfter - tradeEstimate.priceBefore) * 100).toFixed(1)} pts)
                     </span>
                   </span>
                 </div>
@@ -202,7 +222,7 @@ export function TradeTicketModal({
                 <div className="border-t pt-2 flex justify-between">
                   <span className="text-muted-foreground">Line movement cost</span>
                   <span className={cn("font-mono text-xs", highSlippage ? "text-warning font-semibold" : "")}>
-                    {(slippage * 100).toFixed(1)}¢ ({slippagePct.toFixed(1)}%)
+                    {slippagePct.toFixed(1)}%
                   </span>
                 </div>
                 {tradeEstimate.fee > 0 && (
@@ -254,23 +274,31 @@ export function TradeTicketModal({
           <div className="p-5 space-y-5">
             <div className="text-center space-y-1">
               <p className="text-sm text-muted-foreground">Confirm your bet</p>
-              <p className="text-2xl font-bold">{type === "BUY" ? "Bet" : "Cash out"} {qty} units</p>
+              <p className="text-2xl font-bold">{type === "BUY" ? "Bet" : "Cash out"} ${Math.abs(tradeEstimate.totalCost).toFixed(2)}</p>
               <p className="text-muted-foreground">{outcomeName}</p>
             </div>
             <div className="rounded-lg border p-4 space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Units</span>
-                <span className="font-mono font-semibold">{qty}</span>
+                <span className="text-muted-foreground">Your odds</span>
+                <span className="font-mono font-semibold">{toAmerican(tradeEstimate.avgPrice)}</span>
               </div>
+              {type === "BUY" && (
+                <>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">To win</span>
+                    <span className="font-mono font-semibold text-success">${Math.max(0, qty - Math.abs(tradeEstimate.totalCost)).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Total payout</span>
+                    <span className="font-mono font-semibold">${qty.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Line move</span>
                 <span className="font-mono font-semibold">
-                  {(tradeEstimate.priceBefore * 100).toFixed(1)}¢ → {(tradeEstimate.priceAfter * 100).toFixed(1)}¢
+                  {toAmerican(tradeEstimate.priceBefore)} → {toAmerican(tradeEstimate.priceAfter)}
                 </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Your average price</span>
-                <span className="font-mono font-semibold">{(tradeEstimate.avgPrice * 100).toFixed(1)}¢</span>
               </div>
               {highSlippage && (
                 <div className="flex justify-between text-warning">
@@ -298,18 +326,18 @@ export function TradeTicketModal({
             <div>
               <p className="text-lg font-bold">{lastTrade.type === "BUY" ? "Bet placed!" : "Cashed out!"}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                {lastTrade.quantity} units on {lastTrade.outcomeName} at {(lastTrade.pricePerShare * 100).toFixed(1)}¢ average price.
+${Math.abs(lastTrade.totalCost).toFixed(2)} on {lastTrade.outcomeName} at {toAmerican(lastTrade.pricePerShare)}.
               </p>
             </div>
             <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Total</span>
-                <span className="font-mono font-semibold">${lastTrade.totalCost.toFixed(2)}</span>
+                <span className="text-muted-foreground">{lastTrade.type === "BUY" ? "Stake" : "Returns"}</span>
+                <span className="font-mono font-semibold">${Math.abs(lastTrade.totalCost).toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Line movement</span>
                 <span className="font-mono font-semibold">
-                  {(lastTrade.priceBeforeTrade * 100).toFixed(1)}¢ → {(lastTrade.priceAfterTrade * 100).toFixed(1)}¢
+                  {toAmerican(lastTrade.priceBeforeTrade)} → {toAmerican(lastTrade.priceAfterTrade)}
                 </span>
               </div>
             </div>
