@@ -37,9 +37,9 @@ export function useAccess() {
     row.status === "active" &&
     (!row.expires_at || new Date(row.expires_at) > new Date());
 
-  // Staff accounts never hit the paywall — except while previewing as a student,
-  // where the instructor should see exactly what a student sees.
-  const staffBypass = (isInstructorAccount || isPlatformAdminAccount) && viewAs !== "student";
+  // Staff accounts never hit the paywall — including while previewing as a
+  // student, so instructors can demo the full betting flow to their class.
+  const staffBypass = isInstructorAccount || isPlatformAdminAccount;
 
   return {
     access: row,
