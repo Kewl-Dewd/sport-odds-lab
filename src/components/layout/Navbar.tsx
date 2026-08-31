@@ -67,7 +67,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
+          {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
             <Link
               key={link.href}
               to={link.href}
