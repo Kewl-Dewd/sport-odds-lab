@@ -188,6 +188,161 @@ export type Database = {
           },
         ]
       }
+      class_invites: {
+        Row: {
+          accepted_at: string | null
+          class_id: string
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          class_id: string
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          class_id?: string
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_invites_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_lesson_progress: {
+        Row: {
+          class_id: string
+          completed_at: string
+          created_at: string
+          id: string
+          lesson_id: string
+          response: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          class_id: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          lesson_id: string
+          response?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          class_id?: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          lesson_id?: string
+          response?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_lesson_progress_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "class_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      class_lessons: {
+        Row: {
+          body_md: string
+          class_id: string
+          created_at: string
+          created_by: string | null
+          due_at: string | null
+          id: string
+          is_published: boolean
+          kind: string
+          requires_ack: boolean
+          sort_order: number
+          source_rg_lesson_id: string | null
+          title: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          body_md?: string
+          class_id: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          is_published?: boolean
+          kind?: string
+          requires_ack?: boolean
+          sort_order?: number
+          source_rg_lesson_id?: string | null
+          title: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          body_md?: string
+          class_id?: string
+          created_at?: string
+          created_by?: string | null
+          due_at?: string | null
+          id?: string
+          is_published?: boolean
+          kind?: string
+          requires_ack?: boolean
+          sort_order?: number
+          source_rg_lesson_id?: string | null
+          title?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_lessons_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_lessons_source_rg_lesson_id_fkey"
+            columns: ["source_rg_lesson_id"]
+            isOneToOne: false
+            referencedRelation: "rg_lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_members: {
         Row: {
           bankroll: number

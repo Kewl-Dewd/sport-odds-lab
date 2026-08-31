@@ -10,10 +10,13 @@ import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
+import { StudentCourseworkPanel } from "@/features/coursework/StudentCourseworkPanel";
+import { useActiveClass } from "@/context/ClassContext";
 
 export default function Dashboard() {
   const { portfolio, portfolioStats, recentTrades, topMovers, trades, markets, classroom, getLeaderboard, ethicsSettings } = useMarket();
   const { mode } = useMode();
+  const { activeEnrollment } = useActiveClass();
   const { showOnboarding, completeOnboarding } = useOnboarding();
 
   // Mode-scoped views
@@ -50,7 +53,7 @@ export default function Dashboard() {
     <div className="container py-8 space-y-8 animate-slide-up">
       <div>
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
-        <p className="text-muted-foreground">{classroom.name} · {portfolio.displayName}</p>
+        <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? classroom.name} · {portfolio.displayName}</p>
       </div>
 
       {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
@@ -74,7 +77,8 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-6 items-start">
+        <div className="space-y-6">
         <Card>
           <CardHeader><CardTitle className="text-lg">Recent Bets</CardTitle></CardHeader>
           <CardContent>
@@ -131,7 +135,11 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+        </div>
+
+        <StudentCourseworkPanel />
       </div>
+
 
       <ClassActionTicker />
 

@@ -174,3 +174,46 @@ export interface PublishedMarketRow {
   created_at: string;
   updated_at: string;
 }
+
+// ── Course-in-a-box: coursework, progress, invites ────────────────
+
+export type CourseworkKind = "lesson" | "link" | "rg" | "assignment";
+
+export interface ClassLessonRow {
+  id: string;
+  class_id: string;
+  kind: CourseworkKind;
+  title: string;
+  body_md: string;
+  url: string | null;
+  source_rg_lesson_id: string | null;
+  requires_ack: boolean;
+  due_at: string | null;
+  sort_order: number;
+  is_published: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClassLessonProgressRow {
+  id: string;
+  lesson_id: string;
+  class_id: string;
+  user_id: string;
+  completed_at: string;
+  response: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClassInviteRow {
+  id: string;
+  class_id: string;
+  email: string;
+  invited_by: string | null;
+  status: "sent" | "accepted" | "revoked";
+  accepted_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
