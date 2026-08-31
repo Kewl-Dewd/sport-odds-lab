@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,8 +20,6 @@ import HowItWorks from "./pages/HowItWorks.tsx";
 import Glossary from "./pages/Glossary.tsx";
 import TradeReview from "./pages/TradeReview.tsx";
 import Reports from "./pages/Reports.tsx";
-import InstructorDashboard from "./pages/InstructorDashboard.tsx";
-import Experiments from "./pages/Experiments.tsx";
 import ExperimentView from "./pages/ExperimentView.tsx";
 import PresentationMode from "./pages/PresentationMode.tsx";
 import Auth from "./pages/Auth.tsx";
