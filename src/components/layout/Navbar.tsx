@@ -27,6 +27,12 @@ const authedLinks = [
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
+const studentOnlyLinks = new Set(["/portfolio"]);
+
+function getAuthedLinks(viewAs?: string) {
+  return authedLinks.filter((l) => !studentOnlyLinks.has(l.href) || viewAs === "student");
+}
+
 const publicLinks = [
   { label: "How It Works", href: "/how-it-works", icon: BookOpen },
 ];
@@ -61,7 +67,7 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
+          {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
             <Link
               key={link.href}
               to={link.href}
@@ -191,7 +197,7 @@ export function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t animate-slide-up">
           <nav className="container flex flex-col gap-1 py-3">
-            {(user ? [...authedLinks, ...publicLinks] : publicLinks).map((link) => (
+            {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
