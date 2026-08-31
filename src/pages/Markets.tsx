@@ -11,6 +11,7 @@ import { useMarket } from "@/context/MarketContext";
 import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import type { MarketStatus } from "@/lib/tradingEngine";
 import { cn } from "@/lib/utils";
+import { toAmerican } from "@/lib/oddsFormat";
 import { TradeTicketModal } from "@/components/trading/TradeTicketModal";
 import { MAJOR_LEAGUES } from "@/lib/liveBoard";
 import { useBoardLeagues, useSetBoardLeagues } from "@/features/classes/useBoardLeagues";
@@ -39,11 +40,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   "custom": "Custom",
 };
 
-const diffBadgeStyle: Record<string, string> = {
-  beginner: "bg-success/15 text-success",
-  intermediate: "bg-warning/15 text-warning",
-  advanced: "bg-destructive/15 text-destructive",
-};
 
 export default function Markets() {
   const { markets: allMarkets, trades, liveBoardLoading, liveBoardError, loadLiveMarkets } = useMarket();
@@ -238,7 +234,6 @@ export default function Markets() {
           const priceSum = market.outcomes.reduce((s, o) => s + o.price, 0);
           const vol = volumeByMarket.get(market.id);
           const catLabel = CATEGORY_LABELS[market.metadata?.category ?? "custom"] ?? market.metadata?.category;
-          const diff = market.metadata?.difficultyLevel;
 
           return (
             <div key={market.id} className="market-card">
@@ -250,7 +245,6 @@ export default function Markets() {
                       <Badge variant="outline" className="text-xs">{market.league}</Badge>
                       <Badge variant="outline" className="text-xs">{market.sport}</Badge>
                       {catLabel && <Badge variant="secondary" className="text-[10px]">{catLabel}</Badge>}
-                      {diff && <Badge className={`text-[10px] border-0 ${diffBadgeStyle[diff] ?? ""}`}>{diff}</Badge>}
                       {isMulti && <Badge variant="secondary" className="text-xs">{market.outcomes.length} outcomes</Badge>}
                     </div>
                     <h3 className="text-base sm:text-lg font-semibold">{market.title}</h3>
@@ -275,14 +269,14 @@ export default function Markets() {
                       <div key={o.id} className="flex-1 min-w-[calc(50%-0.375rem)] sm:min-w-[100px] rounded-lg border p-3">
                         <div className="flex items-center justify-between mb-1.5">
                           <p className="text-sm font-medium truncate">{o.name}</p>
-                          <span className="text-lg font-bold font-mono ml-2">{(o.price * 100).toFixed(1)}¢</span>
+                          <span className="text-lg font-bold font-mono ml-2">{toAmerican(o.price)}</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                           <div className="h-full rounded-full bg-primary transition-all duration-500"
                             style={{ width: `${(o.price / Math.max(priceSum, 0.01)) * 100}%` }} />
                         </div>
                         <p className="text-xs text-muted-foreground text-right mt-1">
-                          {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}%
+                          {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}% implied
                         </p>
                       </div>
                     ))}
@@ -299,7 +293,7 @@ export default function Markets() {
                             <div className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-primary" : "bg-primary/50")}
                               style={{ width: `${pct}%` }} />
                           </div>
-                          <span className="font-mono font-bold text-sm w-14 text-right">{(o.price * 100).toFixed(1)}¢</span>
+                          <span className="font-mono font-bold text-sm w-14 text-right">{toAmerican(o.price)}</span>
                           <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
                         </div>
                       );
@@ -327,7 +321,7 @@ export default function Markets() {
                         }}
                       >
                         <TrendingUp className="mr-1 h-3 w-3" />
-                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {(o.price * 100).toFixed(0)}¢
+                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {toAmerican(o.price)}
                       </Button>
                     ))}
                   </div>

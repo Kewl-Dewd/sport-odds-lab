@@ -25,6 +25,7 @@ import { BehavioralFraming } from "@/components/student/BehavioralFraming";
 import { MarketNewsFeed, BreakingNewsBanner } from "@/components/student/MarketNewsFeed";
 import { buildPriceHistory, calculateMarketAnalytics } from "@/lib/marketAnalytics";
 import { cn } from "@/lib/utils";
+import { toAmerican } from "@/lib/oddsFormat";
 
 type OutcomeSort = "price-desc" | "price-asc" | "name" | "change";
 
@@ -322,7 +323,7 @@ export default function MarketDetail() {
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-lg">{o.name}</h3>
                         <div className="text-right">
-                          <span className="text-2xl font-bold font-mono">{(o.price * 100).toFixed(1)}¢</span>
+                          <span className="text-2xl font-bold font-mono">{toAmerican(o.price)}</span>
                           {oAnalytics && oAnalytics.priceChange !== 0 && (
                             <div className={cn("text-xs font-mono flex items-center justify-end gap-0.5",
                               oAnalytics.priceChange > 0 ? "price-up" : "price-down"
@@ -409,7 +410,7 @@ export default function MarketDetail() {
                                 {isWinner && <Badge variant="default" className="text-[10px] bg-success">Winner</Badge>}
                               </div>
                             </td>
-                            <td className="p-3 text-right font-mono font-bold">{(o.price * 100).toFixed(1)}¢</td>
+                            <td className="p-3 text-right font-mono font-bold">{toAmerican(o.price)}</td>
                             <td className="p-3">
                               <div className="flex items-center gap-2">
                                 <div className="w-20 h-1.5 rounded-full bg-muted overflow-hidden">
