@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Award, GraduationCap, Target, CheckCircle2, Circle, Lock } from "lucide-react";
+import { Award, GraduationCap, Target, CheckCircle2, Circle, Lock, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -62,6 +62,34 @@ export function StudentScoreCard() {
         <CardContent className="py-6 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
           <Lock className="h-3.5 w-3.5" />
           Class score is hidden during this session.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const hasActivity = score.metrics.trades > 0
+    || score.metrics.reflectionsAssigned > 0
+    || (activeExperiment && activeExperiment.status === "active");
+
+  if (!hasActivity) {
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base flex items-center gap-2">
+            <GraduationCap className="h-4 w-4 text-info" />
+            Your class score
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="py-6 text-center space-y-3">
+          <div className="mx-auto w-10 h-10 rounded-full bg-info/10 flex items-center justify-center">
+            <Sparkles className="h-5 w-5 text-info" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium">No score yet</p>
+            <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+              Place your first bet or complete assigned coursework to start earning your class score.
+            </p>
+          </div>
         </CardContent>
       </Card>
     );
