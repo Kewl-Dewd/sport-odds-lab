@@ -38,7 +38,7 @@ export interface ClassMemberRow {
   id: string;
   class_id: string;
   user_id: string;
-  member_role: "student" | "ta";
+  member_role: "student" | "ta" | "instructor";
   bankroll: number;
   joined_at: string;
 }
