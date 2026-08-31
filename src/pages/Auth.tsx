@@ -50,7 +50,7 @@ export default function Auth() {
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
-    toast.success("Account created");
+    toast.success("Check your email to confirm your account");
   };
 
   const forgotPassword = async () => {
