@@ -80,14 +80,28 @@ export function useCreateClass() {
       semester_start?: string;
       semester_end?: string;
     }) =>
-      unwrap<ClassRow>(
+    {
+      const klass = unwrap<ClassRow>(
         await db
           .from("classes")
           .insert({ ...input, owner_id: user!.id })
           .select("*")
           .single(),
-      ),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["classes"] }),
+      );
+      // Seat the instructor in their own class so they can preview the
+      // student console (bankroll, coursework, board) for that section.
+      await db.from("class_members").insert({
+        class_id: klass.id,
+        user_id: user!.id,
+        member_role: "instructor",
+        bankroll: input.starting_bankroll,
+      });
+      return klass;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["classes"] });
+      qc.invalidateQueries({ queryKey: ["enrollments"] });
+    },
   });
 }
 
