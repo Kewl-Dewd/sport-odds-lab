@@ -38,7 +38,7 @@ export const CURRICULUM: CurriculumTopic[] = [
       {
         key: "intro-welcome",
         title: "Welcome: what this app is (and isn't)",
-        minutes: 10,
+        minutes: 4,
         kind: "lesson",
         body: `## Welcome to the class sportsbook
 
@@ -70,7 +70,7 @@ Not on how much you win. Randomness is loud over a semester of bets. You will be
       {
         key: "intro-tour",
         title: "A tour of the app in five minutes",
-        minutes: 8,
+        minutes: 3,
         kind: "lesson",
         body: `## Where everything lives
 
@@ -95,7 +95,7 @@ Not on how much you win. Randomness is loud over a semester of bets. You will be
       {
         key: "intro-first-bet",
         title: "Assignment: place and journal your first bet",
-        minutes: 20,
+        minutes: 15,
         kind: "assignment",
         body: `## Your first position
 
@@ -124,7 +124,7 @@ Not on how much you win. Randomness is loud over a semester of bets. You will be
       {
         key: "odds-formats",
         title: "Reading odds: American, decimal and fractional",
-        minutes: 15,
+        minutes: 3,
         kind: "lesson",
         body: `## Three ways to write the same price
 
@@ -156,7 +156,7 @@ Not on how much you win. Randomness is loud over a semester of bets. You will be
       {
         key: "implied-vig",
         title: "Implied probability and the vig",
-        minutes: 15,
+        minutes: 4,
         kind: "lesson",
         body: `## The house edge, in one calculation
 
@@ -182,7 +182,7 @@ Your edge is not "I think the home team wins." Your edge is "I think the home te
       {
         key: "bet-types",
         title: "Bet types: moneyline, spread, totals and parlays",
-        minutes: 15,
+        minutes: 4,
         kind: "lesson",
         body: `## The menu
 
@@ -202,7 +202,7 @@ Three legs at \u2212110 (1.909 each): 1.909³ = **6.96** fair-ish decimal, but t
       {
         key: "line-movement",
         title: "Line movement, closing line value and market efficiency",
-        minutes: 18,
+        minutes: 4,
         kind: "lesson",
         body: `## Why the number changes
 
@@ -224,7 +224,7 @@ If you consistently bet at prices better than the close — you took +150 and it
       {
         key: "betting-quiz",
         title: "Assignment: price a game yourself",
-        minutes: 25,
+        minutes: 20,
         kind: "assignment",
         body: `## Beat the board
 
@@ -249,7 +249,7 @@ Pick one upcoming game on the class board and, **before looking at the odds**:
       {
         key: "app-markets",
         title: "The markets board and finding a game",
-        minutes: 10,
+        minutes: 3,
         kind: "lesson",
         body: `## Working the board
 
@@ -265,7 +265,7 @@ The board shows upcoming games from the leagues your instructor enabled, sorted 
       {
         key: "app-slip",
         title: "Placing a bet: the slip, stake and payout",
-        minutes: 10,
+        minutes: 3,
         kind: "lesson",
         body: `## Anatomy of the bet slip
 
@@ -285,7 +285,7 @@ The bet moves to **My Bets** as *open*, your bankroll drops by the stake, and yo
       {
         key: "app-portfolio",
         title: "Tracking exposure, P&L and the leaderboard",
-        minutes: 12,
+        minutes: 3,
         kind: "lesson",
         body: `## Reading your own numbers
 
@@ -302,7 +302,7 @@ The dashboard ticker shows classmates' bets and results. Use it to notice herd b
       {
         key: "app-journal",
         title: "Keeping a journal your instructor can grade",
-        minutes: 12,
+        minutes: 3,
         kind: "assignment",
         body: `## What a good entry looks like
 
@@ -329,7 +329,7 @@ After the game settles, add one line of reflection: *was the process right, inde
       {
         key: "bankroll-units",
         title: "Bankroll management and unit sizing",
-        minutes: 15,
+        minutes: 3,
         kind: "lesson",
         body: `## Survive first, win later
 
@@ -357,7 +357,7 @@ Full Kelly is violently volatile and assumes your probability estimate is correc
       {
         key: "variance",
         title: "Variance, drawdowns and sample size",
-        minutes: 15,
+        minutes: 3,
         kind: "lesson",
         body: `## Why good bettors lose for months
 
@@ -378,7 +378,7 @@ A bettor with a genuine 3% edge at even-ish odds will still have losing stretche
       {
         key: "expected-value",
         title: "Expected value and finding an edge",
-        minutes: 15,
+        minutes: 3,
         kind: "lesson",
         body: `## The only question that matters
 
@@ -401,7 +401,7 @@ Recent results, team loyalty, "due for a win", parlay dreams, or a system with n
       {
         key: "bias",
         title: "Behavioural traps: tilt, recency and the favourite bias",
-        minutes: 12,
+        minutes: 3,
         kind: "lesson",
         body: `## The opponent in your own head
 
@@ -434,7 +434,7 @@ Recent results, team loyalty, "due for a win", parlay dreams, or a system with n
       {
         key: "rg-risks",
         title: "The real-world risks behind the simulation",
-        minutes: 12,
+        minutes: 4,
         kind: "rg",
         requiresAck: true,
         body: `## This is required reading
@@ -463,7 +463,7 @@ By acknowledging this module you confirm you have read it and understand that no
       {
         key: "rg-warning-signs",
         title: "Warning signs and how to help someone",
-        minutes: 10,
+        minutes: 4,
         kind: "rg",
         requiresAck: true,
         body: `## Know the signs
