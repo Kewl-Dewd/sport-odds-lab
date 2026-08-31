@@ -27,6 +27,12 @@ const authedLinks = [
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
+const studentOnlyLinks = new Set(["/portfolio"]);
+
+function getAuthedLinks(viewAs?: string) {
+  return authedLinks.filter((l) => !studentOnlyLinks.has(l.href) || viewAs === "student");
+}
+
 const publicLinks = [
   { label: "How It Works", href: "/how-it-works", icon: BookOpen },
 ];
