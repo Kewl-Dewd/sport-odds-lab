@@ -31,6 +31,7 @@ import { ClassRoundsTab } from "@/features/classes/ClassRoundsTab";
 import { ClassBookLedger } from "@/features/classes/ClassBookLedger";
 import { ClassInviteCard } from "@/features/classes/ClassInviteCard";
 import { ClassCourseworkTab } from "@/features/classes/ClassCourseworkTab";
+import { ClassProgressTab } from "@/features/classes/ClassProgressTab";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -104,6 +105,7 @@ export default function ClassDetailPage() {
           <TabsTrigger value="rounds">Windows &amp; contests</TabsTrigger>
           <TabsTrigger value="book">Book dashboard</TabsTrigger>
           <TabsTrigger value="coursework">Coursework</TabsTrigger>
+          <TabsTrigger value="progress">Student progress</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
@@ -123,6 +125,11 @@ export default function ClassDetailPage() {
         <TabsContent value="coursework" className="mt-4">
           <ClassCourseworkTab classId={klass.id} />
         </TabsContent>
+
+        <TabsContent value="progress" className="mt-4">
+          <ClassProgressTab classId={klass.id} roster={roster} bets={bets} journal={journal} />
+        </TabsContent>
+
 
         <TabsContent value="book" className="mt-4">
           <ClassBookLedger
