@@ -100,30 +100,9 @@ export function Navbar() {
                 <Activity className="h-4 w-4" />
                 Insights
               </Link>
-              <Link
-                to="/experiments"
-                className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
-                  location.pathname.startsWith("/experiments")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                <FlaskConical className="h-4 w-4" />
-                Experiments
-              </Link>
-              <Link
-                to="/instructor"
-                className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
-                  location.pathname === "/instructor" || location.pathname.startsWith("/instructor/")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                <GraduationCap className="h-4 w-4" />
-                Instructor
-              </Link>
+              {/* Legacy simulation consoles (Experiments / Control Center) retired —
+                  Classes is the single instructor console. */}
+
               <Link
                 to="/admin/users"
                 className={cn(
@@ -234,12 +213,6 @@ export function Navbar() {
                 </Link>
                 <Link to="/insights" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <Activity className="h-4 w-4" /> Insights
-                </Link>
-                <Link to="/experiments" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
-                  <FlaskConical className="h-4 w-4" /> Experiments
-                </Link>
-                <Link to="/instructor" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
-                  <GraduationCap className="h-4 w-4" /> Instructor
                 </Link>
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <Users className="h-4 w-4" /> My Students
