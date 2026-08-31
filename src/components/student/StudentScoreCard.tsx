@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Award, GraduationCap, Target, CheckCircle2, Circle, Lock } from "lucide-react";
+import { Award, GraduationCap, Target, CheckCircle2, Circle, Lock, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
