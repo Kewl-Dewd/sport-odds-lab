@@ -16,6 +16,7 @@ import { useMode, MODE_LABELS, SINGLE_MODE } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
 
 const authedLinks = [
+  { label: "Responsible Play", href: "/responsible-play", icon: ShieldCheck },
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Class Board", href: "/class-board", icon: School },
@@ -23,11 +24,16 @@ const authedLinks = [
   { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { label: "Learning", href: "/learn", icon: GraduationCap },
   { label: "Journal", href: "/journal", icon: NotebookPen },
-  { label: "Responsible Play", href: "/responsible-play", icon: ShieldCheck },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
-const studentOnlyLinks = new Set(["/dashboard", "/portfolio", "/glossary", "/journal"]);
+const studentOnlyLinks = new Set([
+  "/dashboard",
+  "/portfolio",
+  "/glossary",
+  "/journal",
+  "/responsible-play",
+]);
 
 function getAuthedLinks(viewAs?: string) {
   return authedLinks.filter((l) => !studentOnlyLinks.has(l.href) || viewAs === "student");
