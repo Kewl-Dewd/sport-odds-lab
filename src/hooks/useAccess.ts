@@ -2,6 +2,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 
+/** Students get a free look at the app before they must pay. */
+export const TRIAL_DAYS = 10;
+
+/** Days remaining in the signup trial (0 once it has lapsed). */
+export function trialDaysLeft(createdAt: string | null | undefined) {
+  if (!createdAt) return 0;
+  const ends = new Date(createdAt).getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000;
+  return Math.max(0, Math.ceil((ends - Date.now()) / (24 * 60 * 60 * 1000)));
+}
+
 export interface AccessRow {
   status: string;
   source: string;
@@ -37,15 +47,22 @@ export function useAccess() {
     row.status === "active" &&
     (!row.expires_at || new Date(row.expires_at) > new Date());
 
+  // Free trial window measured from account creation.
+  const daysLeft = entitled ? 0 : trialDaysLeft(user?.created_at);
+  const inTrial = !entitled && daysLeft > 0;
+
   // Staff accounts never hit the paywall — including while previewing as a
   // student, so instructors can demo the full betting flow to their class.
   const staffBypass = isInstructorAccount || isPlatformAdminAccount;
 
   return {
     access: row,
+    entitled,
     loading: query.isLoading,
-    hasAccess: staffBypass || entitled,
-    isPaywalled: !staffBypass && !entitled,
+    hasAccess: staffBypass || entitled || inTrial,
+    isPaywalled: !staffBypass && !entitled && !inTrial,
+    inTrial,
+    trialDaysLeft: daysLeft,
     expiresAt: row?.expires_at ?? null,
     refetch: query.refetch,
   };

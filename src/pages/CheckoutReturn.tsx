@@ -8,24 +8,25 @@ import { useAccess } from "@/hooks/useAccess";
 export default function CheckoutReturn() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const { hasAccess, refetch } = useAccess();
+  // Poll on the paid entitlement, not `hasAccess` (which is true during the free trial).
+  const { entitled, refetch } = useAccess();
 
   // The webhook grants access moments after checkout; poll briefly.
   useEffect(() => {
-    if (hasAccess) return;
+    if (entitled) return;
     const t = setInterval(() => void refetch(), 2000);
     const stop = setTimeout(() => clearInterval(t), 20000);
     return () => {
       clearInterval(t);
       clearTimeout(stop);
     };
-  }, [hasAccess, refetch]);
+  }, [entitled, refetch]);
 
   return (
     <div className="container max-w-lg py-16">
       <Card>
         <CardContent className="py-10 text-center space-y-4">
-          {hasAccess ? (
+          {entitled ? (
             <>
               <CheckCircle2 className="h-10 w-10 text-primary mx-auto" />
               <h1 className="text-2xl font-bold">You're all set</h1>

@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard, BarChart3, Briefcase, Trophy, GraduationCap,
-  School, Users, Activity, Building2,
+  School, Users, Building2,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,6 @@ const INSTRUCTOR_TABS: Tab[] = [
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Board", href: "/class-board", icon: Trophy },
   { label: "Students", href: "/admin/users", icon: Users },
-  { label: "Insights", href: "/insights", icon: Activity },
 ];
 
 const ADMIN_TABS: Tab[] = [

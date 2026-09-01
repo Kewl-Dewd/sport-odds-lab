@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Lock } from "lucide-react";
+import { Clock, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAccess } from "@/hooks/useAccess";
 
@@ -8,8 +8,27 @@ import { useAccess } from "@/hooks/useAccess";
  * the app but cannot trade or join a class.
  */
 export function AccessBanner() {
-  const { isPaywalled, loading } = useAccess();
-  if (loading || !isPaywalled) return null;
+  const { isPaywalled, inTrial, trialDaysLeft, loading } = useAccess();
+  if (loading) return null;
+
+  // Trial countdown so students know when their free window closes.
+  if (inTrial) {
+    return (
+      <div className="border-b bg-primary/5">
+        <div className="container flex flex-wrap items-center gap-3 py-2 text-sm">
+          <Clock className="h-4 w-4 text-primary" />
+          <span className="text-muted-foreground">
+            Free trial — {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} left before you need full access.
+          </span>
+          <Button asChild size="sm" variant="hero" className="ml-auto">
+            <Link to="/access">Get access — $10/year</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isPaywalled) return null;
 
   return (
     <div className="border-b bg-muted/60">

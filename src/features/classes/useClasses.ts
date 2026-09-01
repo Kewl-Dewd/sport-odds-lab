@@ -39,8 +39,17 @@ export function useClass(classId: string | undefined) {
   });
 }
 
+export interface RosterAccess {
+  status: string;
+  source: string;
+  expires_at: string | null;
+  last_payment_at: string | null;
+  amount_cents: number | null;
+}
+
 export interface RosterEntry extends ClassMemberRow {
   profile: ProfileRow | null;
+  access: RosterAccess | null;
 }
 
 export function useRoster(classId: string | undefined) {
@@ -65,7 +74,19 @@ export function useRoster(classId: string | undefined) {
           .in("user_id", members.map((m) => m.user_id)),
       );
       const byUser = new Map(profiles.map((p) => [p.user_id, p]));
-      return members.map((m) => ({ ...m, profile: byUser.get(m.user_id) ?? null }));
+      // Payment / entitlement state — instructors may read this for their own students.
+      const access = unwrap<(RosterAccess & { user_id: string })[]>(
+        await db
+          .from("user_access")
+          .select("user_id, status, source, expires_at, last_payment_at, amount_cents")
+          .in("user_id", members.map((m) => m.user_id)),
+      );
+      const accessByUser = new Map(access.map((a) => [a.user_id, a]));
+      return members.map((m) => ({
+        ...m,
+        profile: byUser.get(m.user_id) ?? null,
+        access: accessByUser.get(m.user_id) ?? null,
+      }));
     },
   });
 }

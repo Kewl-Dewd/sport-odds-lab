@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { STUDENT_ACCESS_PRICE_ID } from "@/lib/stripe";
-import { useAccess, useRedeemCode } from "@/hooks/useAccess";
+import { TRIAL_DAYS, useAccess, useRedeemCode } from "@/hooks/useAccess";
 import { toast } from "sonner";
 
 const INCLUDED = [
@@ -19,7 +19,7 @@ const INCLUDED = [
 ];
 
 export default function GetAccess() {
-  const { hasAccess, access, expiresAt, loading } = useAccess();
+  const { entitled, access, expiresAt, loading, inTrial, trialDaysLeft } = useAccess();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [code, setCode] = useState("");
   const redeem = useRedeemCode();
@@ -46,7 +46,24 @@ export default function GetAccess() {
           </p>
         </header>
 
-        {!loading && hasAccess && (
+        {!loading && !entitled && inTrial && (
+          <Card className="border-primary/40 bg-primary/5">
+            <CardContent className="flex items-center gap-3 py-4">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+              <div className="text-sm">
+                <p className="font-medium">
+                  You&apos;re on a free {TRIAL_DAYS}-day trial — {trialDaysLeft} day
+                  {trialDaysLeft === 1 ? "" : "s"} left.
+                </p>
+                <p className="text-muted-foreground">
+                  Purchase below or redeem your instructor&apos;s course code before it ends to keep your access.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!loading && entitled && (
           <Card className="border-primary/40 bg-primary/5">
             <CardContent className="flex items-center gap-3 py-4">
               <ShieldCheck className="h-5 w-5 text-primary" />
