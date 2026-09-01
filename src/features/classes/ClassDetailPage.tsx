@@ -32,6 +32,7 @@ import { ClassBookLedger } from "@/features/classes/ClassBookLedger";
 import { ClassInviteCard } from "@/features/classes/ClassInviteCard";
 import { ClassCourseworkTab } from "@/features/classes/ClassCourseworkTab";
 import { ClassProgressTab } from "@/features/classes/ClassProgressTab";
+import { TRIAL_DAYS, trialDaysLeft } from "@/hooks/useAccess";
 
 export default function ClassDetailPage() {
   const { id } = useParams<{ id: string }>();
