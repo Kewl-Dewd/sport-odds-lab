@@ -357,6 +357,26 @@ function ToggleRow({ label, checked, onChange }: {
 
 // ── Roster ────────────────────────────────────────────────────────
 
+/**
+ * Payment / entitlement badge for a student. Students get a TRIAL_DAYS free
+ * window from signup; after that they need a paid year or a course code.
+ */
+function accessBadge(m: RosterEntry) {
+  const a = m.access;
+  const active = a?.status === "active" && (!a.expires_at || new Date(a.expires_at) > new Date());
+  if (active) {
+    if (a!.source === "paid") return { label: "Paid", variant: "default" as const, hint: a!.last_payment_at ? `Paid ${new Date(a!.last_payment_at).toLocaleDateString()}` : "" };
+    if (a!.source === "code") return { label: "Course code", variant: "secondary" as const, hint: "Free access via code" };
+    return { label: "Comped", variant: "secondary" as const, hint: "Granted by admin" };
+  }
+  const left = trialDaysLeft(m.profile?.created_at ?? m.joined_at);
+  if (left > 0) {
+    return { label: `Trial · ${left}d left`, variant: "outline" as const, hint: `${TRIAL_DAYS}-day free trial` };
+  }
+  if (a?.expires_at) return { label: "Expired", variant: "destructive" as const, hint: `Expired ${new Date(a.expires_at).toLocaleDateString()}` };
+  return { label: "Unpaid", variant: "destructive" as const, hint: "Trial ended — access locked" };
+}
+
 function RosterTab({ classId, roster, bets, journal }: {
   classId: string;
   roster: RosterEntry[];
@@ -383,6 +403,7 @@ function RosterTab({ classId, roster, bets, journal }: {
             <TableRow>
               <TableHead>Student</TableHead>
               <TableHead>Joined</TableHead>
+              <TableHead>Payment</TableHead>
               <TableHead className="text-right">Bets</TableHead>
               <TableHead className="text-right">ROI</TableHead>
               <TableHead className="text-right">Journal</TableHead>
@@ -401,6 +422,19 @@ function RosterTab({ classId, roster, bets, journal }: {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {new Date(m.joined_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    {(() => {
+                      const b = accessBadge(m);
+                      return (
+                        <div>
+                          <Badge variant={b.variant}>{b.label}</Badge>
+                          {b.hint && (
+                            <div className="text-xs text-muted-foreground mt-0.5">{b.hint}</div>
+                          )}
+                        </div>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell className="text-right">{stats.totalBets}</TableCell>
                   <TableCell className="text-right">
