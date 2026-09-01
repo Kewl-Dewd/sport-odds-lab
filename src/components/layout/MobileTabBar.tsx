@@ -21,7 +21,6 @@ const INSTRUCTOR_TABS: Tab[] = [
   { label: "Markets", href: "/markets", icon: BarChart3 },
   { label: "Board", href: "/class-board", icon: Trophy },
   { label: "Students", href: "/admin/users", icon: Users },
-  { label: "Insights", href: "/insights", icon: Activity },
 ];
 
 const ADMIN_TABS: Tab[] = [

@@ -40,7 +40,6 @@ import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 import GetAccess from "./pages/GetAccess.tsx";
 import CheckoutReturn from "./pages/CheckoutReturn.tsx";
-import Insights from "./pages/Insights.tsx";
 import { RequireAccess } from "@/components/access/RequireAccess";
 
 const queryClient = new QueryClient();
@@ -80,7 +79,6 @@ const App = () => (
                     <Route path="/join/:code" element={<ProtectedRoute><RequireAccess><JoinClassPage /></RequireAccess></ProtectedRoute>} />
                     <Route path="/access" element={<ProtectedRoute><GetAccess /></ProtectedRoute>} />
                     <Route path="/checkout/return" element={<ProtectedRoute><CheckoutReturn /></ProtectedRoute>} />
-                    <Route path="/insights" element={<ProtectedRoute requireInstructor><Insights /></ProtectedRoute>} />
                     <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
                     <Route path="/class-board" element={<ProtectedRoute><ClassBoardPage /></ProtectedRoute>} />
                     <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
