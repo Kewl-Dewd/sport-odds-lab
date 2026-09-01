@@ -4,7 +4,7 @@ import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
-  NotebookPen, ShieldCheck, School, Building2, Activity,
+  NotebookPen, ShieldCheck, School, Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -94,18 +94,6 @@ export function Navbar() {
               >
                 <School className="h-4 w-4" />
                 Classes
-              </Link>
-              <Link
-                to="/insights"
-                className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
-                  location.pathname === "/insights"
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
-              >
-                <Activity className="h-4 w-4" />
-                Insights
               </Link>
               {/* Legacy simulation consoles (Experiments / Control Center) retired —
                   Classes is the single instructor console. */}
@@ -217,9 +205,6 @@ export function Navbar() {
               <>
                 <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <School className="h-4 w-4" /> Classes
-                </Link>
-                <Link to="/insights" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
-                  <Activity className="h-4 w-4" /> Insights
                 </Link>
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <Users className="h-4 w-4" /> My Students
