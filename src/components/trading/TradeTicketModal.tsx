@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import { toAmerican, impliedPct } from "@/lib/oddsFormat";
 import { AccessRequired } from "@/components/access/AccessGate";
 import { useAccess } from "@/hooks/useAccess";
+import { useStudentBook } from "@/hooks/useStudentBook";
+import { money } from "@/lib/money";
 import { toast } from "sonner";
 
 
@@ -31,6 +33,7 @@ export function TradeTicketModal({
   const { estimate, validate, trade, getMarket, getHolding, portfolio } = useMarket();
   const { pushNudge, educationEnabled } = useEducation();
   const { isPaywalled } = useAccess();
+  const book = useStudentBook();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   // For BUY this is a dollar stake; for SELL it's how much of the position to cash out (dollars of payout).
   const [amount, setAmount] = useState("");
@@ -48,19 +51,26 @@ export function TradeTicketModal({
 
   const dollars = Math.max(0, Number(amount) || 0);
 
-  // Convert a dollar stake into the engine's contract quantity.
+  const isFixedOdds = market?.config?.engineType === "fixed-odds";
+
+  // Convert a dollar stake into the engine's payout quantity. The dollar
+  // amount the student typed is exactly the dollar amount wagered.
   const qty = useMemo(() => {
     if (dollars <= 0 || !currentOutcome) return 0;
-    if (type === "SELL") return Math.min(holding?.shares ?? 0, Math.floor(dollars));
-    const maxQty = Math.max(1, Math.ceil(dollars / Math.max(currentOutcome.price, 0.01)) + 50);
-    let lo = 0, hi = maxQty;
-    while (lo < hi) {
-      const mid = Math.ceil((lo + hi) / 2);
+    if (type === "SELL") return Math.min(holding?.shares ?? 0, dollars);
+    // Fixed odds: cost = quantity x posted price, so the stake maps exactly.
+    if (isFixedOdds) return dollars / Math.max(currentOutcome.price, 0.0001);
+    // Moving-line engines: solve continuously for the quantity that costs
+    // the typed stake (never round down to a whole contract).
+    let lo = 0;
+    let hi = Math.max(1, (dollars / Math.max(currentOutcome.price, 0.01)) * 3);
+    for (let i = 0; i < 60; i++) {
+      const mid = (lo + hi) / 2;
       const est = estimate(marketId, outcomeId, mid, "BUY");
-      if (est && Math.abs(est.totalCost) <= dollars) lo = mid; else hi = mid - 1;
+      if (est && Math.abs(est.totalCost) <= dollars) lo = mid; else hi = mid;
     }
     return lo;
-  }, [dollars, type, currentOutcome, holding, marketId, outcomeId, estimate]);
+  }, [dollars, type, currentOutcome, holding, marketId, outcomeId, estimate, isFixedOdds]);
 
   const tradeEstimate = useMemo(() => {
     if (qty <= 0) return null;
@@ -79,7 +89,7 @@ export function TradeTicketModal({
     return calculateSlippage(currentOutcome.price, tradeEstimate.avgPrice, type);
   }, [tradeEstimate, currentOutcome, type]);
 
-  const fixedOdds = market?.config?.engineType === "fixed-odds";
+  const fixedOdds = isFixedOdds;
   const slippagePct = !fixedOdds && currentOutcome && currentOutcome.price > 0
     ? (slippage / currentOutcome.price) * 100 : 0;
   const highSlippage = !fixedOdds && slippagePct > 5;
@@ -142,11 +152,12 @@ export function TradeTicketModal({
               <div className="text-right">
                 <p className="text-sm text-muted-foreground">Odds</p>
                 <p className="text-xl font-bold font-mono">{toAmerican(currentOutcome.price)}</p>
-                <p className="text-[11px] text-muted-foreground">{impliedPct(currentOutcome.price)} implied</p>
+                <p className="text-[11px] text-muted-foreground">{impliedPct(currentOutcome.price)} implied by price</p>
               </div>
             </div>
 
-            {/* Buy/Sell toggle */}
+            {/* Buy/Sell toggle — a fixed-odds book has no cash-out */}
+            {!isFixedOdds && (
             <div className="flex rounded-lg border overflow-hidden">
               <button
                 className={cn("flex-1 py-2.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5", type === "BUY" ? "bg-success text-success-foreground" : "hover:bg-muted")}
@@ -157,13 +168,14 @@ export function TradeTicketModal({
                 onClick={() => setType("SELL")}
               ><TrendingDown className="h-4 w-4" />Cash out</button>
             </div>
+            )}
 
             {/* Stake */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <label className="text-sm font-medium">{type === "BUY" ? "Stake ($)" : "Amount to cash out ($)"}</label>
                 {type === "BUY" ? (
-                  <span className="text-xs text-muted-foreground">Bankroll: <span className="font-mono">${portfolio.cash.toFixed(2)}</span></span>
+                  <span className="text-xs text-muted-foreground">Bankroll: <span className="font-mono">{money(book.bankroll)}</span></span>
                 ) : (
                   <span className="text-xs text-muted-foreground">Position: <span className="font-mono">${(holding?.shares ?? 0).toFixed(2)}</span> to win</span>
                 )}
@@ -177,7 +189,7 @@ export function TradeTicketModal({
                 {[5, 10, 25, 50].map((q) => (
                   <button key={q} onClick={() => setAmount(String(q))} className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">${q}</button>
                 ))}
-                <button onClick={() => setAmount(String(Math.floor(type === "BUY" ? portfolio.cash : (holding?.shares ?? 0))))}
+                <button onClick={() => setAmount(String(Math.floor(type === "BUY" ? Math.max(0, book.bankroll) : (holding?.shares ?? 0))))}
                   className="flex-1 py-1 text-xs font-medium rounded border hover:bg-muted transition-colors">Max</button>
               </div>
             </div>
@@ -226,7 +238,7 @@ export function TradeTicketModal({
                 </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Implied chance to win</span>
+                  <span className="text-muted-foreground">Implied by price (vig included)</span>
                   <span className="font-mono text-xs">
                     {fixedOdds
                       ? `${(currentOutcome.price * 100).toFixed(1)}%`
