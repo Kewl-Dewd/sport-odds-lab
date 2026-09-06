@@ -21,6 +21,7 @@ export function PersistenceBridge() {
   const { user } = useAuth();
   const { portfolio, markets, trades, sportsbookWagers, raceWagers } = useMarket();
   const { data: membership } = useActiveMembership();
+  const qc = useQueryClient();
 
   // Last-synced stamp per bet id, so we only write on change.
   const syncedRef = useRef<Map<string, string>>(new Map());
