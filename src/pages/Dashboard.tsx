@@ -1,50 +1,43 @@
 import { useMemo } from "react";
-import { DollarSign, Briefcase, TrendingUp, TrendingDown, ArrowUpRight, Clock, GraduationCap } from "lucide-react";
+import { DollarSign, Briefcase, TrendingUp, TrendingDown, Clock, GraduationCap } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMarket } from "@/context/MarketContext";
 import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
 import { OnboardingModal, useOnboarding } from "@/components/onboarding/OnboardingModal";
-import { MarketDebrief } from "@/components/student/MarketDebrief";
 import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
 import { AssignedLearning } from "@/components/learn/AssignedLearning";
 import { useActiveClass } from "@/context/ClassContext";
+import { useStudentBook, useClassStandings } from "@/hooks/useStudentBook";
+import { money, signedMoney } from "@/lib/money";
+import { toAmerican } from "@/lib/oddsFormat";
 
 export default function Dashboard() {
-  const { portfolio, portfolioStats, recentTrades, topMovers, trades, markets, classroom, getLeaderboard, ethicsSettings } = useMarket();
+  const { portfolio, topMovers, markets, classroom, ethicsSettings } = useMarket();
   const { mode } = useMode();
   const { activeEnrollment } = useActiveClass();
   const { showOnboarding, completeOnboarding } = useOnboarding();
 
-  // Mode-scoped views
+  // Real money, read from the same bet records the instructor's book uses.
+  const book = useStudentBook();
+  const { data: standings = [] } = useClassStandings();
+  const myRank = standings.findIndex((s) => s.user_id === portfolio.userId) + 1;
+
   const modeMarketIds = useMemo(
     () => new Set(mode ? markets.filter((m) => marketMatchesMode(m, mode)).map((m) => m.id) : markets.map((m) => m.id)),
     [markets, mode],
   );
-  const scopedRecentTrades = useMemo(() => recentTrades.filter((t) => modeMarketIds.has(t.marketId)), [recentTrades, modeMarketIds]);
   const scopedMarketTitles = useMemo(() => new Set(markets.filter((m) => modeMarketIds.has(m.id)).map((m) => m.title)), [markets, modeMarketIds]);
   const scopedTopMovers = useMemo(() => topMovers.filter((m) => scopedMarketTitles.has(m.marketTitle)), [topMovers, scopedMarketTitles]);
-  const scopedHoldings = useMemo(() => portfolio.holdings.filter((h) => modeMarketIds.has(h.marketId)), [portfolio.holdings, modeMarketIds]);
-
-  const leaderboard = getLeaderboard("portfolio", mode ? { marketIds: modeMarketIds } : undefined);
-  const myRank = leaderboard.findIndex((e) => e.userId === portfolio.userId) + 1;
-
-  // Mode-scoped portfolio metrics for stat tiles
-  const modePortfolioValue = mode
-    ? leaderboard.find((e) => e.userId === portfolio.userId)?.portfolioValue ?? classroom.startingBalance
-    : portfolioStats.totalValue;
-  const modeReturn = mode
-    ? modePortfolioValue - classroom.startingBalance
-    : portfolioStats.unrealizedPnL;
 
   const stats = [
-    { label: "Bankroll", value: `$${portfolioStats.cash.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: DollarSign, change: null },
-    { label: mode ? `${MODE_LABELS[mode]} Bets Value` : "Bets Value", value: `$${modePortfolioValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, icon: Briefcase, change: modeReturn !== 0 ? `${modeReturn >= 0 ? "+" : ""}$${modeReturn.toFixed(2)}` : null },
-    { label: "Open Bets", value: String(scopedHoldings.length), icon: TrendingUp, change: null },
-    { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null },
+    { label: "Bankroll", value: money(book.bankroll), icon: DollarSign, change: null as string | null },
+    { label: "At Risk", value: money(book.atRisk), icon: Briefcase, change: book.netPnl !== 0 ? signedMoney(book.netPnl) : null },
+    { label: "Open Bets", value: String(book.openBets.length), icon: TrendingUp, change: null as string | null },
+    { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null as string | null },
   ];
 
   return (
