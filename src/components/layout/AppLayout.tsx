@@ -1,4 +1,5 @@
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { MobileTabBar } from "./MobileTabBar";
 import { AccessBanner } from "@/components/access/AccessGate";
@@ -7,6 +8,26 @@ import { useActivityTracker } from "@/hooks/useActivityTracker";
 
 export function AppLayout() {
   useActivityTracker();
+  const location = useLocation();
+
+  // A dropdown that unmounts mid-navigation can leave the page scroll-locked
+  // and unresponsive to the mouse wheel. Clear the leftovers on every route
+  // change when nothing is actually open.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const stillOpen = document.querySelector(
+        "[data-radix-popper-content-wrapper],[role='dialog'],[data-state='open'][role='menu']",
+      );
+      if (stillOpen) return;
+      document.body.removeAttribute("data-scroll-locked");
+      document.body.style.removeProperty("pointer-events");
+      document.body.style.removeProperty("overflow");
+      document.body.style.removeProperty("margin-right");
+      window.scrollTo({ left: 0 });
+    }, 150);
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />

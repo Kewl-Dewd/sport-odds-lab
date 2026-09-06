@@ -178,3 +178,20 @@
     background: hsl(var(--card) / 0.8);
   }
 }
+
+@layer base {
+  /* Reserve the scrollbar so opening a menu never shifts or side-scrolls the
+     page, and never let a stray dropdown leave the page horizontally scrolled. */
+  html {
+    scrollbar-gutter: stable;
+  }
+  body {
+    overflow-x: hidden;
+  }
+  /* Radix compensates for the scrollbar while a menu is open; with a stable
+     gutter that compensation only causes the layout to jump. */
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
+}
