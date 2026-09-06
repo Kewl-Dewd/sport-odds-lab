@@ -50,7 +50,31 @@ interface CallParams {
   status?: string;
 }
 
+// Several cards on a page ask for the same event's odds at once. Share a
+// single in-flight request per parameter set and hold the answer briefly so
+// one page view doesn't fire the same call a dozen times.
+const CACHE_TTL_MS = 60_000;
+const inflight = new Map<string, Promise<unknown>>();
+const cache = new Map<string, { at: number; value: unknown }>();
+
 async function callOddsApi<T>(params: CallParams): Promise<T> {
+  const key = JSON.stringify(params);
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.value as T;
+  const pending = inflight.get(key);
+  if (pending) return pending as Promise<T>;
+
+  const run = requestOddsApi<T>(params)
+    .then((value) => {
+      cache.set(key, { at: Date.now(), value });
+      return value;
+    })
+    .finally(() => inflight.delete(key));
+  inflight.set(key, run);
+  return run;
+}
+
+async function requestOddsApi<T>(params: CallParams): Promise<T> {
   const { data, error } = await supabase.functions.invoke("odds-api", {
     body: params,
   });
