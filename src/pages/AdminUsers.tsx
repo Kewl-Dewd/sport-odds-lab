@@ -137,7 +137,11 @@ export default function AdminUsers() {
 
   const visible = useMemo(() => {
     // Instructors only ever see their own students (enforced server-side too).
-    const base = canManage ? stats : stats.filter((s) => s.user_id !== user?.id);
+    // An instructor who is also seated in one of their own classes still
+    // belongs in the list — that's the same person the class roster shows.
+    const base = canManage
+      ? stats
+      : stats.filter((s) => s.user_id !== user?.id || (classesByUser[s.user_id]?.length ?? 0) > 0);
     const q = search.trim().toLowerCase();
     if (!q) return base;
     return base.filter(
