@@ -23,6 +23,8 @@ import {
 } from "@/lib/studentAnalytics";
 import { cn } from "@/lib/utils";
 import { toAmerican } from "@/lib/oddsFormat";
+import { money, signedMoney, signedPct } from "@/lib/money";
+import { useStudentBook } from "@/hooks/useStudentBook";
 
 function ScoreBadge({ score, label }: { score: number; label?: string }) {
   const color = score >= 70 ? "bg-success/15 text-success" : score >= 40 ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive";
@@ -45,6 +47,7 @@ function StatRow({ label, value, icon, className }: { label: string; value: stri
 export default function Portfolio() {
   const { portfolio: rawPortfolio, portfolioStats, realizedPnL, markets: allMarkets, trades: allTrades, classroom, students } = useMarket();
   const { mode } = useMode();
+  const book = useStudentBook();
   const modeMarketIds = useMemo(
     () => new Set(mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)).map((m) => m.id) : allMarkets.map((m) => m.id)),
     [allMarkets, mode],
