@@ -6,6 +6,7 @@
 // exports, ROI stats) without rewriting MarketContext. Full read-side
 // hydration of the live engines is a later phase.
 import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useMarket } from "@/context/MarketContext";
 import { useActiveMembership } from "@/features/classes/useClasses";
