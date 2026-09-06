@@ -276,7 +276,7 @@ export default function Markets() {
                             style={{ width: `${(o.price / Math.max(priceSum, 0.01)) * 100}%` }} />
                         </div>
                         <p className="text-xs text-muted-foreground text-right mt-1">
-                          {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}% implied
+                          {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}% fair chance
                         </p>
                       </div>
                     ))}
@@ -320,8 +320,9 @@ export default function Markets() {
                           setTradeModal({ marketId: market.id, outcomeId: o.id });
                         }}
                       >
-                        <TrendingUp className="mr-1 h-3 w-3" />
-                        {o.name.length > 12 ? o.name.slice(0, 12) + "…" : o.name} {toAmerican(o.price)}
+                        <TrendingUp className="mr-1 h-3 w-3 shrink-0" />
+                        <span className="truncate">{o.name}</span>
+                        <span className="ml-1.5 font-mono shrink-0">{toAmerican(o.price)}</span>
                       </Button>
                     ))}
                   </div>
@@ -332,13 +333,27 @@ export default function Markets() {
         })}
         {filtered.length === 0 && (
           markets.length === 0 ? (
-            <EmptyState
-              icon={BarChart3}
-              title={liveBoardLoading ? "Loading the board…" : mode ? `No ${MODE_LABELS[mode]} markets yet` : "No markets yet"}
-              description={mode
-                ? `Your instructor hasn't published any ${MODE_LABELS[mode]} markets. Switch modes from the top nav or check back later.`
-                : "Your instructor hasn't published any markets for this class. Check back once a market opens."}
-            />
+            liveBoardLoading ? (
+              <EmptyState
+                icon={Loader2}
+                title="Loading the board…"
+                description="Pulling today's games and the latest prices from the odds feed."
+              />
+            ) : liveBoardError ? (
+              <EmptyState
+                icon={RefreshCw}
+                title="Couldn't load the odds feed"
+                description={`${liveBoardError} — this is a connection problem, not an empty board. Try again in a moment.`}
+                actionLabel="Retry"
+                onAction={() => void loadLiveMarkets(enabledLeagues)}
+              />
+            ) : (
+              <EmptyState
+                icon={BarChart3}
+                title="No games on the board right now"
+                description="Your class board shows games from the leagues your instructor has switched on, for today and the next two days. There are no games in that window yet — check back closer to game day."
+              />
+            )
           ) : (
             <EmptyState
               icon={Search}
