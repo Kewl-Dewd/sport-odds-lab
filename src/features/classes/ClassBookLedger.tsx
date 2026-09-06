@@ -16,7 +16,9 @@ import type { BetRow } from "@/features/db";
 import { BookSummaryCard } from "@/features/classes/BookSummaryCard";
 import { downloadCsv } from "@/features/exports";
 
+// Anything not in this set is still open — a placement is not a result.
 const SETTLED = new Set(["won", "lost", "push", "void"]);
+const OPEN = new Set(["open", "executed"]);
 
 const money = (n: number) =>
   `${n < 0 ? "−" : ""}$${Math.abs(n).toLocaleString(undefined, {
@@ -33,7 +35,7 @@ function bookPnl(bet: BetRow): number | null {
 function statusVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
   if (status === "won") return "destructive"; // a student win is a book loss
   if (status === "lost") return "default";
-  if (status === "open") return "secondary";
+  if (OPEN.has(status)) return "secondary";
   return "outline";
 }
 
@@ -337,7 +339,7 @@ export function ClassBookLedger({ classId, className, bets, nameByUserId }: Prop
                           {b.odds_decimal ? b.odds_decimal.toFixed(2) : "—"}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={statusVariant(b.status)} className="capitalize">{b.status}</Badge>
+                          <Badge variant={statusVariant(b.status)} className="capitalize">{OPEN.has(b.status) ? "open" : b.status}</Badge>
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {b.payout === null || b.payout === undefined ? "—" : money(b.payout)}

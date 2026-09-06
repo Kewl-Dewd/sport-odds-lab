@@ -200,9 +200,10 @@ export function buildStandings(
   for (const e of entries) byUser.set(e.user_id, blank(e.user_id));
   for (const b of bets) {
     const row = byUser.get(b.user_id) ?? blank(b.user_id);
+    const isOpen = b.status === "open" || b.status === "executed";
     row.bets += 1;
     row.staked += Number(b.stake) || 0;
-    if (b.status !== "open") {
+    if (!isOpen) {
       row.returned += Number(b.payout) || 0;
       if (b.status === "won") row.wins += 1;
     }
