@@ -81,7 +81,7 @@ export function ClassActionTicker() {
           key: `${b.id}-placed`,
           name: who,
           kind: "placed",
-          text: `${who} backed ${b.selection} (${b.bet_type}) — ${b.market_title}`,
+          text: `${who} backed ${b.selection}${/^(buy|sell)$/i.test(b.bet_type) ? "" : ` (${b.bet_type})`} — ${b.market_title}`,
           amount: Number(b.stake),
           at: new Date(b.placed_at).getTime(),
         });

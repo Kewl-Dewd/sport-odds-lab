@@ -68,7 +68,10 @@ export function useStudentBook(): StudentBook {
     );
     const returned = settledBets.reduce((s, b) => s + Number(b.payout ?? 0), 0);
     const bankroll = startingBankroll - staked + returned;
-    const netPnl = bankroll - startingBankroll;
+    // P&L only counts graded bets — money still riding on an open bet is
+    // neither a win nor a loss yet.
+    const settledStake = settledBets.reduce((s, b) => s + Number(b.stake ?? 0), 0);
+    const netPnl = returned - settledStake;
     const wins = settledBets.filter((b) => b.status === "won").length;
     const losses = settledBets.filter((b) => b.status === "lost").length;
     const pushes = settledBets.filter((b) => b.status === "push" || b.status === "void").length;
