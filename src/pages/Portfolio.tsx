@@ -154,43 +154,90 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Summary Stats */}
+      {/* Summary Stats — from the durable bet record */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Total Value</span>
-          <p className="text-lg md:text-xl font-bold font-mono">${totalValue.toFixed(2)}</p>
-          <span className={cn("text-xs font-mono", returnPct >= 0 ? "price-up" : "price-down")}>
-            {returnPct >= 0 ? "+" : ""}{returnPct.toFixed(1)}%
+          <span className="text-xs text-muted-foreground">Bankroll</span>
+          <p className="text-lg md:text-xl font-bold font-mono">{money(book.bankroll)}</p>
+          <span className={cn("text-xs font-mono", book.roiPct >= 0 ? "price-up" : "price-down")}>
+            {signedPct(book.roiPct)}
           </span>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Bankroll</span>
-          <p className="text-lg md:text-xl font-bold font-mono">${cash.toFixed(2)}</p>
+          <span className="text-xs text-muted-foreground">Starting bankroll</span>
+          <p className="text-lg md:text-xl font-bold font-mono">{money(book.startingBankroll)}</p>
         </div>
         <div className="stat-card">
           <span className="text-xs text-muted-foreground">At Risk</span>
-          <p className="text-lg md:text-xl font-bold font-mono">${holdingsValue.toFixed(2)}</p>
+          <p className="text-lg md:text-xl font-bold font-mono">{money(book.atRisk)}</p>
+          <span className="text-xs text-muted-foreground">{book.openBets.length} open</span>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Unrealized P&L</span>
-          <p className={cn("text-lg md:text-xl font-bold font-mono", unrealizedPnL >= 0 ? "price-up" : "price-down")}>
-            {unrealizedPnL >= 0 ? "+" : ""}${unrealizedPnL.toFixed(2)}
+          <span className="text-xs text-muted-foreground">Could win</span>
+          <p className="text-lg md:text-xl font-bold font-mono text-success">{money(book.toWin)}</p>
+        </div>
+        <div className="stat-card">
+          <span className="text-xs text-muted-foreground">Settled P&L</span>
+          <p className={cn("text-lg md:text-xl font-bold font-mono", book.netPnl >= 0 ? "price-up" : "price-down")}>
+            {signedMoney(book.netPnl)}
           </p>
         </div>
         <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Realized P&L</span>
-          <p className={cn("text-lg md:text-xl font-bold font-mono", realizedPnL >= 0 ? "price-up" : "price-down")}>
-            {realizedPnL >= 0 ? "+" : ""}${realizedPnL.toFixed(2)}
+          <span className="text-xs text-muted-foreground">Win rate</span>
+          <p className="text-lg md:text-xl font-bold font-mono">
+            {book.wins + book.losses > 0 ? `${book.winRate.toFixed(0)}%` : "—"}
           </p>
-        </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Bankroll In Play</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{cashUtilization.toFixed(0)}%</p>
-          <div className="h-1 rounded-full bg-muted mt-1 overflow-hidden">
-            <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${cashUtilization}%` }} />
-          </div>
+          <span className="text-xs text-muted-foreground">{book.wins}W · {book.losses}L</span>
         </div>
       </div>
+
+      {/* Bet record */}
+      <Card>
+        <CardHeader><CardTitle className="text-lg">Your bets</CardTitle></CardHeader>
+        <CardContent>
+          {book.isLoading ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">Loading your bets…</p>
+          ) : book.bets.length === 0 ? (
+            <p className="py-6 text-center text-sm text-muted-foreground">
+              No bets yet — head to the board to place your first one.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
+                    <th className="py-2">Game</th>
+                    <th className="py-2">Pick</th>
+                    <th className="py-2 text-right">Stake</th>
+                    <th className="py-2 text-right">To win</th>
+                    <th className="py-2 text-right">Status</th>
+                    <th className="py-2 text-right">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {book.bets.map((b) => {
+                    const open = b.status === "open" || b.status === "executed";
+                    const net = Number(b.payout ?? 0) - Number(b.stake ?? 0);
+                    const toWin = Math.max(0, Number(b.potential_payout ?? b.stake) - Number(b.stake));
+                    return (
+                      <tr key={b.id} className="border-b last:border-0">
+                        <td className="py-2.5 pr-3">{b.market_title}</td>
+                        <td className="py-2.5 pr-3 text-muted-foreground">{b.selection}</td>
+                        <td className="py-2.5 text-right font-mono">{money(b.stake)}</td>
+                        <td className="py-2.5 text-right font-mono">{money(toWin)}</td>
+                        <td className="py-2.5 text-right capitalize">{open ? "Open" : b.status}</td>
+                        <td className={cn("py-2.5 text-right font-mono", open ? "text-muted-foreground" : net >= 0 ? "price-up" : "price-down")}>
+                          {open ? "—" : signedMoney(net)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Decision Quality Scores */}
       {stats && (
