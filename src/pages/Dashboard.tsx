@@ -34,7 +34,7 @@ export default function Dashboard() {
   const scopedTopMovers = useMemo(() => topMovers.filter((m) => scopedMarketTitles.has(m.marketTitle)), [topMovers, scopedMarketTitles]);
 
   const stats = [
-    { label: "Bankroll", value: money(book.bankroll), icon: DollarSign, change: null as string | null },
+    { label: "Bankroll", value: book.enrolled ? money(book.bankroll) : "—", icon: DollarSign, change: null as string | null },
     { label: "At Risk", value: money(book.atRisk), icon: Briefcase, change: book.netPnl !== 0 ? signedMoney(book.netPnl) : null },
     { label: "Open Bets", value: String(book.openBets.length), icon: TrendingUp, change: null as string | null },
     { label: "Class Rank", value: myRank > 0 ? `#${myRank}` : "—", icon: GraduationCap, change: null as string | null },

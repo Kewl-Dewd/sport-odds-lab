@@ -161,14 +161,14 @@ export default function Portfolio() {
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
         <div className="stat-card">
           <span className="text-xs text-muted-foreground">Bankroll</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{money(book.bankroll)}</p>
+          <p className="text-lg md:text-xl font-bold font-mono">{book.enrolled ? money(book.bankroll) : "—"}</p>
           <span className={cn("text-xs font-mono", book.roiPct >= 0 ? "price-up" : "price-down")}>
             {signedPct(book.roiPct)}
           </span>
         </div>
         <div className="stat-card">
           <span className="text-xs text-muted-foreground">Starting bankroll</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{money(book.startingBankroll)}</p>
+          <p className="text-lg md:text-xl font-bold font-mono">{book.enrolled ? money(book.startingBankroll) : "—"}</p>
         </div>
         <div className="stat-card">
           <span className="text-xs text-muted-foreground">At Risk</span>

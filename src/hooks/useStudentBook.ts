@@ -32,6 +32,7 @@ export interface StudentBook {
   winRate: number;
   isLoading: boolean;
   classId: string | null;
+  enrolled: boolean;
 }
 
 export function useStudentBook(): StudentBook {
@@ -90,6 +91,7 @@ export function useStudentBook(): StudentBook {
       winRate: wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0,
       isLoading: query.isLoading || classLoading,
       classId,
+      enrolled: !!classId,
     };
   }, [query.data, query.isLoading, classLoading, startingBankroll, classId]);
 }
