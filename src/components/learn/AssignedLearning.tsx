@@ -37,7 +37,10 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
       const key = l.topic || "General";
       map.set(key, [...(map.get(key) ?? []), l]);
     });
-    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+    // Keep the instructor's authored order (topic 1, 2, 3…), not alphabetical.
+    const rank = (items: AssignedLesson[]) =>
+      Math.min(...items.map((l) => l.sort_order ?? Number.MAX_SAFE_INTEGER));
+    return [...map.entries()].sort((a, b) => rank(a[1]) - rank(b[1]) || a[0].localeCompare(b[0]));
   }, [lessons]);
 
   const done = lessons.filter((l) => progress.has(l.id)).length;
@@ -48,7 +51,7 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
     setBusy(lesson.id);
     try {
       await complete.mutateAsync({ lesson_id: lesson.id, class_id: classId });
-      toast.success(lesson.requires_ack ? "Acknowledged" : "Module complete");
+      toast.success(lesson.requires_ack ? "Acknowledged" : "Lesson complete");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not save");
     } finally {

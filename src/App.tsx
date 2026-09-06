@@ -62,11 +62,11 @@ const App = () => (
                     <Route path="/" element={<Index />} />
 
                     <Route path="/choose-mode" element={<ProtectedRoute><ChooseMode /></ProtectedRoute>} />
-                    <Route path="/dashboard" element={<ProtectedRoute requireMode><Dashboard /></ProtectedRoute>} />
-                    <Route path="/markets" element={<ProtectedRoute requireMode><Markets /></ProtectedRoute>} />
-                    <Route path="/markets/:id" element={<ProtectedRoute requireMode><MarketDetail /></ProtectedRoute>} />
-                    <Route path="/portfolio" element={<ProtectedRoute requireMode><Portfolio /></ProtectedRoute>} />
-                    <Route path="/leaderboard" element={<ProtectedRoute requireMode><Leaderboard /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute requireMode><RequireAccess><Dashboard /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/markets" element={<ProtectedRoute requireMode><RequireAccess><Markets /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/markets/:id" element={<ProtectedRoute requireMode><RequireAccess><MarketDetail /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/portfolio" element={<ProtectedRoute requireMode><RequireAccess><Portfolio /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/leaderboard" element={<ProtectedRoute requireMode><RequireAccess><Leaderboard /></RequireAccess></ProtectedRoute>} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
                     <Route path="/instructor" element={<Navigate to="/instructor/classes" replace />} />
@@ -80,7 +80,7 @@ const App = () => (
                     <Route path="/access" element={<ProtectedRoute><GetAccess /></ProtectedRoute>} />
                     <Route path="/checkout/return" element={<ProtectedRoute><CheckoutReturn /></ProtectedRoute>} />
                     <Route path="/admin/platform" element={<ProtectedRoute><PlatformAdminPage /></ProtectedRoute>} />
-                    <Route path="/class-board" element={<ProtectedRoute><ClassBoardPage /></ProtectedRoute>} />
+                    <Route path="/class-board" element={<ProtectedRoute><RequireAccess><ClassBoardPage /></RequireAccess></ProtectedRoute>} />
                     <Route path="/learn" element={<ProtectedRoute><Learn /></ProtectedRoute>} />
                     <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                     <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />

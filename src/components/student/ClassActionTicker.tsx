@@ -3,6 +3,7 @@ import { Radio, TrendingUp, TrendingDown, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
+import { isOpenBet } from "@/hooks/useStudentBook";
 
 interface BetRow {
   id: string;
@@ -75,12 +76,12 @@ export function ClassActionTicker() {
     for (const b of rows) {
       const name = nameById[b.user_id] ?? "A bettor";
       const who = b.user_id === user?.id ? "You" : firstName(name);
-      if (b.status === "open") {
+      if (isOpenBet(b.status)) {
         out.push({
           key: `${b.id}-placed`,
           name: who,
           kind: "placed",
-          text: `${who} backed ${b.selection} (${b.bet_type}) — ${b.market_title}`,
+          text: `${who} backed ${b.selection}${/^(buy|sell)$/i.test(b.bet_type) ? "" : ` (${b.bet_type})`} — ${b.market_title}`,
           amount: Number(b.stake),
           at: new Date(b.placed_at).getTime(),
         });
@@ -115,7 +116,9 @@ export function ClassActionTicker() {
     return () => clearInterval(t);
   }, [user, load]);
 
-  const marquee = useMemo(() => (items.length ? [...items, ...items] : []), [items]);
+  // Only loop the strip when there are too few items to fill the width —
+  // otherwise every entry appears twice.
+  const marquee = useMemo(() => (items.length > 0 && items.length < 6 ? [...items, ...items] : items), [items]);
 
   if (!user) return null;
   if (loading && items.length === 0) return null;

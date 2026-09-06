@@ -1,19 +1,20 @@
 import { useMemo, useState } from "react";
-import { Trophy, Medal, TrendingUp, BarChart3, Target, Zap, Brain, Shield, Gauge } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Target, Zap, Gauge } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useMarket, type LeaderboardMode } from "@/context/MarketContext";
-import { useMode, marketMatchesMode, MODE_LABELS } from "@/context/ModeContext";
+import { useActiveClass } from "@/context/ClassContext";
+import { useClassStandings, type StandingRow } from "@/hooks/useStudentBook";
+import { money, signedMoney, signedPct } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
-const modes: { key: LeaderboardMode; label: string; icon: typeof Trophy; description: string }[] = [
-  { key: "portfolio", label: "Bankroll", icon: Trophy, description: "Biggest total bankroll" },
-  { key: "return", label: "Best Return %", icon: TrendingUp, description: "Best percentage return on starting capital" },
-  { key: "decision", label: "Decision Quality", icon: Brain, description: "Best decision-making based on timing and edge capture" },
-  { key: "risk", label: "Risk Management", icon: Shield, description: "Best diversification and position sizing" },
-  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest return per bet placed" },
-  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win rate on bets" },
-  { key: "activity", label: "Most Active", icon: Zap, description: "Most bets placed" },
+type Board = "bankroll" | "return" | "efficiency" | "accuracy" | "activity";
+
+const boards: { key: Board; label: string; icon: typeof Trophy; description: string }[] = [
+  { key: "bankroll", label: "Bankroll", icon: Trophy, description: "Biggest bankroll — starting bankroll minus stakes plus settled payouts." },
+  { key: "return", label: "Best Return %", icon: TrendingUp, description: "Best percentage return on the starting bankroll." },
+  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest settled profit per bet placed." },
+  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win rate on bets that have been graded." },
+  { key: "activity", label: "Most Active", icon: Zap, description: "Most bets placed." },
 ];
 
 const rankIcon = (rank: number) => {
@@ -23,82 +24,77 @@ const rankIcon = (rank: number) => {
   return <span className="text-sm font-mono text-muted-foreground w-5 text-center inline-block">{rank}</span>;
 };
 
+const perBet = (e: StandingRow) => (Number(e.bet_count) > 0 ? Number(e.net_pnl) / Number(e.bet_count) : 0);
+const winRate = (e: StandingRow) =>
+  Number(e.settled_count) > 0 ? (Number(e.wins) / Number(e.settled_count)) * 100 : null;
+
 export default function Leaderboard() {
-  const { getLeaderboard, classroom, markets } = useMarket();
-  const { mode: appMode } = useMode();
-  const [mode, setMode] = useState<LeaderboardMode>("portfolio");
+  const { activeEnrollment } = useActiveClass();
+  const { data: standings = [], isLoading } = useClassStandings();
+  const [board, setBoard] = useState<Board>("bankroll");
 
-  const modeMarketIds = useMemo(
-    () => appMode ? new Set(markets.filter((m) => marketMatchesMode(m, appMode)).map((m) => m.id)) : undefined,
-    [markets, appMode],
-  );
+  const entries = useMemo(() => {
+    const rows = [...standings];
+    switch (board) {
+      case "return": rows.sort((a, b) => Number(b.roi_pct) - Number(a.roi_pct)); break;
+      case "efficiency": rows.sort((a, b) => perBet(b) - perBet(a)); break;
+      case "accuracy": rows.sort((a, b) => (winRate(b) ?? -1) - (winRate(a) ?? -1)); break;
+      case "activity": rows.sort((a, b) => Number(b.bet_count) - Number(a.bet_count)); break;
+      default: rows.sort((a, b) => Number(b.bankroll) - Number(a.bankroll));
+    }
+    return rows;
+  }, [standings, board]);
 
-  const entries = getLeaderboard(mode, modeMarketIds ? { marketIds: modeMarketIds } : undefined);
-  const currentMode = modes.find((m) => m.key === mode)!;
+  const currentBoard = boards.find((b) => b.key === board)!;
 
-  const formatValue = (entry: typeof entries[0]) => {
-    switch (mode) {
-      case "portfolio":
-        return `$${entry.portfolioValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-      case "return":
-        return `${entry.returnPct >= 0 ? "+" : ""}${entry.returnPct.toFixed(1)}%`;
-      case "decision":
-        return `${entry.decisionScore}/100`;
-      case "risk":
-        return `${entry.riskScore}/100`;
-      case "efficiency":
-        return `$${entry.efficiency.toFixed(2)}/bet`;
-      case "accuracy":
-        return entry.tradeCount > 0 ? `${((entry.winCount / entry.tradeCount) * 100).toFixed(0)}%` : "—";
-      case "activity":
-        return `${entry.tradeCount} bets`;
+  const formatValue = (e: StandingRow) => {
+    switch (board) {
+      case "return": return signedPct(e.roi_pct);
+      case "efficiency": return `${signedMoney(perBet(e))}/bet`;
+      case "accuracy": return winRate(e) === null ? "—" : `${winRate(e)!.toFixed(0)}%`;
+      case "activity": return `${e.bet_count} bets`;
+      default: return money(e.bankroll, 0);
     }
   };
 
   return (
     <div className="container py-8 space-y-6 animate-slide-up">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Leaderboard {appMode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[appMode]}</span>}</h1>
-        <p className="text-muted-foreground">{classroom.name}</p>
+        <h1 className="text-2xl md:text-3xl font-bold">Leaderboard</h1>
+        <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? "Your class"}</p>
       </div>
 
-      {/* Mode Selector */}
       <div className="flex flex-wrap gap-2">
-        {modes.map((m) => (
+        {boards.map((b) => (
           <Button
-            key={m.key}
-            variant={mode === m.key ? "default" : "outline"}
+            key={b.key}
+            variant={board === b.key ? "default" : "outline"}
             size="sm"
-            onClick={() => setMode(m.key)}
+            onClick={() => setBoard(b.key)}
             className="gap-1.5"
           >
-            <m.icon className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">{m.label}</span>
-            <span className="sm:hidden">{m.label.split(" ")[0]}</span>
+            <b.icon className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{b.label}</span>
+            <span className="sm:hidden">{b.label.split(" ")[0]}</span>
           </Button>
         ))}
       </div>
 
-      <p className="text-sm text-muted-foreground">{currentMode.description}</p>
+      <p className="text-sm text-muted-foreground">{currentBoard.description}</p>
 
-      {/* Top 3 Podium */}
       {entries.length >= 3 && (
         <div className="grid sm:grid-cols-3 gap-4">
           {entries.slice(0, 3).map((e, i) => {
             const rank = i + 1;
             return (
-              <div key={e.userId} className={cn("stat-card text-center", rank === 1 && "border-warning/40 bg-warning/5")}>
+              <div key={e.user_id} className={cn("stat-card text-center", rank === 1 && "border-warning/40 bg-warning/5")}>
                 <div className="flex justify-center mb-2">{rankIcon(rank)}</div>
-                <h3 className="font-semibold text-lg">{e.displayName}</h3>
-                <p className={cn("text-2xl font-bold font-mono",
-                  mode === "portfolio" || mode === "return" || mode === "efficiency"
-                    ? (e.returnPct >= 0 ? "price-up" : "price-down")
-                    : "text-primary"
-                )}>
+                <h3 className="font-semibold text-lg">{e.display_name}</h3>
+                <p className={cn("text-2xl font-bold font-mono", Number(e.net_pnl) >= 0 ? "price-up" : "price-down")}>
                   {formatValue(e)}
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  {e.tradeCount} bets · ${e.portfolioValue.toFixed(0)} bankroll
+                  {e.bet_count} bets · {money(e.bankroll, 0)} bankroll
                 </p>
               </div>
             );
@@ -106,13 +102,14 @@ export default function Leaderboard() {
         </div>
       )}
 
-      {/* Full Table */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">All Bettors</CardTitle>
         </CardHeader>
         <CardContent>
-          {entries.length === 0 ? (
+          {isLoading ? (
+            <p className="text-sm text-muted-foreground text-center py-6">Loading standings…</p>
+          ) : entries.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-6">No students in this class yet.</p>
           ) : (
             <div className="overflow-x-auto">
@@ -124,34 +121,26 @@ export default function Leaderboard() {
                     <th className="pb-3 font-medium text-right">Bankroll</th>
                     <th className="pb-3 font-medium text-right">Return</th>
                     <th className="pb-3 font-medium text-right">Bets</th>
+                    <th className="pb-3 font-medium text-right hidden sm:table-cell">Open</th>
                     <th className="pb-3 font-medium text-right hidden sm:table-cell">Win Rate</th>
-                    <th className="pb-3 font-medium text-right hidden md:table-cell">Decision</th>
-                    <th className="pb-3 font-medium text-right hidden md:table-cell">Risk</th>
-                    <th className="pb-3 font-medium text-right hidden lg:table-cell">Efficiency</th>
+                    <th className="pb-3 font-medium text-right hidden lg:table-cell">P&L / bet</th>
                   </tr>
                 </thead>
                 <tbody>
                   {entries.map((e, i) => {
-                    const winRate = e.tradeCount > 0 ? ((e.winCount / e.tradeCount) * 100).toFixed(0) : "—";
+                    const wr = winRate(e);
                     return (
-                      <tr key={e.userId} className="border-b last:border-0">
+                      <tr key={e.user_id} className="border-b last:border-0">
                         <td className="py-3">{rankIcon(i + 1)}</td>
-                        <td className="py-3 font-medium">{e.displayName}</td>
-                        <td className="py-3 text-right font-mono font-semibold">${e.portfolioValue.toFixed(0)}</td>
-                        <td className={cn("py-3 text-right font-mono", e.returnPct >= 0 ? "price-up" : "price-down")}>
-                          {e.returnPct >= 0 ? "+" : ""}{e.returnPct.toFixed(1)}%
+                        <td className="py-3 font-medium">{e.display_name}</td>
+                        <td className="py-3 text-right font-mono font-semibold">{money(e.bankroll, 0)}</td>
+                        <td className={cn("py-3 text-right font-mono", Number(e.roi_pct) >= 0 ? "price-up" : "price-down")}>
+                          {signedPct(e.roi_pct)}
                         </td>
-                        <td className="py-3 text-right font-mono">{e.tradeCount}</td>
-                        <td className="py-3 text-right font-mono hidden sm:table-cell">{winRate}{winRate !== "—" && "%"}</td>
-                        <td className="py-3 text-right hidden md:table-cell">
-                          <ScoreBadge score={e.decisionScore} />
-                        </td>
-                        <td className="py-3 text-right hidden md:table-cell">
-                          <ScoreBadge score={e.riskScore} />
-                        </td>
-                        <td className="py-3 text-right font-mono hidden lg:table-cell">
-                          {e.efficiency >= 0 ? "+" : ""}${e.efficiency.toFixed(2)}
-                        </td>
+                        <td className="py-3 text-right font-mono">{e.bet_count}</td>
+                        <td className="py-3 text-right font-mono hidden sm:table-cell">{money(e.open_stake, 0)}</td>
+                        <td className="py-3 text-right font-mono hidden sm:table-cell">{wr === null ? "—" : `${wr.toFixed(0)}%`}</td>
+                        <td className="py-3 text-right font-mono hidden lg:table-cell">{signedMoney(perBet(e))}</td>
                       </tr>
                     );
                   })}
@@ -162,14 +151,5 @@ export default function Leaderboard() {
         </CardContent>
       </Card>
     </div>
-  );
-}
-
-function ScoreBadge({ score }: { score: number }) {
-  const color = score >= 70 ? "bg-success/15 text-success" : score >= 40 ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive";
-  return (
-    <span className={cn("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-mono font-medium", color)}>
-      {score}
-    </span>
   );
 }

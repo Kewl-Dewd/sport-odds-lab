@@ -6,6 +6,7 @@
 // exports, ROI stats) without rewriting MarketContext. Full read-side
 // hydration of the live engines is a later phase.
 import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useMarket } from "@/context/MarketContext";
 import { useActiveMembership } from "@/features/classes/useClasses";
@@ -20,6 +21,7 @@ export function PersistenceBridge() {
   const { user } = useAuth();
   const { portfolio, markets, trades, sportsbookWagers, raceWagers } = useMarket();
   const { data: membership } = useActiveMembership();
+  const qc = useQueryClient();
 
   // Last-synced stamp per bet id, so we only write on change.
   const syncedRef = useRef<Map<string, string>>(new Map());
@@ -84,6 +86,7 @@ export function PersistenceBridge() {
     for (const t of trades) {
       if (t.userId !== portfolio.userId) continue;
       if (syncedRef.current.has(t.id)) continue;
+      const isBuy = t.type === "BUY";
       rows.push({
         id: t.id,
         class_id: classId,
@@ -93,16 +96,18 @@ export function PersistenceBridge() {
         market_title: t.marketTitle,
         selection: t.outcomeName,
         bet_type: t.type,
-        stake: t.totalCost,
+        // A cash-out is money coming back, not new money at risk.
+        stake: isBuy ? Math.abs(t.totalCost) : 0,
         odds_decimal: t.pricePerShare,
-        potential_payout: t.type === "BUY" ? t.quantity : null,
-        status: "executed",
-        payout: null,
+        potential_payout: isBuy ? t.quantity : null,
+        // Placement is not a result: a bet stays open until it is graded.
+        status: isBuy ? "open" : "void",
+        payout: isBuy ? null : Math.abs(t.totalCost),
         placed_at: t.timestamp,
-        settled_at: null,
+        settled_at: isBuy ? null : t.timestamp,
         raw: t,
       });
-      stamps.push([t.id, "executed|"]);
+      stamps.push([t.id, isBuy ? "open|" : "void|"]);
     }
 
     if (rows.length === 0) return;
@@ -115,9 +120,14 @@ export function PersistenceBridge() {
         if (error) {
           console.error("PersistenceBridge: failed to sync bets:", error.message);
           for (const [id] of stamps) syncedRef.current.delete(id);
+          return;
+        }
+        // Refresh every money view the moment a bet lands.
+        for (const key of ["student-book", "class-standings", "bets", "class-book-summary", "journal"]) {
+          qc.invalidateQueries({ queryKey: [key] });
         }
       });
-  }, [user, membership, portfolio.userId, markets, trades, sportsbookWagers, raceWagers]);
+  }, [user, membership, portfolio.userId, markets, trades, sportsbookWagers, raceWagers, qc]);
 
   return null;
 }
