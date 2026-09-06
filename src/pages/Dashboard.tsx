@@ -90,7 +90,7 @@ export default function Dashboard() {
                         <p className="text-sm font-medium truncate">{b.market_title}</p>
                         <p className="text-xs text-muted-foreground truncate">
                           {b.selection}
-                          {b.odds_decimal ? ` · ${toAmerican(1 / Number(b.odds_decimal) > 1 ? Number(b.odds_decimal) : Number(b.odds_decimal))}` : ""}
+                          {b.odds_decimal ? ` · ${toAmerican(Number(b.odds_decimal))}` : ""}
                         </p>
                       </div>
                       <div className="text-right space-y-0.5 shrink-0">
