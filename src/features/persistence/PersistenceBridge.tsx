@@ -119,9 +119,14 @@ export function PersistenceBridge() {
         if (error) {
           console.error("PersistenceBridge: failed to sync bets:", error.message);
           for (const [id] of stamps) syncedRef.current.delete(id);
+          return;
+        }
+        // Refresh every money view the moment a bet lands.
+        for (const key of ["student-book", "class-standings", "bets", "class-book-summary", "journal"]) {
+          qc.invalidateQueries({ queryKey: [key] });
         }
       });
-  }, [user, membership, portfolio.userId, markets, trades, sportsbookWagers, raceWagers]);
+  }, [user, membership, portfolio.userId, markets, trades, sportsbookWagers, raceWagers, qc]);
 
   return null;
 }
