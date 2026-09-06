@@ -971,6 +971,25 @@ export type Database = {
           settled_stake: number
         }[]
       }
+      class_leaderboard: {
+        Args: { _class_id: string }
+        Returns: {
+          bankroll: number
+          bet_count: number
+          display_name: string
+          net_pnl: number
+          open_liability: number
+          open_stake: number
+          returned: number
+          roi_pct: number
+          settled_count: number
+          settled_stake: number
+          staked: number
+          starting_bankroll: number
+          user_id: string
+          wins: number
+        }[]
+      }
       generate_join_code: { Args: never; Returns: string }
       get_user_stats: {
         Args: never
