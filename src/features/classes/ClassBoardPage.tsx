@@ -130,7 +130,9 @@ export default function ClassBoardPage() {
       <div className="space-y-3">
         {visible.length === 0 ? (
           <Card><CardContent className="py-8 text-sm text-muted-foreground">
-            Your instructor hasn&apos;t published any markets yet.
+            Your instructor hasn&apos;t featured any specific games here yet. If the class board is
+            open, you can still bet every game in the leagues your instructor allows on the{" "}
+            <Link to="/markets" className="text-primary underline">Markets</Link> page.
           </CardContent></Card>
         ) : (
           visible.map((m) => (
