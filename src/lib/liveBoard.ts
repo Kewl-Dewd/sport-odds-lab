@@ -14,7 +14,7 @@ export interface BoardLine {
   label: string;
   decimalOdds: number;
   point?: number;
-  side: "home" | "away" | "over" | "under";
+  side: "home" | "away" | "over" | "under" | "draw";
 }
 
 export interface LiveBoardGame {
@@ -26,7 +26,7 @@ export interface LiveBoardGame {
   lines: BoardLine[];
 }
 
-/** The four major North American leagues we run the classroom board on. */
+/** The major North American leagues we run the classroom board on. */
 export interface MajorLeague {
   key: string;
   label: string;
@@ -39,6 +39,7 @@ export const MAJOR_LEAGUES: MajorLeague[] = [
   { key: "usa-nba", label: "NBA", sport: "basketball", league: "usa-nba" },
   { key: "usa-nfl", label: "NFL", sport: "american-football", league: "usa-nfl" },
   { key: "usa-nhl", label: "NHL", sport: "ice-hockey", league: "usa-nhl" },
+  { key: "usa-mls", label: "MLS", sport: "football", league: "usa-mls" },
 ];
 
 export const DEFAULT_BOARD_LEAGUES = MAJOR_LEAGUES.map((l) => l.key);
@@ -92,8 +93,11 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
 
         if (name === "ml" || name === "moneyline" || name === "1x2") {
           const h = num(row.home), a = num(row.away);
+          // Soccer (MLS) prices a three-way market: home / draw / away.
+          const d = num(row.draw ?? row.x);
           if (h) (ml[event.home] ??= { sum: 0, n: 0 }), (ml[event.home].sum += h, ml[event.home].n += 1);
           if (a) (ml[event.away] ??= { sum: 0, n: 0 }), (ml[event.away].sum += a, ml[event.away].n += 1);
+          if (d) (ml["Draw"] ??= { sum: 0, n: 0 }), (ml["Draw"].sum += d, ml["Draw"].n += 1);
         } else if (name === "spread" || name === "handicap") {
           const point = Number(row.hdp);
           const h = num(row.home), a = num(row.away);
@@ -120,9 +124,9 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
   for (const [team, dec] of Object.entries(moneyline)) {
     lines.push({
       kind: "moneyline",
-      label: `${team} ML`,
+      label: team === "Draw" ? "Draw" : `${team} ML`,
       decimalOdds: dec,
-      side: team === event.home ? "home" : "away",
+      side: team === event.home ? "home" : team === event.away ? "away" : "draw",
     });
   }
   for (const side of ["home", "away"] as const) {
