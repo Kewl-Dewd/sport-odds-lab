@@ -15,7 +15,7 @@ export interface SportsbookLine {
   /** Optional: spread points or total line for spread/total markets */
   point?: number;
   /** Optional: which side this line represents (home/away/over/under) */
-  side?: "home" | "away" | "over" | "under";
+  side?: "home" | "away" | "over" | "under" | "draw";
 }
 
 export interface SportsbookSurface {
@@ -41,7 +41,7 @@ export interface SportsbookWager {
   /** Snapshot of label for after-the-fact debrief */
   label: string;
   kind: SportsbookMarketKind;
-  side?: "home" | "away" | "over" | "under";
+  side?: "home" | "away" | "over" | "under" | "draw";
   point?: number;
   placedAt: string;
   /** Settlement state */
