@@ -14,7 +14,7 @@ export function JoinClassCard() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.trim().length < 6) return;
+    if (code.trim().length < 4) return;
     try {
       const result = await joinClass.mutateAsync(code);
       if (result.ok) {
@@ -46,11 +46,11 @@ export function JoinClassCard() {
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="e.g. K7XQ2M"
-            maxLength={6}
+            maxLength={12}
             className="font-mono tracking-widest uppercase"
             autoFocus
           />
-          <Button type="submit" disabled={joinClass.isPending || code.trim().length < 6}>
+          <Button type="submit" disabled={joinClass.isPending || code.trim().length < 4}>
             {joinClass.isPending ? "Joining…" : "Join class"}
           </Button>
         </form>

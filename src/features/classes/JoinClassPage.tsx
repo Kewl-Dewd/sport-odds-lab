@@ -69,11 +69,11 @@ export default function JoinClassPage() {
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
               placeholder="e.g. K7XQ2M"
-              maxLength={6}
+              maxLength={12}
               className="font-mono tracking-widest uppercase"
               autoFocus
             />
-            <Button type="submit" disabled={joinClass.isPending || code.trim().length < 6}>
+            <Button type="submit" disabled={joinClass.isPending || code.trim().length < 4}>
               {joinClass.isPending ? "Joining…" : "Join"}
             </Button>
           </form>
