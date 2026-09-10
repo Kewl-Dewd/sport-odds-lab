@@ -37,6 +37,7 @@ export interface MajorLeague {
 export const MAJOR_LEAGUES: MajorLeague[] = [
   { key: "usa-mlb", label: "MLB", sport: "baseball", league: "usa-mlb" },
   { key: "usa-nba", label: "NBA", sport: "basketball", league: "usa-nba" },
+  { key: "usa-wnba", label: "WNBA", sport: "basketball", league: "usa-wnba" },
   { key: "usa-nfl", label: "NFL", sport: "american-football", league: "usa-nfl" },
   { key: "usa-nhl", label: "NHL", sport: "ice-hockey", league: "usa-nhl" },
   { key: "usa-mls", label: "MLS", sport: "football", league: "usa-mls" },
