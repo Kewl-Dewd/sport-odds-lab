@@ -106,10 +106,25 @@ export function NewClassDialog({
               You can add shorter betting windows or contests inside the class afterward.
             </p>
           </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nc-code">Class code (optional)</Label>
+            <Input
+              id="nc-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="SPM2020"
+              className="font-mono tracking-widest"
+            />
+            <p className="text-xs text-muted-foreground">
+              {codeValid
+                ? "Pick your own code students type to join, or leave blank for a random one."
+                : "Use 4–12 letters, numbers or dashes."}
+            </p>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={createClass.isPending || !name.trim()}>
+          <Button onClick={submit} disabled={createClass.isPending || !name.trim() || !codeValid}>
             {createClass.isPending ? "Creating…" : "Create class"}
           </Button>
         </DialogFooter>
