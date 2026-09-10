@@ -9,6 +9,7 @@ import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
+import { JoinClassCard } from "@/components/student/JoinClassCard";
 import { AssignedLearning } from "@/components/learn/AssignedLearning";
 import { useActiveClass } from "@/context/ClassContext";
 import { useStudentBook, useClassStandings } from "@/hooks/useStudentBook";
