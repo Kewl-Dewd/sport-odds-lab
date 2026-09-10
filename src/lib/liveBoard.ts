@@ -14,7 +14,7 @@ export interface BoardLine {
   label: string;
   decimalOdds: number;
   point?: number;
-  side: "home" | "away" | "over" | "under";
+  side: "home" | "away" | "over" | "under" | "draw";
 }
 
 export interface LiveBoardGame {
@@ -93,8 +93,11 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
 
         if (name === "ml" || name === "moneyline" || name === "1x2") {
           const h = num(row.home), a = num(row.away);
+          // Soccer (MLS) prices a three-way market: home / draw / away.
+          const d = num(row.draw ?? row.x);
           if (h) (ml[event.home] ??= { sum: 0, n: 0 }), (ml[event.home].sum += h, ml[event.home].n += 1);
           if (a) (ml[event.away] ??= { sum: 0, n: 0 }), (ml[event.away].sum += a, ml[event.away].n += 1);
+          if (d) (ml["Draw"] ??= { sum: 0, n: 0 }), (ml["Draw"].sum += d, ml["Draw"].n += 1);
         } else if (name === "spread" || name === "handicap") {
           const point = Number(row.hdp);
           const h = num(row.home), a = num(row.away);
