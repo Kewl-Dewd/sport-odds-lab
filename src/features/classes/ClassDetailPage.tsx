@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  useClass, useRegenerateJoinCode, useRemoveMember, useResetClassBets,
+  useClass, useRegenerateJoinCode, useRemoveMember, useResetClassBets, useSetJoinCode,
   useRoster, useUpdateClass, type RosterEntry,
 } from "@/features/classes/useClasses";
 import type { BetRow, BetJournalRow } from "@/features/db";
@@ -160,6 +160,8 @@ type Klass = NonNullable<ReturnType<typeof useClass>["data"]>;
 function SettingsTab({ klass }: { klass: Klass }) {
   const updateClass = useUpdateClass(klass.id);
   const regenCode = useRegenerateJoinCode(klass.id);
+  const setCode = useSetJoinCode(klass.id);
+  const [customCode, setCustomCode] = useState(klass.join_code);
   const resetBets = useResetClassBets(klass.id);
 
   const [form, setForm] = useState({
@@ -259,16 +261,44 @@ function SettingsTab({ klass }: { klass: Klass }) {
 
       <div className="space-y-4">
         <ClassInviteCard classId={klass.id} joinCode={klass.join_code} className={klass.name} />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => regenCode.mutate(undefined, {
-            onSuccess: () => toast.success("New join code generated"),
-            onError: (e) => toast.error(e.message),
-          })}
-        >
-          <RefreshCw className="mr-1.5 h-4 w-4" /> Regenerate course code
-        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Course code</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Input
+                value={customCode}
+                onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
+                className="w-40 font-mono tracking-widest"
+                placeholder="SPM2020"
+              />
+              <Button
+                size="sm"
+                disabled={setCode.isPending || customCode === klass.join_code}
+                onClick={() => setCode.mutate(customCode, {
+                  onSuccess: () => toast.success("Course code updated"),
+                  onError: (e) => toast.error(e.message),
+                })}
+              >
+                Save code
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => regenCode.mutate(undefined, {
+                  onSuccess: (c) => { setCustomCode(c.join_code); toast.success("New join code generated"); },
+                  onError: (e) => toast.error(e.message),
+                })}
+              >
+                <RefreshCw className="mr-1.5 h-4 w-4" /> Random
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Pick any code students type to join — 4–12 letters, numbers or dashes.
+            </p>
+          </CardContent>
+        </Card>
 
 
         <Card>

@@ -29,9 +29,12 @@ export function NewClassDialog({
   const [bankroll, setBankroll] = useState("1000");
   const [start, setStart] = useState(today);
   const [end, setEnd] = useState("");
+  const [code, setCode] = useState("");
+
+  const codeValid = !code || /^[A-Z0-9-]{4,12}$/.test(code);
 
   const submit = async () => {
-    if (!name.trim()) return;
+    if (!name.trim() || !codeValid) return;
     try {
       const created = await createClass.mutateAsync({
         name: name.trim(),
@@ -39,10 +42,11 @@ export function NewClassDialog({
         starting_bankroll: Number(bankroll) || 1000,
         semester_start: start || undefined,
         semester_end: end || undefined,
+        join_code: code || undefined,
       });
       toast.success("Class created — share the join code with your students");
       onOpenChange(false);
-      setName(""); setTerm(""); setBankroll("1000"); setEnd("");
+      setName(""); setTerm(""); setBankroll("1000"); setEnd(""); setCode("");
       navigate(`/instructor/classes/${created.id}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not create class");
@@ -102,10 +106,25 @@ export function NewClassDialog({
               You can add shorter betting windows or contests inside the class afterward.
             </p>
           </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="nc-code">Class code (optional)</Label>
+            <Input
+              id="nc-code"
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="SPM2020"
+              className="font-mono tracking-widest"
+            />
+            <p className="text-xs text-muted-foreground">
+              {codeValid
+                ? "Pick your own code students type to join, or leave blank for a random one."
+                : "Use 4–12 letters, numbers or dashes."}
+            </p>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button onClick={submit} disabled={createClass.isPending || !name.trim()}>
+          <Button onClick={submit} disabled={createClass.isPending || !name.trim() || !codeValid}>
             {createClass.isPending ? "Creating…" : "Create class"}
           </Button>
         </DialogFooter>
