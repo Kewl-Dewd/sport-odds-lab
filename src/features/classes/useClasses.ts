@@ -65,7 +65,9 @@ export function useRoster(classId: string | undefined) {
           .order("joined_at", { ascending: true }),
       );
       // The instructor's own seat exists only for student-view previews.
-      const members = all.filter((m) => m.member_role !== "instructor");
+      const members = all.filter(
+        (m) => m.member_role !== "instructor" && m.member_role !== "ta",
+      );
       if (members.length === 0) return [];
       const profiles = unwrap<ProfileRow[]>(
         await db
@@ -117,7 +119,7 @@ export function useCreateClass() {
       await db.from("class_members").insert({
         class_id: klass.id,
         user_id: user!.id,
-        member_role: "instructor",
+        member_role: "ta",
         bankroll: input.starting_bankroll,
       });
       return klass;
