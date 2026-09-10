@@ -26,7 +26,7 @@ export interface LiveBoardGame {
   lines: BoardLine[];
 }
 
-/** The four major North American leagues we run the classroom board on. */
+/** The major North American leagues we run the classroom board on. */
 export interface MajorLeague {
   key: string;
   label: string;
@@ -39,6 +39,7 @@ export const MAJOR_LEAGUES: MajorLeague[] = [
   { key: "usa-nba", label: "NBA", sport: "basketball", league: "usa-nba" },
   { key: "usa-nfl", label: "NFL", sport: "american-football", league: "usa-nfl" },
   { key: "usa-nhl", label: "NHL", sport: "ice-hockey", league: "usa-nhl" },
+  { key: "usa-mls", label: "MLS", sport: "football", league: "usa-mls" },
 ];
 
 export const DEFAULT_BOARD_LEAGUES = MAJOR_LEAGUES.map((l) => l.key);
