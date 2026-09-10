@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  useClass, useRegenerateJoinCode, useRemoveMember, useResetClassBets,
+  useClass, useRegenerateJoinCode, useRemoveMember, useResetClassBets, useSetJoinCode,
   useRoster, useUpdateClass, type RosterEntry,
 } from "@/features/classes/useClasses";
 import type { BetRow, BetJournalRow } from "@/features/db";
@@ -160,6 +160,8 @@ type Klass = NonNullable<ReturnType<typeof useClass>["data"]>;
 function SettingsTab({ klass }: { klass: Klass }) {
   const updateClass = useUpdateClass(klass.id);
   const regenCode = useRegenerateJoinCode(klass.id);
+  const setCode = useSetJoinCode(klass.id);
+  const [customCode, setCustomCode] = useState(klass.join_code);
   const resetBets = useResetClassBets(klass.id);
 
   const [form, setForm] = useState({
