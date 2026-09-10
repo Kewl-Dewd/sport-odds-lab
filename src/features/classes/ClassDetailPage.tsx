@@ -261,16 +261,44 @@ function SettingsTab({ klass }: { klass: Klass }) {
 
       <div className="space-y-4">
         <ClassInviteCard classId={klass.id} joinCode={klass.join_code} className={klass.name} />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => regenCode.mutate(undefined, {
-            onSuccess: () => toast.success("New join code generated"),
-            onError: (e) => toast.error(e.message),
-          })}
-        >
-          <RefreshCw className="mr-1.5 h-4 w-4" /> Regenerate course code
-        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Course code</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-2">
+              <Input
+                value={customCode}
+                onChange={(e) => setCustomCode(e.target.value.toUpperCase())}
+                className="w-40 font-mono tracking-widest"
+                placeholder="SPM2020"
+              />
+              <Button
+                size="sm"
+                disabled={setCode.isPending || customCode === klass.join_code}
+                onClick={() => setCode.mutate(customCode, {
+                  onSuccess: () => toast.success("Course code updated"),
+                  onError: (e) => toast.error(e.message),
+                })}
+              >
+                Save code
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => regenCode.mutate(undefined, {
+                  onSuccess: (c) => { setCustomCode(c.join_code); toast.success("New join code generated"); },
+                  onError: (e) => toast.error(e.message),
+                })}
+              >
+                <RefreshCw className="mr-1.5 h-4 w-4" /> Random
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Pick any code students type to join — 4–12 letters, numbers or dashes.
+            </p>
+          </CardContent>
+        </Card>
 
 
         <Card>
