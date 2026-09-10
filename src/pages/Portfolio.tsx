@@ -636,9 +636,9 @@ export default function Portfolio() {
 
             {/* Open Positions Table */}
             <Card>
-              <CardHeader><CardTitle className="text-lg">Open Bets</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-lg">My Open Bets</CardTitle></CardHeader>
               <CardContent>
-                {portfolio.holdings.length === 0 ? (
+                {book.openBets.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-6 text-center">
                     No open bets yet. <Link to="/markets" className="text-primary underline">Browse the board</Link> to place your first bet.
                   </p>
@@ -648,32 +648,32 @@ export default function Portfolio() {
                       <thead>
                         <tr className="border-b text-left text-muted-foreground">
                           <th className="pb-3 font-medium">Market</th>
-                          <th className="pb-3 font-medium">Outcome</th>
+                          <th className="pb-3 font-medium">Your pick</th>
+                          <th className="pb-3 font-medium text-right">Stake</th>
+                          <th className="pb-3 font-medium text-right">Odds</th>
+                          <th className="pb-3 font-medium text-right">To win</th>
                           <th className="pb-3 font-medium text-right">Payout if win</th>
-                          <th className="pb-3 font-medium text-right">Your odds</th>
-                          <th className="pb-3 font-medium text-right">Current odds</th>
-                          <th className="pb-3 font-medium text-right">Value</th>
-                          <th className="pb-3 font-medium text-right">P&L</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {positions.map((p) => (
-                          <tr key={p.outcomeId} className="border-b last:border-0">
-                            <td className="py-3 font-medium">
-                              <Link to={`/markets/${portfolio.holdings.find((h) => h.outcomeId === p.outcomeId)?.marketId}`} className="hover:text-primary transition-colors">
-                                {p.marketTitle}
-                              </Link>
-                            </td>
-                            <td className="py-3">{p.outcomeName}</td>
-                            <td className="py-3 text-right font-mono">${p.shares.toFixed(2)}</td>
-                            <td className="py-3 text-right font-mono">{toAmerican(p.costBasis / p.shares)}</td>
-                            <td className="py-3 text-right font-mono">{toAmerican(p.currentValue / p.shares)}</td>
-                            <td className="py-3 text-right font-mono">${p.currentValue.toFixed(2)}</td>
-                            <td className={cn("py-3 text-right font-mono font-medium", p.pnl >= 0 ? "price-up" : "price-down")}>
-                              {p.pnl >= 0 ? "+" : ""}${p.pnl.toFixed(2)} ({p.pnlPct > 0 ? "+" : ""}{p.pnlPct.toFixed(1)}%)
-                            </td>
-                          </tr>
-                        ))}
+                        {book.openBets.map((b) => {
+                          const stake = Number(b.stake ?? 0);
+                          const payout = Number(b.potential_payout ?? stake);
+                          return (
+                            <tr key={b.id} className="border-b last:border-0">
+                              <td className="py-3 font-medium">{b.market_title}</td>
+                              <td className="py-3">{b.selection}</td>
+                              <td className="py-3 text-right font-mono">{money(stake)}</td>
+                              <td className="py-3 text-right font-mono">
+                                {b.odds_decimal ? toAmerican(Number(b.odds_decimal)) : "—"}
+                              </td>
+                              <td className="py-3 text-right font-mono price-up">
+                                {money(Math.max(0, payout - stake))}
+                              </td>
+                              <td className="py-3 text-right font-mono">{money(payout)}</td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>
