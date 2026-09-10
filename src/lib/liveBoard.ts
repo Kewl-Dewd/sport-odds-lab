@@ -124,9 +124,9 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
   for (const [team, dec] of Object.entries(moneyline)) {
     lines.push({
       kind: "moneyline",
-      label: `${team} ML`,
+      label: team === "Draw" ? "Draw" : `${team} ML`,
       decimalOdds: dec,
-      side: team === event.home ? "home" : "away",
+      side: team === event.home ? "home" : team === event.away ? "away" : "draw",
     });
   }
   for (const side of ["home", "away"] as const) {
