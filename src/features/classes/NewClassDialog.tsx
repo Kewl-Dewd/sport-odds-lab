@@ -29,9 +29,12 @@ export function NewClassDialog({
   const [bankroll, setBankroll] = useState("1000");
   const [start, setStart] = useState(today);
   const [end, setEnd] = useState("");
+  const [code, setCode] = useState("");
+
+  const codeValid = !code || /^[A-Z0-9-]{4,12}$/.test(code);
 
   const submit = async () => {
-    if (!name.trim()) return;
+    if (!name.trim() || !codeValid) return;
     try {
       const created = await createClass.mutateAsync({
         name: name.trim(),
@@ -39,10 +42,11 @@ export function NewClassDialog({
         starting_bankroll: Number(bankroll) || 1000,
         semester_start: start || undefined,
         semester_end: end || undefined,
+        join_code: code || undefined,
       });
       toast.success("Class created — share the join code with your students");
       onOpenChange(false);
-      setName(""); setTerm(""); setBankroll("1000"); setEnd("");
+      setName(""); setTerm(""); setBankroll("1000"); setEnd(""); setCode("");
       navigate(`/instructor/classes/${created.id}`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not create class");
