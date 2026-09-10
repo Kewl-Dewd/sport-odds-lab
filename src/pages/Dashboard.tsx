@@ -50,6 +50,8 @@ export default function Dashboard() {
         <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? classroom.name} · {portfolio.displayName}</p>
       </div>
 
+      {!classesLoading && enrollments.length === 0 && <JoinClassCard />}
+
       {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
         <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm">
           ⚠️ <strong>Experiment notice:</strong> This classroom is running in
