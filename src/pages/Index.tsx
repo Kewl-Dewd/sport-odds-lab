@@ -110,7 +110,7 @@ export default function Index() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
                 <Link to="/auth?tab=signup">
-                  Start Betting <ArrowRight className="ml-1 h-4 w-4" />
+                  Start Learning <ArrowRight className="ml-1 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>

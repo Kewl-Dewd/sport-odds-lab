@@ -91,7 +91,7 @@ export function OnboardingModal({ onComplete }: { onComplete: () => void }) {
               </Button>
             ) : (
               <Button variant="hero" onClick={handleComplete} className="flex-1">
-                Got it — start betting
+                Got it — start learning
               </Button>
             )}
           </div>
