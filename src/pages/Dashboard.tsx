@@ -9,6 +9,7 @@ import { MarketNewsFeed } from "@/components/student/MarketNewsFeed";
 import { ClassActionTicker } from "@/components/student/ClassActionTicker";
 import { ReflectionForm } from "@/components/student/ReflectionForm";
 import { StudentScoreCard } from "@/components/student/StudentScoreCard";
+import { JoinClassCard } from "@/components/student/JoinClassCard";
 import { AssignedLearning } from "@/components/learn/AssignedLearning";
 import { useActiveClass } from "@/context/ClassContext";
 import { useStudentBook, useClassStandings } from "@/hooks/useStudentBook";
@@ -18,7 +19,7 @@ import { toAmerican } from "@/lib/oddsFormat";
 export default function Dashboard() {
   const { portfolio, topMovers, markets, classroom, ethicsSettings } = useMarket();
   const { mode } = useMode();
-  const { activeEnrollment } = useActiveClass();
+  const { activeEnrollment, enrollments, isLoading: classesLoading } = useActiveClass();
   const { showOnboarding, completeOnboarding } = useOnboarding();
 
   // Real money, read from the same bet records the instructor's book uses.
@@ -48,6 +49,8 @@ export default function Dashboard() {
         <h1 className="text-2xl md:text-3xl font-bold">Dashboard {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
         <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? classroom.name} · {portfolio.displayName}</p>
       </div>
+
+      {!classesLoading && enrollments.length === 0 && <JoinClassCard />}
 
       {ethicsSettings.enabled && ethicsSettings.studentsAwareOfManipulation && (
         <div className="rounded-lg bg-warning/10 border border-warning/30 p-3 text-sm">
