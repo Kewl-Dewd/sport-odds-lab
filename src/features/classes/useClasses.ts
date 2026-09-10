@@ -102,6 +102,7 @@ export function useCreateClass() {
       starting_bankroll: number;
       semester_start?: string;
       semester_end?: string;
+      join_code?: string;
     }) =>
     {
       const klass = unwrap<ClassRow>(
@@ -162,6 +163,34 @@ export function useRegenerateJoinCode(classId: string) {
         if (!error.message.includes("duplicate")) throw new Error(error.message);
       }
       throw new Error("Could not generate a unique join code");
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["classes"] }),
+  });
+}
+
+/** Instructor-chosen course code (e.g. "SPM2020"). Must be unique across classes. */
+export function useSetJoinCode(classId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (rawCode: string) => {
+      const code = rawCode.trim().toUpperCase();
+      if (!/^[A-Z0-9-]{4,12}$/.test(code)) {
+        throw new Error("Use 4–12 letters, numbers or dashes");
+      }
+      const { data, error } = await db
+        .from("classes")
+        .update({ join_code: code })
+        .eq("id", classId)
+        .select("*")
+        .single();
+      if (error) {
+        throw new Error(
+          error.message.includes("duplicate")
+            ? "That code is already taken — try another"
+            : error.message,
+        );
+      }
+      return data as ClassRow;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["classes"] }),
   });
