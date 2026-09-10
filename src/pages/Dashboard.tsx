@@ -19,7 +19,7 @@ import { toAmerican } from "@/lib/oddsFormat";
 export default function Dashboard() {
   const { portfolio, topMovers, markets, classroom, ethicsSettings } = useMarket();
   const { mode } = useMode();
-  const { activeEnrollment } = useActiveClass();
+  const { activeEnrollment, enrollments, isLoading: classesLoading } = useActiveClass();
   const { showOnboarding, completeOnboarding } = useOnboarding();
 
   // Real money, read from the same bet records the instructor's book uses.
