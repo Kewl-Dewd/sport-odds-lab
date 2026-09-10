@@ -559,6 +559,108 @@ There is no right answer and no grade for "correct" limits. You are graded on ho
       },
     ],
   },
+  {
+    key: "alberta-law",
+    title: "6. Rules and laws: betting in Alberta",
+    summary:
+      "Who is allowed to bet in Alberta, how the new iGaming Alberta Act changed the market in 2025–26, the advertising and integrity rules, and the player protections you are legally owed.",
+    modules: [
+      {
+        key: "ab-legal-basics",
+        title: "Who can legally bet in Alberta, and on what",
+        minutes: 4,
+        kind: "lesson",
+        body: `## The legal basics
+
+Gambling in Canada is governed by the **Criminal Code**, which makes gambling illegal *unless* a province conducts and manages it. So every legal bet you can place in Alberta exists because the province authorised it.
+
+### The age rule
+- You must be **18 or older** to gamble in Alberta — casinos, lottery, retail sportsbooks and online. (Ontario, BC and most other provinces are 19.)
+- Operators must verify identity and age before you can deposit or bet. Using someone else's account, or letting a minor use yours, breaks the operator's terms and provincial rules.
+
+### Single-event sports betting
+Until 2021 Canadians could only bet **parlays** on sport — you had to combine multiple games. Federal **Bill C-218** amended the Criminal Code in August 2021 to allow **single-event wagering**. That one change created the modern Canadian sports-betting market: single-game moneylines, spreads, totals, player props and live betting.
+
+### Who runs gambling in Alberta
+- **AGLC** (Alberta Gaming, Liquor and Cannabis) is the regulator and licensing body.
+- **PlayAlberta.ca** was, for years, the *only* legal online sportsbook and casino in the province — run by AGLC itself.
+- Everything else advertising to Albertans was **grey market**: offshore operators, legal to use as a player but not licensed or accountable here.
+
+### What is *not* legal
+- Betting with an unregistered bookmaker, or acting as one (taking bets from friends for profit).
+- Betting on an event you can influence — see the integrity module.
+- Match-fixing and cheating at play are Criminal Code offences, not just league violations.
+
+> In this class you bet simulated dollars on live prices. Nothing here is a real wager — but the rules below are the rules that would apply the moment it was.`,
+      },
+      {
+        key: "ab-igaming-act",
+        title: "What's new: the iGaming Alberta Act and the open market",
+        minutes: 4,
+        kind: "lesson",
+        body: `## Alberta's market changed in 2026
+
+This is the newest piece of law in the course, so it is worth knowing precisely.
+
+### The legislation
+In spring 2025 the Alberta legislature passed **Bill 48, the iGaming Alberta Act**, which also amended the *Gaming, Liquor and Cannabis Act*. It set up the market structure Alberta uses today.
+
+### What it created
+- The **Alberta iGaming Corporation (AiGC)** — a new provincial corporation that "conducts and manages" the private online market, which is the constitutional requirement under the Criminal Code.
+- **AGLC as regulator** — it registers and polices private operators, and enforces responsible-gambling and advertising standards.
+- A path for **grey-market operators to become legal**, on the condition they register, pay into the provincial share, and meet player-protection standards.
+
+### Go-live
+Alberta's regulated online market **opened on 13 July 2026** with roughly **50 AGLC-registered operators** offering real-money sports betting and casino games. Alberta became the **second Canadian province** with an open, competitive iGaming market — Ontario was first, in April 2022. PlayAlberta continues to operate alongside the private books.
+
+### Why it matters to a bettor
+- **Competition changes prices.** More books means more line shopping, more promos, and slightly better average pricing — which is exactly the market-efficiency argument from Topic 2.
+- **Registration means recourse.** A registered operator has to hold your funds properly, honour settled bets, and give you self-exclusion and limit tools. An offshore book owes you nothing.
+- **Check the register before you deposit.** AGLC publishes the list of registered operators; if a site is not on it, it is not accountable in Alberta.
+
+### Questions to think about
+1. Alberta captured tax revenue that was previously leaving the province. What does the province owe players in return?
+2. Open markets increase advertising volume. Who bears that cost?`,
+      },
+      {
+        key: "ab-integrity-ads",
+        title: "Integrity rules, advertising limits and player protections",
+        minutes: 4,
+        kind: "lesson",
+        body: `## The rules around the bet
+
+### Integrity: who may never bet
+Athletes, coaches, officials, team staff and league employees are barred from betting on their own sport — by league rule and, where inside information is involved, potentially by law. The offences that matter:
+- **Match-fixing / cheating at play** is a Criminal Code offence.
+- **Using or selling inside information** (an unreported injury, a lineup decision) is prohibited by every league and by operator terms; accounts get frozen and bets voided.
+- Operators must report suspicious betting patterns to the regulator and to integrity monitors.
+
+If you play a varsity or junior sport, assume you may **not** bet on that sport at all — check your league's policy before you ever open a real account.
+
+### Advertising rules
+Canadian advertising standards and provincial rules restrict how books may market:
+- No advertising targeted at people under the legal age, and no use of youth-appealing imagery or characters.
+- Ontario banned **athletes and celebrities who appeal to minors** from gambling ads; Alberta's regulated market applies comparable standards through AGLC.
+- **Inducements, bonuses and free-bet offers** cannot be advertised to the general public in Ontario's model — they may only be shown to players who opt in. Expect similar tightening as Alberta's market matures.
+- Ads must carry responsible-gambling messaging and a helpline.
+
+Rules in this space are still moving. Federal proposals to standardise gambling-ad limits nationally have been debated but not passed as of this course.
+
+### What a registered operator must give you
+Every AGLC-registered site must offer:
+- **Deposit, loss and time limits** you set yourself.
+- **Self-exclusion** — a binding block on your account for a chosen period.
+- **Reality checks** — session-time reminders.
+- Visible links to help, including Alberta's **GameSense** program and the **Alberta Problem Gambling Helpline: 1-866-332-2322** (24/7, free, confidential).
+
+### Quick check
+- Legal age in Alberta: **18**.
+- Single-event betting legal since: **August 2021** (Bill C-218).
+- Regulated open market live since: **13 July 2026** (iGaming Alberta Act).
+- Regulator: **AGLC**. Market operator: **Alberta iGaming Corporation**.`,
+      },
+    ],
+  },
 ];
 
 export const CURRICULUM_MODULES: (CurriculumModule & { topic: string; topicTitle: string })[] =
