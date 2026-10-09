@@ -338,6 +338,7 @@ export function TradeTicketModal({
             {isPaywalled ? (
               <AccessRequired action="place bets" />
             ) : (
+              <div className="space-y-3">
               {needsForecast && (
                 <div className="rounded-lg border p-3 space-y-3">
                   <div>
@@ -371,6 +372,7 @@ export function TradeTicketModal({
               <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0 || (needsForecast && !forecastValid)} onClick={() => setStep("confirm")}>
                 Review {type === "BUY" ? "bet" : "cash out"}<ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
+              </div>
             )}
 
           </div>
