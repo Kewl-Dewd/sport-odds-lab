@@ -114,15 +114,25 @@ export type Database = {
         Row: {
           bet_type: string
           class_id: string | null
+          closing_captured_at: string | null
+          closing_no_vig_prob: number | null
           closing_odds: number | null
+          clv_pct: number | null
+          event_starts_at: string | null
+          expected_value: number | null
+          external_event_id: string | null
+          forecast_prob: number | null
           id: string
+          implied_prob: number | null
           market_id: string
           market_title: string
           mode: string
+          no_vig_prob: number | null
           odds_decimal: number | null
           payout: number | null
           placed_at: string
           potential_payout: number | null
+          published_market_id: string | null
           raw: Json | null
           round_id: string | null
           selection: string
@@ -134,15 +144,25 @@ export type Database = {
         Insert: {
           bet_type?: string
           class_id?: string | null
+          closing_captured_at?: string | null
+          closing_no_vig_prob?: number | null
           closing_odds?: number | null
+          clv_pct?: number | null
+          event_starts_at?: string | null
+          expected_value?: number | null
+          external_event_id?: string | null
+          forecast_prob?: number | null
           id: string
+          implied_prob?: number | null
           market_id: string
           market_title?: string
           mode: string
+          no_vig_prob?: number | null
           odds_decimal?: number | null
           payout?: number | null
           placed_at?: string
           potential_payout?: number | null
+          published_market_id?: string | null
           raw?: Json | null
           round_id?: string | null
           selection?: string
@@ -154,15 +174,25 @@ export type Database = {
         Update: {
           bet_type?: string
           class_id?: string | null
+          closing_captured_at?: string | null
+          closing_no_vig_prob?: number | null
           closing_odds?: number | null
+          clv_pct?: number | null
+          event_starts_at?: string | null
+          expected_value?: number | null
+          external_event_id?: string | null
+          forecast_prob?: number | null
           id?: string
+          implied_prob?: number | null
           market_id?: string
           market_title?: string
           mode?: string
+          no_vig_prob?: number | null
           odds_decimal?: number | null
           payout?: number | null
           placed_at?: string
           potential_payout?: number | null
+          published_market_id?: string | null
           raw?: Json | null
           round_id?: string | null
           selection?: string
@@ -177,6 +207,13 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bets_published_market_id_fkey"
+            columns: ["published_market_id"]
+            isOneToOne: false
+            referencedRelation: "published_markets"
             referencedColumns: ["id"]
           },
           {
@@ -645,6 +682,8 @@ export type Database = {
           away_team: string
           bet_kinds: string[]
           class_id: string
+          closing_captured_at: string | null
+          closing_snapshot: Json | null
           commence_at: string | null
           created_at: string
           external_event_id: string
@@ -653,6 +692,8 @@ export type Database = {
           league_name: string
           league_slug: string
           note: string
+          opening_captured_at: string | null
+          opening_snapshot: Json | null
           published_by: string | null
           round_id: string | null
           sport_name: string
@@ -665,6 +706,8 @@ export type Database = {
           away_team?: string
           bet_kinds?: string[]
           class_id: string
+          closing_captured_at?: string | null
+          closing_snapshot?: Json | null
           commence_at?: string | null
           created_at?: string
           external_event_id: string
@@ -673,6 +716,8 @@ export type Database = {
           league_name?: string
           league_slug?: string
           note?: string
+          opening_captured_at?: string | null
+          opening_snapshot?: Json | null
           published_by?: string | null
           round_id?: string | null
           sport_name?: string
@@ -685,6 +730,8 @@ export type Database = {
           away_team?: string
           bet_kinds?: string[]
           class_id?: string
+          closing_captured_at?: string | null
+          closing_snapshot?: Json | null
           commence_at?: string | null
           created_at?: string
           external_event_id?: string
@@ -693,6 +740,8 @@ export type Database = {
           league_name?: string
           league_slug?: string
           note?: string
+          opening_captured_at?: string | null
+          opening_snapshot?: Json | null
           published_by?: string | null
           round_id?: string | null
           sport_name?: string
@@ -957,6 +1006,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      class_analysis_leaderboard: {
+        Args: { _class_id: string; _round_id?: string }
+        Returns: {
+          avg_clv_pct: number
+          brier: number
+          clv_count: number
+          display_name: string
+          forecasts: number
+          journal_pct: number
+          positions: number
+          user_id: string
+        }[]
+      }
       class_book_summary: {
         Args: { _class_id: string }
         Returns: {
