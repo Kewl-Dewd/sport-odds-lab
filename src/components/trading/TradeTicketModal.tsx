@@ -16,6 +16,8 @@ import { money } from "@/lib/money";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { useLearningGate } from "@/hooks/useLearningGate";
+import { setForecastMeta } from "@/lib/forecastStore";
+import { expectedValue, noVigProb } from "@/lib/forecastMath";
 
 
 interface TradeTicketModalProps {
@@ -40,6 +42,7 @@ export function TradeTicketModal({
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   // For BUY this is a dollar stake; for SELL it's how much of the position to cash out (dollars of payout).
   const [amount, setAmount] = useState("");
+  const [forecast, setForecast] = useState("");
 
   const [step, setStep] = useState<Step>("entry");
   const [lastTrade, setLastTrade] = useState<any>(null);
@@ -49,7 +52,7 @@ export function TradeTicketModal({
   const currentOutcome = market?.outcomes.find((o) => o.id === outcomeId);
 
   useEffect(() => {
-    if (open) { setType(initialType); setAmount(""); setStep("entry"); setLastTrade(null); }
+    if (open) { setType(initialType); setAmount(""); setForecast(""); setStep("entry"); setLastTrade(null); }
   }, [open, initialType]);
 
   const dollars = Math.max(0, Number(amount) || 0);
@@ -104,13 +107,38 @@ export function TradeTicketModal({
       })()
     : 0;
 
+  // Forecast analysis: the student's own win chance vs. the market.
+  const forecastNum = forecast.trim() === "" ? NaN : Number(forecast);
+  const forecastValid = Number.isFinite(forecastNum) && forecastNum >= 0 && forecastNum <= 100;
+  const forecastProb = forecastValid ? forecastNum / 100 : null;
+  const sideImplied = currentOutcome?.price ?? 0;
+  const fairProb = market ? noVigProb(sideImplied, market.outcomes.map((o) => o.price)) : 0;
+  const lockedDecimal = sideImplied > 0 ? 1 / sideImplied : 0;
+  const ev = forecastProb !== null && dollars > 0 ? expectedValue(dollars, lockedDecimal, forecastProb) : null;
+  const needsForecast = type === "BUY";
+
   const handleConfirm = () => {
+    if (needsForecast && forecastProb === null) {
+      toast.error("Enter your forecast first");
+      return;
+    }
     if (type === "BUY" && !gate.cleared) {
       toast.error("Finish \"Before you start\" in Learning first");
       return;
     }
     const result = trade(marketId, outcomeId, qty, type);
     if (result) {
+      if (type === "BUY" && forecastProb !== null) {
+        const meta = market?.metadata as { externalEventId?: string } | undefined;
+        setForecastMeta((result as { id: string }).id, {
+          forecast_prob: forecastProb,
+          implied_prob: result.pricePerShare,
+          no_vig_prob: fairProb,
+          expected_value: expectedValue(Math.abs(result.totalCost), 1 / result.pricePerShare, forecastProb),
+          external_event_id: meta?.externalEventId ?? null,
+          event_starts_at: market?.startTime ?? null,
+        });
+      }
       setLastTrade(result);
       setStep("success");
       toast.success(`${type === "BUY" ? "Bet placed" : "Cashed out"} · $${Math.abs(result.totalCost).toFixed(2)} on ${outcomeName}`, {
@@ -310,7 +338,37 @@ export function TradeTicketModal({
             {isPaywalled ? (
               <AccessRequired action="place bets" />
             ) : (
-              <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0} onClick={() => setStep("confirm")}>
+              {needsForecast && (
+                <div className="rounded-lg border p-3 space-y-3">
+                  <div>
+                    <label htmlFor="forecast" className="text-sm font-medium">Your forecast: chance {outcomeName} wins (%)</label>
+                    <Input id="forecast" type="number" inputMode="decimal" min={0} max={100} placeholder="e.g. 55"
+                      value={forecast} onChange={(e) => setForecast(e.target.value)} className="mt-1" />
+                    {forecast !== "" && !forecastValid && <p className="text-xs text-destructive mt-1">Enter a number from 0 to 100.</p>}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-md bg-muted/50 p-2">
+                      <p className="text-[11px] text-muted-foreground">Market implied</p>
+                      <p className="font-mono font-semibold">{(sideImplied * 100).toFixed(1)}%</p>
+                    </div>
+                    <div className="rounded-md bg-muted/50 p-2">
+                      <p className="text-[11px] text-muted-foreground">No-vig fair</p>
+                      <p className="font-mono font-semibold">{(fairProb * 100).toFixed(1)}%</p>
+                    </div>
+                    <div className="rounded-md bg-muted/50 p-2">
+                      <p className="text-[11px] text-muted-foreground">EV at your forecast</p>
+                      <p className={cn("font-mono font-semibold", ev !== null && (ev >= 0 ? "text-success" : "text-destructive"))}>
+                        {ev === null ? "—" : `${ev >= 0 ? "+" : "−"}${money(Math.abs(ev))}`}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">
+                    No-vig removes the book's margin using every side of this game. EV is the average profit or loss
+                    on this stake if your forecast is right. Your forecast is saved and scored for accuracy.
+                  </p>
+                </div>
+              )}
+              <Button variant={type === "BUY" ? "success" : "destructive"} className="w-full" disabled={!validation.valid || qty <= 0 || (needsForecast && !forecastValid)} onClick={() => setStep("confirm")}>
                 Review {type === "BUY" ? "bet" : "cash out"}<ArrowRight className="ml-1.5 h-4 w-4" />
               </Button>
             )}
