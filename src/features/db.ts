@@ -64,6 +64,16 @@ export interface BetRow {
   placed_at: string;
   settled_at: string | null;
   raw: unknown;
+  forecast_prob?: number | null;
+  implied_prob?: number | null;
+  no_vig_prob?: number | null;
+  expected_value?: number | null;
+  closing_no_vig_prob?: number | null;
+  clv_pct?: number | null;
+  closing_captured_at?: string | null;
+  external_event_id?: string | null;
+  event_starts_at?: string | null;
+  published_market_id?: string | null;
 }
 
 export interface BetJournalRow {
@@ -124,7 +134,7 @@ export function unwrap<T>(result: { data: T | null; error: { message: string } |
 // ── Instructor market publishing, rounds & contests ───────────────
 
 export type RoundKind = "semester" | "weekend" | "round";
-export type RoundScoring = "profit" | "roi" | "wins";
+export type RoundScoring = "brier" | "clv" | "journal" | "profit" | "roi" | "wins";
 
 export interface ClassRoundRow {
   id: string;

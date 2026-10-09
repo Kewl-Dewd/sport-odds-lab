@@ -14,7 +14,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { fetchEvents, fetchSports, type OddsApiEvent, type OddsApiSport } from "@/lib/oddsApi";
+import { moneylineSnapshot } from "@/lib/liveBoard";
+import { db } from "@/features/db";
+import { fetchEvents, fetchOdds, fetchSports, type OddsApiEvent, type OddsApiSport } from "@/lib/oddsApi";
 import { useUpdateClass } from "@/features/classes/useClasses";
 import {
   usePublishedMarkets, usePublishMarkets, useRounds, useUnpublishMarket,
@@ -79,6 +81,18 @@ export function ClassMarketsTab({ klass }: { klass: ClassRow }) {
     const picks = events.filter((e) => selected.has(e.id));
     if (picks.length === 0) return toast.error("Select at least one event.");
     try {
+      // Opening price snapshot: the line at the moment the game is published.
+      const openings = await Promise.all(
+        picks.map(async (e) => {
+          try {
+            const snap = moneylineSnapshot(await fetchOdds(e.id), e.home, e.away);
+            return Object.keys(snap).length >= 2 ? snap : null;
+          } catch {
+            return null;
+          }
+        }),
+      );
+      const now = new Date().toISOString();
       await publish.mutateAsync(
         picks.map((e) => ({
           external_event_id: String(e.id),
@@ -94,6 +108,19 @@ export function ClassMarketsTab({ klass }: { klass: ClassRow }) {
           bet_kinds: betKinds.length ? betKinds : ["moneyline"],
           status: "published" as const,
         })),
+      );
+      // Store the opening line once; republishing never overwrites it.
+      await Promise.all(
+        picks.map((e, i) =>
+          openings[i]
+            ? db
+                .from("published_markets")
+                .update({ opening_snapshot: { moneyline: openings[i] }, opening_captured_at: now })
+                .eq("class_id", classId)
+                .eq("external_event_id", String(e.id))
+                .is("opening_snapshot", null)
+            : Promise.resolve(),
+        ),
       );
       toast.success(`Published ${picks.length} market${picks.length === 1 ? "" : "s"} to students.`);
       setSelected(new Set());

@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useMarket } from "@/context/MarketContext";
 import { useActiveMembership } from "@/features/classes/useClasses";
 import { db, type BetRow } from "@/features/db";
+import { getForecastMeta } from "@/lib/forecastStore";
 
 /** Fields that change after placement — re-upsert when these move. */
 function syncStamp(status: string, payout: number | undefined): string {
@@ -87,7 +88,9 @@ export function PersistenceBridge() {
       if (t.userId !== portfolio.userId) continue;
       if (syncedRef.current.has(t.id)) continue;
       const isBuy = t.type === "BUY";
+      const meta = isBuy ? getForecastMeta(t.id) : undefined;
       rows.push({
+        ...(meta ?? {}),
         id: t.id,
         class_id: classId,
         user_id: user.id,

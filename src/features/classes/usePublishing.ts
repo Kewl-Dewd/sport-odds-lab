@@ -191,7 +191,7 @@ export interface ContestStanding {
 export function buildStandings(
   bets: BetRow[],
   entries: RoundEntryRow[],
-  scoring: "profit" | "roi" | "wins",
+  scoring: string,
 ): ContestStanding[] {
   const byUser = new Map<string, ContestStanding>();
   const blank = (userId: string): ContestStanding => ({

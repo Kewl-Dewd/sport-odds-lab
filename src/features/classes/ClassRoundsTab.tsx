@@ -1,3 +1,4 @@
+import { ANALYSIS_MODES, AnalysisStandings, SCORING_LABELS } from "@/features/classes/AnalysisStandings";
 // Instructor: betting windows (weekend / semester / custom rounds) and contests.
 import { useState } from "react";
 import { Plus, Trash2, Trophy } from "lucide-react";
@@ -39,7 +40,7 @@ export function ClassRoundsTab({ classId, startingBankroll }: { classId: string;
   const [ends, setEnds] = useState(toLocalInput(new Date(Date.now() + 3 * 864e5).toISOString()));
   const [bankroll, setBankroll] = useState(startingBankroll);
   const [isContest, setIsContest] = useState(true);
-  const [scoring, setScoring] = useState<RoundScoring>("profit");
+  const [scoring, setScoring] = useState<RoundScoring>("brier");
   const [maxStake, setMaxStake] = useState("");
   const [maxBets, setMaxBets] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -116,9 +117,10 @@ export function ClassRoundsTab({ classId, startingBankroll }: { classId: string;
             <Select value={scoring} onValueChange={(v) => setScoring(v as RoundScoring)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="profit">Net profit</SelectItem>
-                <SelectItem value="roi">ROI</SelectItem>
-                <SelectItem value="wins">Winning bets</SelectItem>
+                <SelectItem value="brier">{SCORING_LABELS.brier}</SelectItem>
+                <SelectItem value="clv">{SCORING_LABELS.clv}</SelectItem>
+                <SelectItem value="journal">{SCORING_LABELS.journal}</SelectItem>
+                <SelectItem value="profit">{SCORING_LABELS.profit}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -201,12 +203,15 @@ function StandingsCard({ classId, round }: { classId: string; round: ClassRoundR
     return m?.profile?.display_name ?? m?.profile?.email ?? uid.slice(0, 8);
   };
   const standings = buildStandings(bets, entries, round.scoring);
+  if (ANALYSIS_MODES.includes(round.scoring)) {
+    return <AnalysisStandings classId={classId} round={round} nameFor={(uid, fb) => nameFor(uid) || fb} />;
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">{round.name} — standings</CardTitle>
-        <CardDescription>Scored by {round.scoring}. {entries.length} entrant(s).</CardDescription>
+        <CardDescription>Scored by {SCORING_LABELS[round.scoring] ?? round.scoring}. {entries.length} entrant(s).</CardDescription>
       </CardHeader>
       <CardContent>
         {standings.length === 0 ? (
