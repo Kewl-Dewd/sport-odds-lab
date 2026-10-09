@@ -8,6 +8,7 @@ import { EducationProvider } from "@/context/EducationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ModeProvider } from "@/context/ModeContext";
 import { ClassProvider } from "@/context/ClassContext";
+import Support from "./pages/Support";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { LearningNudgeBar } from "@/components/education/LearningNudges";
@@ -67,6 +68,7 @@ const App = () => (
                     <Route path="/markets/:id" element={<ProtectedRoute requireMode><RequireAccess><MarketDetail /></RequireAccess></ProtectedRoute>} />
                     <Route path="/portfolio" element={<ProtectedRoute requireMode><RequireAccess><Portfolio /></RequireAccess></ProtectedRoute>} />
                     <Route path="/leaderboard" element={<ProtectedRoute requireMode><RequireAccess><Leaderboard /></RequireAccess></ProtectedRoute>} />
+                    <Route path="/support" element={<Support />} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
                     <Route path="/instructor" element={<Navigate to="/instructor/classes" replace />} />

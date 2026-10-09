@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { Navbar } from "./Navbar";
 import { MobileTabBar } from "./MobileTabBar";
 import { AccessBanner } from "@/components/access/AccessGate";
@@ -37,8 +37,14 @@ export function AppLayout() {
       </main>
 
       <footer className="border-t py-6">
-        <div className="container text-center text-xs sm:text-sm text-muted-foreground">
-          © 2026 Avason Systems · Classroom Sportsbook Simulator
+        <div className="container text-center text-xs sm:text-sm text-muted-foreground space-y-2">
+          <p className="max-w-3xl mx-auto">
+            Educational simulation for post-secondary coursework. Virtual funds only, with no
+            cash value. Not affiliated with any sportsbook. If gambling is affecting you or
+            someone you know, see{" "}
+            <Link to="/support" className="underline text-primary">Support Resources</Link>.
+          </p>
+          <p>© 2026 Avason Systems · Sports Market Lab</p>
         </div>
       </footer>
 
