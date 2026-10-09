@@ -159,6 +159,11 @@ function parseBook(payload: unknown, event: OddsApiEvent): { moneyline: Record<s
   return { moneyline, lines };
 }
 
+/** Averaged moneyline (team name / "Draw" -> decimal odds) from a raw odds payload. */
+export function moneylineSnapshot(payload: unknown, home: string, away: string): Record<string, number> {
+  return parseBook(payload, { home, away } as OddsApiEvent).moneyline;
+}
+
 /** Fetch a handful of upcoming games that actually have priced lines. */
 export async function loadLiveBoard(opts?: {
   /** League keys from MAJOR_LEAGUES; defaults to all four. */

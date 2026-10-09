@@ -79,8 +79,23 @@ export function ClassMarketsTab({ klass }: { klass: ClassRow }) {
     const picks = events.filter((e) => selected.has(e.id));
     if (picks.length === 0) return toast.error("Select at least one event.");
     try {
+      // Opening price snapshot: the line at the moment the game is published.
+      const openings = await Promise.all(
+        picks.map(async (e) => {
+          try {
+            const snap = moneylineSnapshot(await fetchOdds(e.id), e.home, e.away);
+            return Object.keys(snap).length >= 2 ? snap : null;
+          } catch {
+            return null;
+          }
+        }),
+      );
+      const now = new Date().toISOString();
       await publish.mutateAsync(
-        picks.map((e) => ({
+        picks.map((e, i) => ({
+          ...(openings[i] && !existingIds.has(String(e.id))
+            ? { opening_snapshot: { moneyline: openings[i] }, opening_captured_at: now }
+            : {}),
           external_event_id: String(e.id),
           round_id: roundId === "none" ? null : roundId,
           sport_slug: e.sport?.slug ?? sport,

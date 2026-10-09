@@ -24,6 +24,9 @@ import {
 import { BookSummaryCard } from "@/features/classes/BookSummaryCard";
 import { db, type ClassRoundRow, type PublishedMarketRow } from "@/features/db";
 import { extractMoneyline, fetchOdds } from "@/lib/oddsApi";
+import { moneylineSnapshot } from "@/lib/liveBoard";
+import { expectedValue, noVigProb } from "@/lib/forecastMath";
+import { useLearningGate } from "@/hooks/useLearningGate";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function ClassBoardPage() {
@@ -171,12 +174,21 @@ function PublishedMarketCard({
   const [pick, setPick] = useState<string | null>(null);
   const [stake, setStake] = useState("25");
   const [placing, setPlacing] = useState(false);
+  const [forecast, setForecast] = useState("");
+  const gate = useLearningGate();
 
   const loadOdds = async () => {
     setLoading(true);
     try {
       const odds = await fetchOdds(market.external_event_id);
-      setLines(extractMoneyline(odds));
+      const snap = moneylineSnapshot(odds, market.home_team, market.away_team);
+      const entries = Object.entries(snap);
+      if (entries.length >= 2) {
+        const sum = entries.reduce((t, [, d]) => t + 1 / d, 0);
+        setLines(entries.map(([outcome, decimal]) => ({ outcome, decimal, implied: 1 / decimal / sum })));
+      } else {
+        setLines(extractMoneyline(odds));
+      }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Could not load odds");
     } finally {
@@ -190,6 +202,13 @@ function PublishedMarketCard({
     if (!line) return;
     const amount = Number(stake);
     if (!amount || amount <= 0) return toast.error("Enter a stake.");
+    if (!gate.cleared) return toast.error('Finish "Before you start" in Learning first.');
+    const fc = Number(forecast);
+    if (forecast.trim() === "" || !Number.isFinite(fc) || fc < 0 || fc > 100) {
+      return toast.error("Enter your forecast (0–100%) first.");
+    }
+    const forecastProb = fc / 100;
+    const allImplied = lines.map((l) => 1 / l.decimal);
     if (round?.max_stake_per_bet && amount > Number(round.max_stake_per_bet)) {
       return toast.error(`Max stake for this window is $${round.max_stake_per_bet}.`);
     }
@@ -212,6 +231,13 @@ function PublishedMarketCard({
         potential_payout: amount * line.decimal,
         status: "open",
         raw: { source: "class-board", published_market_id: market.id },
+        forecast_prob: forecastProb,
+        implied_prob: 1 / line.decimal,
+        no_vig_prob: noVigProb(1 / line.decimal, allImplied),
+        expected_value: expectedValue(amount, line.decimal, forecastProb),
+        external_event_id: market.external_event_id,
+        event_starts_at: market.commence_at,
+        published_market_id: market.id,
       });
       if (error) throw new Error(error.message);
       if (entryId && bankroll !== null) {
@@ -219,6 +245,7 @@ function PublishedMarketCard({
       }
       toast.success(`Bet placed: ${pick} for $${amount.toFixed(2)}`);
       setPick(null);
+      setForecast("");
       qc.invalidateQueries({ queryKey: ["bets"] });
       qc.invalidateQueries({ queryKey: ["round-entries"] });
     } catch (e) {
@@ -275,13 +302,34 @@ function PublishedMarketCard({
           </p>
         )}
 
+        {pick && canBet && lines && (() => {
+          const line = lines.find((l) => l.outcome === pick);
+          if (!line) return null;
+          const imp = 1 / line.decimal;
+          const fair = noVigProb(imp, lines.map((l) => 1 / l.decimal));
+          const fc = Number(forecast);
+          const ok = forecast.trim() !== "" && Number.isFinite(fc) && fc >= 0 && fc <= 100;
+          const ev = ok && Number(stake) > 0 ? expectedValue(Number(stake), line.decimal, fc / 100) : null;
+          return (
+            <div className="space-y-2 rounded-lg border p-3">
+              <Label className="text-xs">Your forecast: chance {pick} wins (%)</Label>
+              <Input className="w-28" type="number" min={0} max={100} placeholder="e.g. 55" value={forecast} onChange={(e) => setForecast(e.target.value)} />
+              <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                <div className="rounded bg-muted/50 p-2"><p className="text-muted-foreground">Market implied</p><p className="font-mono font-semibold">{(imp * 100).toFixed(1)}%</p></div>
+                <div className="rounded bg-muted/50 p-2"><p className="text-muted-foreground">No-vig fair</p><p className="font-mono font-semibold">{(fair * 100).toFixed(1)}%</p></div>
+                <div className="rounded bg-muted/50 p-2"><p className="text-muted-foreground">EV at forecast</p><p className="font-mono font-semibold">{ev === null ? "—" : `${ev >= 0 ? "+" : "−"}$${Math.abs(ev).toFixed(2)}`}</p></div>
+              </div>
+            </div>
+          );
+        })()}
+
         {pick && canBet && (
           <div className="flex items-end gap-2">
             <div>
               <Label className="text-xs">Stake</Label>
               <Input className="w-28" type="number" value={stake} onChange={(e) => setStake(e.target.value)} />
             </div>
-            <Button size="sm" onClick={placeBet} disabled={placing}>
+            <Button size="sm" onClick={placeBet} disabled={placing || forecast.trim() === ""}>
               Place bet on {pick}
             </Button>
           </div>
