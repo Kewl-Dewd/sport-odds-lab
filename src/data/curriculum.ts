@@ -11,6 +11,9 @@
 
 export type CurriculumKind = "lesson" | "assignment" | "rg";
 
+/** Lessons a student must acknowledge before placing their first position. */
+export const GATE_LESSON_KEYS = ["rg-risks", "rg-warning-signs"];
+
 export interface CurriculumModule {
   key: string;
   title: string;
@@ -30,8 +33,98 @@ export interface CurriculumTopic {
 
 export const CURRICULUM: CurriculumTopic[] = [
   {
+    key: "responsible-play",
+    title: "1. Before you start: the real-world risks",
+    summary:
+      "Required module: the real-world risks, the warning signs, and where to get help.",
+    modules: [
+      {
+        key: "rg-risks",
+        title: "The real-world risks behind the simulation",
+        minutes: 4,
+        kind: "rg",
+        requiresAck: true,
+        body: `## This is required reading
+
+The app is simulated. The behaviour it teaches is not.
+
+### What the research says
+- Roughly **1%** of adults meet the criteria for gambling disorder, and another **2–3%** experience problem-gambling harms (National Council on Problem Gambling).
+- **Young men aged 18–24** are the highest-risk demographic for sports betting harm — the same group most likely to be in this class.
+- Harm concentrates: a small minority of accounts generates most of the losses on commercial books.
+- Sports betting apps are designed for engagement — push notifications, same-game parlays, live betting, deposit bonuses. Every one of those features increases frequency, and frequency multiplies the house edge.
+
+### The maths of the house edge
+At standard \u2212110 pricing the book keeps roughly 4.5–5% of every dollar wagered over time. Parlays are far worse. There is no strategy that removes the edge; there is only being right often enough to beat it, which almost nobody is.
+
+### Rules that actually protect people
+- Bet only money you have already decided you can lose.
+- Set a hard budget and a time limit before you start, not during.
+- Never bet to recover losses.
+- Never bet with borrowed money or credit.
+- Do not bet while drinking, angry, or after a bad day.
+- Keep it a small part of how you enjoy sport.
+
+By acknowledging this module you confirm you have read it and understand that no betting strategy overcomes the house edge over time.`,
+      },
+      {
+        key: "rg-warning-signs",
+        title: "Warning signs and how to help someone",
+        minutes: 4,
+        kind: "rg",
+        requiresAck: true,
+        body: `## Know the signs
+
+In yourself or a friend:
+- Betting more, or more often, than intended.
+- Chasing losses with bigger bets.
+- Hiding bets, or lying about how much or how often.
+- Borrowing money, selling things, or missing bills to bet.
+- Restlessness or irritability when trying to cut back.
+- Betting to escape stress, loneliness or low mood.
+- Missing classes, work or commitments because of betting.
+- Relationships suffering; people expressing concern.
+
+### If it's you
+Take a break. Use self-exclusion and deposit limits — every licensed operator must offer them. Tell one person you trust. Call the helpline. None of this requires you to have hit rock bottom first.
+
+### If it's a friend
+- Pick a private moment and be direct without accusing: *"I've noticed you've been betting a lot — how are you doing?"*
+- Listen instead of lecturing; shame drives it underground.
+- Do not lend money or cover losses. It extends the problem.
+- Offer to help find support, and share the helpline.
+- Look after yourself too — family and friends can call the same helplines.
+
+### Get help (free, confidential, 24/7)
+- **1-800-GAMBLER** (1-800-426-2537) — US National Problem Gambling Helpline; text or chat also available.
+- **ncpgambling.org** — National Council on Problem Gambling: screening tools and state-by-state resources.
+- **ConnexOntario 1-866-531-2600** / **responsiblegambling.org** — Canadian support and the Responsible Gambling Council.
+- **gamblersanonymous.org** — peer support meetings, in person and online.
+- **Gam-Anon** — support for family and friends.
+
+Campus counselling services also handle this and are usually free to students.`,
+      },
+      {
+        key: "rg-reflection",
+        title: "Assignment: personal limits reflection",
+        minutes: 15,
+        kind: "assignment",
+        body: `## Write your own rules
+
+In 250–400 words:
+
+1. Set the limits you would apply if this were real money: a monthly budget, a maximum single stake, a maximum number of betting days per week, and a stop-loss that ends the month.
+2. Explain how the app's design features — the ticker, the leaderboard, the live board, instant settlement — pushed you toward betting more than you planned. Be specific about a moment it happened.
+3. Identify the one warning sign you would find hardest to notice in yourself, and name the person you would tell.
+4. Describe how you would respond if a friend told you they were in trouble with betting.
+
+There is no right answer and no grade for "correct" limits. You are graded on honesty and specificity.`,
+      },
+    ],
+  },
+  {
     key: "intro",
-    title: "1. Getting started",
+    title: "2. Getting started",
     summary:
       "What this course is, how the class sportsbook works, and the ground rules before anyone places a bet.",
     modules: [
@@ -117,7 +210,7 @@ Not on how much you win. Randomness is loud over a semester of bets. You will be
   },
   {
     key: "how-betting-works",
-    title: "2. How sports betting works",
+    title: "3. How sports betting works",
     summary:
       "Odds formats, implied probability, the vig, and the main bet types you will see on the board.",
     modules: [
@@ -286,7 +379,7 @@ Pick one upcoming game on the class board and, **before looking at the odds**:
   },
   {
     key: "using-the-app",
-    title: "3. Using the app",
+    title: "4. Using the app",
     summary:
       "Navigating the board, placing bets correctly, tracking exposure, and keeping a journal your instructor can grade.",
     modules: [
@@ -366,7 +459,7 @@ After the game settles, add one line of reflection: *was the process right, inde
   },
   {
     key: "strategy",
-    title: "4. Bankroll and strategy",
+    title: "5. Risk, variance and the house edge",
     summary:
       "Staking, variance, expected value, and the behavioural traps that beat most bettors before the market does.",
     modules: [
@@ -421,7 +514,7 @@ A bettor with a genuine 3% edge at even-ish odds will still have losing stretche
       },
       {
         key: "expected-value",
-        title: "Expected value and finding an edge",
+        title: "Expected value and why most edges disappear",
         minutes: 3,
         kind: "lesson",
         body: `## The only question that matters
@@ -466,96 +559,6 @@ Recent results, team loyalty, "due for a win", parlay dreams, or a system with n
 - Fixed unit sizing (kills tilt).
 - Post-settlement reflection (separates process from result).
 - Daily bet caps set by your instructor (kills volume spirals).`,
-      },
-    ],
-  },
-  {
-    key: "responsible-play",
-    title: "5. Responsible play",
-    summary:
-      "Required module: the real-world risks, the warning signs, and where to get help.",
-    modules: [
-      {
-        key: "rg-risks",
-        title: "The real-world risks behind the simulation",
-        minutes: 4,
-        kind: "rg",
-        requiresAck: true,
-        body: `## This is required reading
-
-The app is simulated. The behaviour it teaches is not.
-
-### What the research says
-- Roughly **1%** of adults meet the criteria for gambling disorder, and another **2–3%** experience problem-gambling harms (National Council on Problem Gambling).
-- **Young men aged 18–24** are the highest-risk demographic for sports betting harm — the same group most likely to be in this class.
-- Harm concentrates: a small minority of accounts generates most of the losses on commercial books.
-- Sports betting apps are designed for engagement — push notifications, same-game parlays, live betting, deposit bonuses. Every one of those features increases frequency, and frequency multiplies the house edge.
-
-### The maths of the house edge
-At standard \u2212110 pricing the book keeps roughly 4.5–5% of every dollar wagered over time. Parlays are far worse. There is no strategy that removes the edge; there is only being right often enough to beat it, which almost nobody is.
-
-### Rules that actually protect people
-- Bet only money you have already decided you can lose.
-- Set a hard budget and a time limit before you start, not during.
-- Never bet to recover losses.
-- Never bet with borrowed money or credit.
-- Do not bet while drinking, angry, or after a bad day.
-- Keep it a small part of how you enjoy sport.
-
-By acknowledging this module you confirm you have read it and understand that no betting strategy overcomes the house edge over time.`,
-      },
-      {
-        key: "rg-warning-signs",
-        title: "Warning signs and how to help someone",
-        minutes: 4,
-        kind: "rg",
-        requiresAck: true,
-        body: `## Know the signs
-
-In yourself or a friend:
-- Betting more, or more often, than intended.
-- Chasing losses with bigger bets.
-- Hiding bets, or lying about how much or how often.
-- Borrowing money, selling things, or missing bills to bet.
-- Restlessness or irritability when trying to cut back.
-- Betting to escape stress, loneliness or low mood.
-- Missing classes, work or commitments because of betting.
-- Relationships suffering; people expressing concern.
-
-### If it's you
-Take a break. Use self-exclusion and deposit limits — every licensed operator must offer them. Tell one person you trust. Call the helpline. None of this requires you to have hit rock bottom first.
-
-### If it's a friend
-- Pick a private moment and be direct without accusing: *"I've noticed you've been betting a lot — how are you doing?"*
-- Listen instead of lecturing; shame drives it underground.
-- Do not lend money or cover losses. It extends the problem.
-- Offer to help find support, and share the helpline.
-- Look after yourself too — family and friends can call the same helplines.
-
-### Get help (free, confidential, 24/7)
-- **1-800-GAMBLER** (1-800-426-2537) — US National Problem Gambling Helpline; text or chat also available.
-- **ncpgambling.org** — National Council on Problem Gambling: screening tools and state-by-state resources.
-- **ConnexOntario 1-866-531-2600** / **responsiblegambling.org** — Canadian support and the Responsible Gambling Council.
-- **gamblersanonymous.org** — peer support meetings, in person and online.
-- **Gam-Anon** — support for family and friends.
-
-Campus counselling services also handle this and are usually free to students.`,
-      },
-      {
-        key: "rg-reflection",
-        title: "Assignment: personal limits reflection",
-        minutes: 15,
-        kind: "assignment",
-        body: `## Write your own rules
-
-In 250–400 words:
-
-1. Set the limits you would apply if this were real money: a monthly budget, a maximum single stake, a maximum number of betting days per week, and a stop-loss that ends the month.
-2. Explain how the app's design features — the ticker, the leaderboard, the live board, instant settlement — pushed you toward betting more than you planned. Be specific about a moment it happened.
-3. Identify the one warning sign you would find hardest to notice in yourself, and name the person you would tell.
-4. Describe how you would respond if a friend told you they were in trouble with betting.
-
-There is no right answer and no grade for "correct" limits. You are graded on honesty and specificity.`,
       },
     ],
   },

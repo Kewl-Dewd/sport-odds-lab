@@ -62,8 +62,8 @@ const models = [
 const features = [
   {
     icon: Calculator,
-    title: "Math-driven, no luck",
-    description: "Every price comes from a transparent formula students can study, not a black box.",
+    title: "Transparent pricing",
+    description: "Every price comes from a formula students can study.",
   },
   {
     icon: GraduationCap,
@@ -99,13 +99,13 @@ export default function Index() {
               Live odds · One classroom
             </div>
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-              Learn Markets by{" "}
-              <span className="text-gradient">Running a Sportsbook</span>
+              See How{" "}
+              <span className="text-gradient">Sports Markets Really Work</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-              A classroom sportsbook that runs on live moneyline, spread and totals odds.
-              Your instructor runs the book, students wager virtual cash, and everyone
-              sees the house&apos;s numbers. Real strategy, zero risk.
+              A classroom simulation for studying how sportsbook prices are set, testing
+              forecasts against the market, and seeing why the house edge wins over time.
+              Virtual funds only.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
               <Button variant="hero" size="lg" asChild>
@@ -125,7 +125,7 @@ export default function Index() {
       {/* Three market models */}
       <section className="container py-16 md:py-20">
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
-          <h2 className="text-2xl md:text-3xl font-bold">Run a real book in your classroom</h2>
+          <h2 className="text-2xl md:text-3xl font-bold">Study how a book works in your classroom</h2>
           <p className="text-muted-foreground">
             Instructors publish the games, set the betting windows, and take the action.
             Students bet the lines and watch the house&apos;s hold add up in real time.
@@ -222,8 +222,8 @@ export default function Index() {
         <div className="rounded-2xl bg-gradient-to-r from-primary/10 to-accent/10 border p-8 md:p-12 text-center space-y-4">
           <h2 className="text-2xl md:text-3xl font-bold">Ready to open the book?</h2>
           <p className="text-muted-foreground max-w-lg mx-auto">
-            Join your classroom, bet the board your instructor posts, and see how your bankroll
-            stacks up against the house and your classmates.
+            Join your classroom, work through the markets your instructor posts and see how the
+            book&apos;s economics play out.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button variant="hero" size="lg" asChild>
