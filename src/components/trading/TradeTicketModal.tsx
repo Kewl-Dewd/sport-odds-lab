@@ -14,6 +14,8 @@ import { useAccess } from "@/hooks/useAccess";
 import { useStudentBook } from "@/hooks/useStudentBook";
 import { money } from "@/lib/money";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
+import { useLearningGate } from "@/hooks/useLearningGate";
 
 
 interface TradeTicketModalProps {
@@ -34,6 +36,7 @@ export function TradeTicketModal({
   const { pushNudge, educationEnabled } = useEducation();
   const { isPaywalled } = useAccess();
   const book = useStudentBook();
+  const gate = useLearningGate();
   const [type, setType] = useState<"BUY" | "SELL">(initialType);
   // For BUY this is a dollar stake; for SELL it's how much of the position to cash out (dollars of payout).
   const [amount, setAmount] = useState("");
@@ -102,6 +105,10 @@ export function TradeTicketModal({
     : 0;
 
   const handleConfirm = () => {
+    if (type === "BUY" && !gate.cleared) {
+      toast.error("Finish \"Before you start\" in Learning first");
+      return;
+    }
     const result = trade(marketId, outcomeId, qty, type);
     if (result) {
       setLastTrade(result);
@@ -141,7 +148,22 @@ export function TradeTicketModal({
           </button>
         </div>
 
-        {step === "entry" && (
+        {step === "entry" && !gate.cleared && !gate.loading && (
+          <div className="p-5 space-y-3">
+            <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm space-y-2">
+              <p className="font-semibold">Complete "Before you start" first</p>
+              <p className="text-muted-foreground">
+                Before placing your first position, read and acknowledge the required lessons in
+                the module "Before you start: the real-world risks."
+              </p>
+            </div>
+            <Button asChild className="w-full" onClick={onClose}>
+              <Link to="/learn">Go to the module</Link>
+            </Button>
+          </div>
+        )}
+
+        {step === "entry" && gate.cleared && (
           <div className="p-5 space-y-5">
             {/* Outcome */}
             <div className="rounded-lg border p-3 flex items-center justify-between">
