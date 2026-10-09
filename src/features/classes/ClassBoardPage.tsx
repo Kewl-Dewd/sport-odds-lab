@@ -27,6 +27,7 @@ import { extractMoneyline, fetchOdds } from "@/lib/oddsApi";
 import { moneylineSnapshot } from "@/lib/liveBoard";
 import { expectedValue, noVigProb } from "@/lib/forecastMath";
 import { useLearningGate } from "@/hooks/useLearningGate";
+import { ANALYSIS_MODES, AnalysisStandings, SCORING_LABELS } from "@/features/classes/AnalysisStandings";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function ClassBoardPage() {
@@ -345,13 +346,23 @@ function ContestStandings({ round }: { round: ClassRoundRow }) {
   const { user } = useAuth();
   const standings = buildStandings(bets, entries, round.scoring);
 
+  if (ANALYSIS_MODES.includes(round.scoring)) {
+    return (
+      <AnalysisStandings
+        classId={round.class_id}
+        round={round}
+        nameFor={(uid) => (uid === user?.id ? "You" : `Student ${uid.slice(0, 6)}`)}
+      />
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Trophy className="h-4 w-4 text-warning" /> {round.name} standings
         </CardTitle>
-        <CardDescription>Scored by {round.scoring}.</CardDescription>
+        <CardDescription>Scored by {SCORING_LABELS[round.scoring] ?? round.scoring}.</CardDescription>
       </CardHeader>
       <CardContent>
         {standings.length === 0 ? (
