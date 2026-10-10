@@ -1,3 +1,4 @@
+import { ClassCalibrationTab } from "@/features/classes/ClassCalibrationTab";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -107,6 +108,7 @@ export default function ClassDetailPage() {
           <TabsTrigger value="book">Book dashboard</TabsTrigger>
           <TabsTrigger value="coursework">Coursework</TabsTrigger>
           <TabsTrigger value="progress">Student progress</TabsTrigger>
+          <TabsTrigger value="calibration">Calibration</TabsTrigger>
           <TabsTrigger value="roster">Roster</TabsTrigger>
           <TabsTrigger value="journal">Journal review</TabsTrigger>
         </TabsList>
@@ -125,6 +127,10 @@ export default function ClassDetailPage() {
 
         <TabsContent value="coursework" className="mt-4">
           <ClassCourseworkTab classId={klass.id} />
+        </TabsContent>
+
+        <TabsContent value="calibration" className="mt-4">
+          <ClassCalibrationTab bets={bets} roster={roster} />
         </TabsContent>
 
         <TabsContent value="progress" className="mt-4">

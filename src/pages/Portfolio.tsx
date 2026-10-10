@@ -653,6 +653,8 @@ export default function Portfolio() {
                           <th className="pb-3 font-medium text-right">Odds</th>
                           <th className="pb-3 font-medium text-right">To win</th>
                           <th className="pb-3 font-medium text-right">Payout if win</th>
+                          <th className="pb-3 font-medium text-right">Forecast</th>
+                          <th className="pb-3 font-medium text-right">CLV</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -671,6 +673,12 @@ export default function Portfolio() {
                                 {money(Math.max(0, payout - stake))}
                               </td>
                               <td className="py-3 text-right font-mono">{money(payout)}</td>
+                              <td className="py-3 text-right font-mono">
+                                {b.forecast_prob == null ? "—" : `${(Number(b.forecast_prob) * 100).toFixed(0)}%`}
+                              </td>
+                              <td className="py-3 text-right font-mono">
+                                {b.clv_pct == null ? "pending" : `${Number(b.clv_pct) >= 0 ? "+" : ""}${Number(b.clv_pct).toFixed(1)}%`}
+                              </td>
                             </tr>
                           );
                         })}
