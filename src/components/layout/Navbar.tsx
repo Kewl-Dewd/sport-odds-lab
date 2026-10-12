@@ -5,6 +5,7 @@ import {
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
   NotebookPen, Target, ShieldCheck, School, Building2,
+  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ const authedLinks = [
   { label: "Learning", href: "/learn", icon: GraduationCap },
   { label: "Journal", href: "/journal", icon: NotebookPen },
   { label: "Calibration", href: "/calibration", icon: Target },
+  { label: "Tools", href: "/tools", icon: Calculator },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 

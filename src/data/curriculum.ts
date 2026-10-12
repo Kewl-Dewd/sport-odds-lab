@@ -123,96 +123,53 @@ There is no right answer and no grade for "correct" limits. You are graded on ho
     ],
   },
   {
-    key: "intro",
-    title: "2. Getting started",
+    key: "canadian-industry",
+    title: "2. The Canadian wagering industry",
     summary:
-      "What this course is, how the class sportsbook works, and the ground rules before anyone places a bet.",
+      "How legal single-event wagering works in Canada, who regulates it, and who profits.",
     modules: [
       {
-        key: "intro-welcome",
-        title: "Welcome: what this app is (and isn't)",
+        key: "single-event-wagering-in-canada-after-bill-c-218",
+        title: "Single-event wagering in Canada after Bill C-218",
         minutes: 4,
         kind: "lesson",
-        body: `## Welcome to the class sportsbook
-
-This app is a **simulation built on real market data**. The games, teams and odds you see are pulled live from a commercial odds feed — the same numbers a real sportsbook is posting right now. What is *not* real is the money: every student starts with a bankroll of simulated units set by the instructor.
-
-### Why simulate?
-Sports betting is one of the cleanest classrooms in finance. Every position has:
-- a **known price** (the odds),
-- a **known expiry** (the final whistle),
-- and a **binary, verifiable outcome**.
-
-That means you can measure your decision quality in weeks instead of years, and you can see the difference between a good decision and a good result.
-
-### The three roles in this class
-1. **You, the bettor.** You research, price and place positions with a limited bankroll.
-2. **Your instructor, the book.** They decide which markets are open, how long a round runs, and they see the book's profit and loss.
-3. **The market.** The odds move as money and information arrive. Your edge, if you have one, lives in the gap between the price and reality.
-
-### What you will be graded on
-Not on how much you win. Randomness is loud over a semester of bets. You will be assessed on process: staking discipline, the quality of your written rationale in the bet journal, and completion of the learning modules.
-
-### Ground rules
-- No real money is ever wagered, deposited or won in this app.
-- Bets are visible to your instructor and, in the class ticker, to your classmates.
-- The responsible-play module is required. Do it before you place a large share of your bankroll.
-
-**Take-away:** treat your simulated bankroll like it is real capital you are accountable for. Habits you build here are the habits you keep.`,
+        body: `Content coming soon.`,
       },
       {
-        key: "intro-tour",
-        title: "A tour of the app in five minutes",
-        minutes: 3,
+        key: "who-regulates-aglc-igaming-ontario-and-provincia",
+        title: "Who regulates: AGLC, iGaming Ontario and provincial bodies",
+        minutes: 4,
         kind: "lesson",
-        body: `## Where everything lives
-
-**Dashboard** — your home base. Bankroll, open exposure, profit and loss, your assigned learning, and the class action ticker showing what your classmates are betting.
-
-**Markets** — the live board. Upcoming games pulled from the odds feed, filtered to the sports and leagues your instructor allowed. Click any game to see the full price on each side.
-
-**Bet slip** — opens when you select a price. Enter your stake, confirm the odds and payout, then place.
-
-**My Bets / Portfolio** — every position you hold, split into open and settled. This is where you check exposure before adding another bet.
-
-**Journal** — the written record of *why* you took each position. In most classes this is a graded requirement.
-
-**Responsible play** — the safety module, plus links to real help resources.
-
-**Leaderboard** — class standings for the current round.
-
-### Two numbers to watch daily
-- **Bankroll:** cash you can still deploy.
-- **Open exposure:** money already at risk in unsettled bets. A leaderboard position with 80% of the bankroll at risk is not a lead, it is a coin flip waiting to happen.`,
+        body: `Content coming soon.`,
       },
       {
-        key: "intro-first-bet",
-        title: "Assignment: place and journal your first bet",
-        minutes: 15,
+        key: "operator-models-provincial-monopoly-private-lice",
+        title: "Operator models: provincial monopoly, private licensed, offshore grey market",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "leagues-teams-broadcasters-and-sportsbooks-follo",
+        title: "Leagues, teams, broadcasters and sportsbooks: following the money",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "assignment-map-a-sport-organization-s-wagering-p",
+        title: "Assignment: map a sport organization's wagering partnerships",
+        minutes: 4,
         kind: "assignment",
-        body: `## Your first position
-
-1. Open **Markets** and pick one game from an allowed league that starts in the next 72 hours.
-2. Before you look at the price, write down which side you think wins and roughly how often (e.g. "home team, about 60%").
-3. Now look at the odds and convert them to an implied probability (the next topic covers the maths; use the payout shown on the slip as a guide).
-4. Place a **small** bet — no more than 1–2% of your bankroll.
-5. Open **Journal** and record:
-   - your estimated probability *before* seeing the price,
-   - the price you got,
-   - the single piece of information you leaned on most,
-   - what would have to happen for you to admit the bet was a mistake.
-
-**Submit:** a completed journal entry linked to the bet. Your instructor sees both.
-
-**Why the pre-estimate matters:** once you see a price, your brain anchors to it. Writing your number first is the only way to find out whether you actually disagreed with the market or just went along with it.`,
+        body: `Content coming soon.`,
       },
     ],
   },
   {
     key: "how-betting-works",
-    title: "3. How sports betting works",
+    title: "3. The mathematics of odds",
     summary:
-      "Odds formats, implied probability, the vig, and the main bet types you will see on the board.",
+      "Reading odds, implied probability, the vig, expected value and how the house edge grows.",
     modules: [
       {
         key: "odds-formats",
@@ -315,7 +272,6 @@ Watch it over a round and you will see the two forces that run the industry:
 - The posted price is not a probability — divide by the total to get the fair (no-vig) number before you decide anything.
 - The book's profit is the mirror image of the class's losses. Watching the house side is the fastest way to understand why "the house always wins" is a statement about **margin and volume**, not luck.`,
       },
-
       {
         key: "bet-types",
         title: "Bet types: moneyline, spread, totals and parlays",
@@ -337,26 +293,18 @@ Three legs at \u2212110 (1.909 each): 1.909³ = **6.96** fair-ish decimal, but t
 **Rule of thumb for this class:** if you place a parlay, journal an explicit reason why the legs are correlated or mispriced. "Bigger payout" is not a reason.`,
       },
       {
-        key: "line-movement",
-        title: "Line movement, closing line value and market efficiency",
+        key: "expected-value-hold-percentage-and-theoretical-r",
+        title: "Expected value, hold percentage and theoretical return",
         minutes: 4,
         kind: "lesson",
-        body: `## Why the number changes
-
-In this app the line only moves when the **live odds feed** moves — your own bet never changes the price (see "How the book makes money"). Out in the market, prices move for two reasons:
-1. **Information** — an injury, a lineup scratch, weather, a goalie announcement.
-2. **Money** — the book adjusts to balance its exposure.
-
-### Closing line value (CLV)
-The **closing line** is the last price before kick-off. It is the single best publicly available estimate of true probability, because it contains every piece of information and every dollar of sharp money.
-
-If you consistently bet at prices better than the close — you took +150 and it closed +120 — you have **positive CLV**. Over a large sample, CLV predicts profitability far better than your win rate does. This app records the closing odds on your settled bets for exactly this reason.
-
-### How to use it
-- Beating the close on 55%+ of your bets means your process has an edge, even in a losing month.
-- Consistently getting worse prices than the close means you are the money the market moves against.
-
-**Take-away:** grade yourself on the price you got, not just the result you got.`,
+        body: `Content coming soon.`,
+      },
+      {
+        key: "props-and-parlays-where-the-house-edge-grows",
+        title: "Props and parlays: where the house edge grows",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
       },
       {
         key: "betting-quiz",
@@ -378,8 +326,223 @@ Pick one upcoming game on the class board and, **before looking at the odds**:
     ],
   },
   {
+    key: "strategy",
+    title: "4. Risk, variance and the house edge",
+    summary:
+      "Staking, variance, sample size and why most edges disappear.",
+    modules: [
+      {
+        key: "bankroll-units",
+        title: "Bankroll management and unit sizing",
+        minutes: 3,
+        kind: "lesson",
+        body: `## Survive first, win later
+
+Your bankroll is your ability to keep playing. Blow it up and even a genuine edge is worthless.
+
+### Flat staking
+Bet the same percentage — commonly **1–2%** of the starting bankroll — on every position. Boring, robust, and the default recommendation for this class.
+
+### Kelly criterion
+Kelly gives the mathematically growth-optimal stake:
+
+\`f = (bp \u2212 q) / b\`
+
+where \`b\` = decimal odds − 1, \`p\` = your win probability, \`q\` = 1 − p.
+
+Example: odds 2.50 (b = 1.5), your p = 0.45, q = 0.55 → f = (1.5 × 0.45 − 0.55) / 1.5 = **8.3%** of bankroll.
+
+Full Kelly is violently volatile and assumes your probability estimate is correct — it never is. Practitioners use **quarter Kelly** or **half Kelly**, which keeps most of the growth with a fraction of the drawdown.
+
+### Non-negotiables
+- Never increase stake size to recover a loss.
+- Size on your edge, not your confidence or your mood.
+- Cap total open exposure (a common rule: no more than 10–15% of bankroll at risk at once).`,
+      },
+      {
+        key: "variance",
+        title: "Variance, drawdowns and sample size",
+        minutes: 3,
+        kind: "lesson",
+        body: `## Why good bettors lose for months
+
+A bettor with a genuine 3% edge at even-ish odds will still have losing stretches that feel like a broken strategy. Over 100 bets at 53% true win rate, finishing below break-even is entirely ordinary.
+
+### The numbers
+- 100 bets is a *sample*, not evidence.
+- 1,000 bets starts to separate skill from luck.
+- Drawdowns of 20–30% of bankroll happen to profitable bettors.
+
+### What to do about it
+- Judge process, not outcome: was the price good, was the stake right, was the reasoning written down?
+- Track **CLV** — it converges far faster than profit.
+- Never re-size your bets because of a short run in either direction.
+
+**Classroom implication:** a semester is a small sample. The leaderboard winner is often the luckiest competent player, not the best analyst. Your journal is where the real skill shows.`,
+      },
+      {
+        key: "expected-value",
+        title: "Expected value and why most edges disappear",
+        minutes: 3,
+        kind: "lesson",
+        body: `## The only question that matters
+
+\`EV = (probability of winning × profit) \u2212 (probability of losing × stake)\`
+
+Example: 10 units at decimal 2.50 (profit 15), your estimated win probability 45%.
+EV = (0.45 × 15) − (0.55 × 10) = 6.75 − 5.50 = **+1.25 units** per bet.
+
+Positive EV over many bets is the entire game.
+
+### Where edges actually come from
+- **Information speed** — reacting to a lineup or weather change before the price does.
+- **Niche markets** — lower limits and less attention mean softer prices than a marquee game.
+- **Price shopping** — taking the best available number moves your break-even meaningfully.
+- **Model discipline** — a simple model applied consistently beats gut feel applied erratically.
+
+### Where edges do not come from
+Recent results, team loyalty, "due for a win", parlay dreams, or a system with no measurement.`,
+      },
+    ],
+  },
+  {
+    key: "data-models",
+    title: "5. Data, models and market prices",
+    summary:
+      "Sourcing data, building a simple model, and testing it against the market.",
+    modules: [
+      {
+        key: "sourcing-and-preparing-sport-data",
+        title: "Sourcing and preparing sport data",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "building-a-simple-rating-model",
+        title: "Building a simple rating model",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "comparing-your-model-to-the-market",
+        title: "Comparing your model to the market",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "line-movement",
+        title: "Line movement, information and market efficiency",
+        minutes: 4,
+        kind: "lesson",
+        body: `## Why the number changes
+
+In this app the line only moves when the **live odds feed** moves — your own bet never changes the price (see "How the book makes money"). Out in the market, prices move for two reasons:
+1. **Information** — an injury, a lineup scratch, weather, a goalie announcement.
+2. **Money** — the book adjusts to balance its exposure.
+
+### Closing line value (CLV)
+The **closing line** is the last price before kick-off. It is the single best publicly available estimate of true probability, because it contains every piece of information and every dollar of sharp money.
+
+If you consistently bet at prices better than the close — you took +150 and it closed +120 — you have **positive CLV**. Over a large sample, CLV predicts profitability far better than your win rate does. This app records the closing odds on your settled bets for exactly this reason.
+
+### How to use it
+- Beating the close on 55%+ of your bets means your process has an edge, even in a losing month.
+- Consistently getting worse prices than the close means you are the money the market moves against.
+
+**Take-away:** grade yourself on the price you got, not just the result you got.`,
+      },
+      {
+        key: "why-models-fail-sample-size-overfitting-and-vari",
+        title: "Why models fail: sample size, overfitting and variance",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "assignment-model-vs-market-report",
+        title: "Assignment: model vs. market report",
+        minutes: 4,
+        kind: "assignment",
+        body: `Content coming soon.`,
+      },
+    ],
+  },
+  {
+    key: "bias-advertising-support",
+    title: "6. Bias, advertising and support",
+    summary:
+      "Behavioural traps, risk indicators, advertising standards and where to get help.",
+    modules: [
+      {
+        key: "bias",
+        title: "Behavioural traps: tilt, recency and the favourite bias",
+        minutes: 3,
+        kind: "lesson",
+        body: `## The opponent in your own head
+
+**Tilt / chasing.** Increasing stakes after a loss to "get it back". The single most common way bankrolls die.
+
+**Recency bias.** Overweighting the last game you watched. Markets already priced it.
+
+**Confirmation bias.** Searching for stats that support the bet you already want.
+
+**Favourite–longshot bias.** Casual money overprices longshots (dreams of a big payout) and undervalues short favourites. Know which side of that you are on.
+
+**Availability from narrative.** Media storylines are entertainment, not information.
+
+**Sunk-cost betting.** Doubling on a live bet purely because you are already in it.
+
+### Countermeasures used in this class
+- Written pre-bet rationale (kills confirmation bias).
+- Fixed unit sizing (kills tilt).
+- Post-settlement reflection (separates process from result).
+- Daily bet caps set by your instructor (kills volume spirals).`,
+      },
+      {
+        key: "cognitive-biases-in-wagering-decisions",
+        title: "Cognitive biases in wagering decisions",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "risk-indicators-among-post-secondary-students",
+        title: "Risk indicators among post-secondary students",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "responsible-gambling-tools-what-operators-and-re",
+        title: "Responsible-gambling tools: what operators and regulators offer",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "advertising-standards-in-canada-and-how-ads-shap",
+        title: "Advertising standards in Canada and how ads shape behaviour",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.`,
+      },
+      {
+        key: "support-and-referral-pathways-in-alberta",
+        title: "Support and referral pathways in Alberta",
+        minutes: 4,
+        kind: "lesson",
+        body: `Content coming soon.
+
+See the [Support Resources](/support) page.`,
+      },
+    ],
+  },
+  {
     key: "using-the-app",
-    title: "4. Using the app",
+    title: "7. Using the app",
     summary:
       "Navigating the board, placing bets correctly, tracking exposure, and keeping a journal your instructor can grade.",
     modules: [
@@ -458,113 +621,94 @@ After the game settles, add one line of reflection: *was the process right, inde
     ],
   },
   {
-    key: "strategy",
-    title: "5. Risk, variance and the house edge",
+    key: "intro",
+    title: "Extra: Getting started",
     summary:
-      "Staking, variance, expected value, and the behavioural traps that beat most bettors before the market does.",
+      "What this course is, how the class sportsbook works, and the ground rules before anyone places a bet.",
     modules: [
       {
-        key: "bankroll-units",
-        title: "Bankroll management and unit sizing",
-        minutes: 3,
+        key: "intro-welcome",
+        title: "Welcome: what this app is (and isn't)",
+        minutes: 4,
         kind: "lesson",
-        body: `## Survive first, win later
+        body: `## Welcome to the class sportsbook
 
-Your bankroll is your ability to keep playing. Blow it up and even a genuine edge is worthless.
+This app is a **simulation built on real market data**. The games, teams and odds you see are pulled live from a commercial odds feed — the same numbers a real sportsbook is posting right now. What is *not* real is the money: every student starts with a bankroll of simulated units set by the instructor.
 
-### Flat staking
-Bet the same percentage — commonly **1–2%** of the starting bankroll — on every position. Boring, robust, and the default recommendation for this class.
+### Why simulate?
+Sports betting is one of the cleanest classrooms in finance. Every position has:
+- a **known price** (the odds),
+- a **known expiry** (the final whistle),
+- and a **binary, verifiable outcome**.
 
-### Kelly criterion
-Kelly gives the mathematically growth-optimal stake:
+That means you can measure your decision quality in weeks instead of years, and you can see the difference between a good decision and a good result.
 
-\`f = (bp \u2212 q) / b\`
+### The three roles in this class
+1. **You, the bettor.** You research, price and place positions with a limited bankroll.
+2. **Your instructor, the book.** They decide which markets are open, how long a round runs, and they see the book's profit and loss.
+3. **The market.** The odds move as money and information arrive. Your edge, if you have one, lives in the gap between the price and reality.
 
-where \`b\` = decimal odds − 1, \`p\` = your win probability, \`q\` = 1 − p.
+### What you will be graded on
+Not on how much you win. Randomness is loud over a semester of bets. You will be assessed on process: staking discipline, the quality of your written rationale in the bet journal, and completion of the learning modules.
 
-Example: odds 2.50 (b = 1.5), your p = 0.45, q = 0.55 → f = (1.5 × 0.45 − 0.55) / 1.5 = **8.3%** of bankroll.
+### Ground rules
+- No real money is ever wagered, deposited or won in this app.
+- Bets are visible to your instructor and, in the class ticker, to your classmates.
+- The responsible-play module is required. Do it before you place a large share of your bankroll.
 
-Full Kelly is violently volatile and assumes your probability estimate is correct — it never is. Practitioners use **quarter Kelly** or **half Kelly**, which keeps most of the growth with a fraction of the drawdown.
-
-### Non-negotiables
-- Never increase stake size to recover a loss.
-- Size on your edge, not your confidence or your mood.
-- Cap total open exposure (a common rule: no more than 10–15% of bankroll at risk at once).`,
+**Take-away:** treat your simulated bankroll like it is real capital you are accountable for. Habits you build here are the habits you keep.`,
       },
       {
-        key: "variance",
-        title: "Variance, drawdowns and sample size",
+        key: "intro-tour",
+        title: "A tour of the app in five minutes",
         minutes: 3,
         kind: "lesson",
-        body: `## Why good bettors lose for months
+        body: `## Where everything lives
 
-A bettor with a genuine 3% edge at even-ish odds will still have losing stretches that feel like a broken strategy. Over 100 bets at 53% true win rate, finishing below break-even is entirely ordinary.
+**Dashboard** — your home base. Bankroll, open exposure, profit and loss, your assigned learning, and the class action ticker showing what your classmates are betting.
 
-### The numbers
-- 100 bets is a *sample*, not evidence.
-- 1,000 bets starts to separate skill from luck.
-- Drawdowns of 20–30% of bankroll happen to profitable bettors.
+**Markets** — the live board. Upcoming games pulled from the odds feed, filtered to the sports and leagues your instructor allowed. Click any game to see the full price on each side.
 
-### What to do about it
-- Judge process, not outcome: was the price good, was the stake right, was the reasoning written down?
-- Track **CLV** — it converges far faster than profit.
-- Never re-size your bets because of a short run in either direction.
+**Bet slip** — opens when you select a price. Enter your stake, confirm the odds and payout, then place.
 
-**Classroom implication:** a semester is a small sample. The leaderboard winner is often the luckiest competent player, not the best analyst. Your journal is where the real skill shows.`,
+**My Bets / Portfolio** — every position you hold, split into open and settled. This is where you check exposure before adding another bet.
+
+**Journal** — the written record of *why* you took each position. In most classes this is a graded requirement.
+
+**Responsible play** — the safety module, plus links to real help resources.
+
+**Leaderboard** — class standings for the current round.
+
+### Two numbers to watch daily
+- **Bankroll:** cash you can still deploy.
+- **Open exposure:** money already at risk in unsettled bets. A leaderboard position with 80% of the bankroll at risk is not a lead, it is a coin flip waiting to happen.`,
       },
       {
-        key: "expected-value",
-        title: "Expected value and why most edges disappear",
-        minutes: 3,
-        kind: "lesson",
-        body: `## The only question that matters
+        key: "intro-first-bet",
+        title: "Assignment: place and journal your first bet",
+        minutes: 15,
+        kind: "assignment",
+        body: `## Your first position
 
-\`EV = (probability of winning × profit) \u2212 (probability of losing × stake)\`
+1. Open **Markets** and pick one game from an allowed league that starts in the next 72 hours.
+2. Before you look at the price, write down which side you think wins and roughly how often (e.g. "home team, about 60%").
+3. Now look at the odds and convert them to an implied probability (the next topic covers the maths; use the payout shown on the slip as a guide).
+4. Place a **small** bet — no more than 1–2% of your bankroll.
+5. Open **Journal** and record:
+   - your estimated probability *before* seeing the price,
+   - the price you got,
+   - the single piece of information you leaned on most,
+   - what would have to happen for you to admit the bet was a mistake.
 
-Example: 10 units at decimal 2.50 (profit 15), your estimated win probability 45%.
-EV = (0.45 × 15) − (0.55 × 10) = 6.75 − 5.50 = **+1.25 units** per bet.
+**Submit:** a completed journal entry linked to the bet. Your instructor sees both.
 
-Positive EV over many bets is the entire game.
-
-### Where edges actually come from
-- **Information speed** — reacting to a lineup or weather change before the price does.
-- **Niche markets** — lower limits and less attention mean softer prices than a marquee game.
-- **Price shopping** — taking the best available number moves your break-even meaningfully.
-- **Model discipline** — a simple model applied consistently beats gut feel applied erratically.
-
-### Where edges do not come from
-Recent results, team loyalty, "due for a win", parlay dreams, or a system with no measurement.`,
-      },
-      {
-        key: "bias",
-        title: "Behavioural traps: tilt, recency and the favourite bias",
-        minutes: 3,
-        kind: "lesson",
-        body: `## The opponent in your own head
-
-**Tilt / chasing.** Increasing stakes after a loss to "get it back". The single most common way bankrolls die.
-
-**Recency bias.** Overweighting the last game you watched. Markets already priced it.
-
-**Confirmation bias.** Searching for stats that support the bet you already want.
-
-**Favourite–longshot bias.** Casual money overprices longshots (dreams of a big payout) and undervalues short favourites. Know which side of that you are on.
-
-**Availability from narrative.** Media storylines are entertainment, not information.
-
-**Sunk-cost betting.** Doubling on a live bet purely because you are already in it.
-
-### Countermeasures used in this class
-- Written pre-bet rationale (kills confirmation bias).
-- Fixed unit sizing (kills tilt).
-- Post-settlement reflection (separates process from result).
-- Daily bet caps set by your instructor (kills volume spirals).`,
+**Why the pre-estimate matters:** once you see a price, your brain anchors to it. Writing your number first is the only way to find out whether you actually disagreed with the market or just went along with it.`,
       },
     ],
   },
   {
     key: "alberta-law",
-    title: "6. Rules and laws: betting in Alberta",
+    title: "Extra: Rules and laws: betting in Alberta",
     summary:
       "Who is allowed to bet in Alberta, how the new iGaming Alberta Act changed the market in 2025–26, the advertising and integrity rules, and the player protections you are legally owed.",
     modules: [
