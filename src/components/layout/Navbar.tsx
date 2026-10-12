@@ -5,6 +5,7 @@ import {
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
   Users, LogOut, LogIn, Eye, EyeOff, Repeat, Zap,
   NotebookPen, Target, ShieldCheck, School, Building2,
+  Calculator,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
