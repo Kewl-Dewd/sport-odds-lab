@@ -25,6 +25,7 @@ const authedLinks = [
   { label: "Learning", href: "/learn", icon: GraduationCap },
   { label: "Journal", href: "/journal", icon: NotebookPen },
   { label: "Calibration", href: "/calibration", icon: Target },
+  { label: "Tools", href: "/tools", icon: Calculator },
   { label: "Glossary", href: "/glossary", icon: BookOpen },
 ];
 
