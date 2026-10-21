@@ -16,8 +16,11 @@ export function AccessBanner() {
         <div className="container flex flex-wrap items-center gap-3 py-2 text-sm">
           <Clock className="h-4 w-4 text-primary" />
           <span className="text-muted-foreground">
-            Pilot access — {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} left in your free trial.
+            {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} left in your free trial.
           </span>
+          <a href="/access" className="ml-auto font-medium text-primary underline">
+            Get access ($10/yr or course code)
+          </a>
         </div>
       </div>
     );
