@@ -1309,12 +1309,9 @@ export function MarketProvider({ children }: { children: ReactNode }) {
     }
   }, [activeClassroomId]);
 
-  const liveLoadStarted = React.useRef(false);
-  useEffect(() => {
-    if (liveLoadStarted.current) return;
-    liveLoadStarted.current = true;
-    void loadLiveMarkets();
-  }, [loadLiveMarkets]);
+  // No app-wide auto-load: the Markets page loads the board itself. Loading
+  // on every page (landing, sign-in, crawlers, link previews) burned the odds
+  // provider's hourly quota even when no student was using the app.
 
 
 
