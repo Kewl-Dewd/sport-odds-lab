@@ -26,8 +26,8 @@ type Action = "sports" | "events" | "odds" | "scores" | "bookmakers";
 const TTL_SECONDS: Record<Action, number> = {
   sports: 24 * 60 * 60,
   bookmakers: 24 * 60 * 60,
-  events: 30 * 60,
-  odds: 20 * 60,
+  events: 60 * 60,
+  odds: 45 * 60,
   scores: 10 * 60,
 };
 
