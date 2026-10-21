@@ -47,13 +47,13 @@ export function useAccess() {
     row.status === "active" &&
     (!row.expires_at || new Date(row.expires_at) > new Date());
 
-  // Free trial window measured from account creation.
-  const daysLeft = entitled ? 0 : trialDaysLeft(user?.created_at);
-  const inTrial = !entitled && daysLeft > 0;
-
   // Staff accounts never hit the paywall — including while previewing as a
   // student, so instructors can demo the full betting flow to their class.
   const staffBypass = isInstructorAccount || isPlatformAdminAccount;
+
+  // Free trial window measured from account creation (students only).
+  const daysLeft = entitled || staffBypass ? 0 : trialDaysLeft(user?.created_at);
+  const inTrial = !entitled && !staffBypass && daysLeft > 0;
 
   return {
     access: row,
