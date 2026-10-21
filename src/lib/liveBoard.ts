@@ -180,7 +180,7 @@ export async function loadLiveBoard(opts?: {
   const maxGames = opts?.maxGames ?? 36;
   const daysAhead = opts?.daysAhead ?? 2;
   // Cap upstream odds lookups; the provider's free tier allows 100 req/hour.
-  const maxLookups = opts?.maxLookups ?? 42;
+  const maxLookups = opts?.maxLookups ?? 24;
 
 
   const eventLists = await Promise.all(
