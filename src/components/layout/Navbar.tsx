@@ -1,3 +1,4 @@
+import logoBeaker from "@/assets/logo-beaker.png";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -70,7 +71,7 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b glass">
       <div className="container flex h-16 md:h-20 items-center justify-between py-2">
         <Link to="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileOpen(false)}>
-          <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-primary" />
+          <img src={logoBeaker} alt="" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
           <span className="hidden sm:inline">Sports Market Lab</span>
           <span className="sm:hidden">SML</span>
         </Link>
