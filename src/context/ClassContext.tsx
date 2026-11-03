@@ -2,7 +2,7 @@
 // enrolled in several classes at once (own bankroll and coursework each),
 // so the active choice is persisted and surfaced through a nav switcher.
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { db, unwrap, type ClassMemberRow, type ClassRow } from "@/features/db";
 
@@ -49,6 +49,19 @@ export function useMyEnrollments() {
 
 export function ClassProvider({ children }: { children: ReactNode }) {
   const { data: enrollments = [], isLoading } = useMyEnrollments();
+  const queryClient = useQueryClient();
+
+  // Joining a class invalidates "membership"/"classes"; refresh enrollments too
+  // so the dashboard updates without a page reload.
+  useEffect(() => {
+    return queryClient.getQueryCache().subscribe((event) => {
+      if (event.type !== "updated" || event.action.type !== "invalidate") return;
+      const root = event.query.queryKey[0];
+      if (root === "membership" || root === "classes") {
+        queryClient.invalidateQueries({ queryKey: ["enrollments"] });
+      }
+    });
+  }, [queryClient]);
   const [activeClassId, setActive] = useState<string | null>(
     () => localStorage.getItem(ACTIVE_CLASS_KEY),
   );
