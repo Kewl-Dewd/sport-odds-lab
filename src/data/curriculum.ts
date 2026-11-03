@@ -133,35 +133,117 @@ There is no right answer and no grade for "correct" limits. You are graded on ho
         title: "Single-event wagering in Canada after Bill C-218",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## From parlays-only to single games
+
+Until 2021 the Criminal Code only let provinces offer **parlay** bets (at least two outcomes on one ticket). Betting on one game was illegal in Canada, so that money went to offshore sites and illegal bookmakers.
+
+**Bill C-218, the Safe and Regulated Sports Betting Act**, removed the parlay requirement from section 207(4)(b) of the Criminal Code. It received Royal Assent on **June 29, 2021** and came into force on **August 27, 2021**.
+
+### What changed and what didn't
+- Provinces can now "conduct and manage" single-event sports betting, either on their own or through licensed operators.
+- Betting is still a **provincial** responsibility: each province decides who can offer it and how.
+- **Horse racing** is still regulated federally by the Canadian Pari-Mutuel Agency and wasn't part of the change.
+- Betting with an unlicensed bookmaker is still illegal.
+
+### Why it matters for this class
+Single-game betting is easy to understand and heavily advertised, so most new bettors start there. It also makes every game something you can bet on, which is why regulators pair it with age limits, advertising rules and self-exclusion tools (Module 6).
+
+**Sources:** Parliament of Canada, LEGISinfo, Bill C-218 (43rd Parliament, 2nd session); Criminal Code of Canada, s. 207; Wikipedia, "Sports betting in Canada" (CC BY-SA).`,
       },
       {
         key: "who-regulates-aglc-igaming-ontario-and-provincia",
         title: "Who regulates: AGLC, iGaming Ontario and provincial bodies",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Who makes the rules
+
+The Criminal Code lets each province **conduct and manage** gambling, so there is no single national regulator.
+
+### Alberta
+- **AGLC (Alberta Gaming, Liquor and Cannabis)** is the regulator. It runs background checks on operators and suppliers, and checks that they follow the rules.
+- **AiGC (Alberta iGaming Corporation)** is a Crown corporation created by the *iGaming Alberta Act* (Bill 48, 2025). It manages operator agreements, anti-money-laundering compliance and revenue sharing.
+- **PlayAlberta.ca** was AGLC's own online site, and was the only legal option before the open market.
+
+### Ontario
+- **AGCO (Alcohol and Gaming Commission of Ontario)** writes and enforces the Registrar's Standards for Internet Gaming.
+- **iGaming Ontario** manages the private market, which opened on **April 4, 2022**.
+
+### Other provinces
+Most provinces sell betting through a lottery corporation: BCLC (PlayNow), Loto-Québec (Mise-o-jeu), the Atlantic Lottery Corporation (Proline) and the Western Canada Lottery Corporation in the Prairies.
+
+### Why two bodies?
+Keeping the regulator (who checks the rules) separate from the market manager (who signs contracts and collects revenue) reduces conflicts of interest. A body that both earns from gambling and polices it has mixed incentives.
+
+**Sources:** abigaming.ca (AiGC General FAQs); alberta.ca, "Alberta's iGaming Strategy"; agco.ca; igamingontario.ca.`,
       },
       {
         key: "operator-models-provincial-monopoly-private-lice",
         title: "Operator models: provincial monopoly, private licensed, offshore grey market",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Three ways to run a market
+
+**1. Provincial monopoly.** The government is the only legal seller, for example BCLC's PlayNow or Loto-Québec. Profits go straight to the province. The downside is fewer choices and less competitive prices, so some players go offshore.
+
+**2. Private licensed (open) market.** Private brands register with the province and pay a share of revenue. Ontario opened its market in April 2022. Alberta followed: AiGC launched it on **July 13, 2026** with 22 registered sites. Under Alberta's model, operators keep 80% of net iGaming revenue and the province keeps 20%. Before that, 3% of gross revenue goes to First Nations initiatives and social-responsibility funding.
+
+**3. Offshore grey market.** These sites are licensed somewhere else (Malta, Curaçao, Kahnawake) but not by the province. Alberta estimated that about **70%** of online gambling in the province happened on these unregulated sites before 2026. Player protection on them varies, there may be no self-exclusion link, and disputes are hard to settle.
+
+### The policy trade-off
+The goal of an open market is **channelization**: moving existing players onto regulated sites, not creating new players. Critics point out that more licensed brands also means more advertising.
+
+### Discussion
+Which model best protects a 19-year-old student? Which one raises the most revenue? Can one model do both?
+
+**Sources:** alberta.ca, "Alberta's iGaming Strategy"; abigaming.ca news release, July 13 2026; igamingontario.ca.`,
       },
       {
         key: "leagues-teams-broadcasters-and-sportsbooks-follo",
         title: "Leagues, teams, broadcasters and sportsbooks: following the money",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Where the money flows
+
+Legal betting created a new set of business relationships across sport.
+
+- **Leagues** sign official data and sponsorship deals with sportsbooks. Sportsbooks pay for fast, official stats, which are needed for live betting.
+- **Teams and arenas** sell naming rights, signs and in-venue betting lounges.
+- **Broadcasters** sell ad time and add odds to the broadcast. Some own a stake in a sportsbook.
+- **Media and affiliates** earn a commission for every new customer they sign up.
+- **Data companies** (Sportradar, Genius Sports) sell feeds to books and integrity monitoring to leagues.
+- **Governments** collect their share of revenue.
+
+### The integrity side
+More betting money means more pressure on athletes and officials. Leagues work with monitoring services that flag unusual betting patterns, and the major North American leagues have suspended players for breaking betting rules.
+
+### Following the money
+For any partnership, ask:
+1. Who pays whom?
+2. What does each side get: data, customers, brand reach?
+3. Who sees the ads? Are any of them under 18?
+4. Does the partnership create a conflict of interest for the broadcaster or the league?
+
+**Sources:** company annual reports (Sportradar, Genius Sports); Canadian Gaming Association public reports; Wikipedia, "Sports betting" (CC BY-SA).`,
       },
       {
         key: "assignment-map-a-sport-organization-s-wagering-p",
         title: "Assignment: map a sport organization's wagering partnerships",
         minutes: 4,
         kind: "assignment",
-        body: `Content coming soon.`,
+        body: `## Assignment: follow one organization's money
+
+Choose one professional team or league that plays in Canada, such as the Oilers, Flames, Elks or Stampeders, or the NHL, CFL or MLS.
+
+**Deliver a one-page map (diagram plus about 300 words) that shows:**
+1. Every wagering-related partner you can find: official sportsbook, data provider, broadcaster betting segments, arena signs.
+2. Which way the money moves for each relationship, and what each side gets.
+3. Where the partnership shows up for fans: jerseys, broadcasts, apps, social media.
+4. One integrity or responsible-gambling safeguard the organization publicly commits to.
+5. Your view: does this relationship raise any concerns about youth exposure or conflicts of interest?
+
+**Research tips:** team press releases, league sponsorship pages, annual reports, news archives. Cite at least three sources.
+
+**Grading:** accuracy and sourcing (40%), clarity of the map (30%), critical analysis (30%).`,
       },
     ],
   },
@@ -297,14 +379,63 @@ Three legs at \u2212110 (1.909 each): 1.909³ = **6.96** fair-ish decimal, but t
         title: "Expected value, hold percentage and theoretical return",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Three numbers that describe every bet
+
+### Expected value (EV)
+EV is the average result per dollar if you repeated the same bet many times:
+
+**EV = (your win probability × profit if you win) − (loss probability × stake)**
+
+Example: a $10 bet at +150 (profit $15) where you believe the true win chance is 40%:
+0.40 × 15 − 0.60 × 10 = 6 − 6 = **$0**, a break-even bet. At 45% the EV is **+$1.25**. The bet slip calculates this from your forecast.
+
+### Hold percentage
+Hold is the share of all money bet that the book keeps. For a two-way market with implied probabilities p1 and p2:
+
+**Theoretical hold = 1 − 1 ÷ (p1 + p2)**
+
+At −110 / −110, each side implies 52.38%, which adds up to 104.76%. The hold is 1 − 1/1.0476 ≈ **4.5%**.
+
+### Theoretical return to player (RTP)
+RTP = 1 − hold. At standard −110 pricing, bettors get about **95.5 cents back per dollar** on average. Casino slots usually return 85–95%.
+
+### Actual vs theoretical hold
+Over one weekend the book's actual result can be anything, positive or negative. Over thousands of bets, actual hold gets closer to theoretical hold. Your instructor's Book dashboard shows both.
+
+**Take-away:** because of the hold, the average bettor's EV is negative. You only get a positive-EV bet when your probability is better than the market's no-vig probability.
+
+**Sources:** Wikipedia, "Expected value" and "Mathematics of bookmaking" (CC BY-SA).`,
       },
       {
         key: "props-and-parlays-where-the-house-edge-grows",
         title: "Props and parlays: where the house edge grows",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Why the edge grows
+
+### Props
+Player and game props (shots on goal, first scorer, passing yards) usually have **higher margins**, often 6–10% or more, compared with about 4.5% on main lines. Books take on more risk with less information, and less money is bet on props to sharpen the price.
+
+### Parlays multiply the margin
+Each leg has its own vig. Combining legs **multiplies** the edges:
+
+**Parlay fair-value ratio = (1 − hold)^legs (approximately)**
+
+| Legs (each −110) | Payout | Fair payout | Edge |
+|---|---|---|---|
+| 2 | +264 | +300 | ~9% |
+| 3 | +596 | +700 | ~13% |
+| 5 | +2,333 | +3,100 | ~21% |
+
+### Same-game parlays
+Legs from one game are **correlated**: if a quarterback throws for 300 yards, his receiver likely gains a lot of yards too. Books price that correlation themselves and often add extra margin on top.
+
+### Why books promote them
+Parlays and props give the book its highest hold, and lottery-style payouts appeal to casual bettors. That is why they get the most advertising and "boost" promotions.
+
+Try the **Parlay calculator** on the Tools page and watch the combined edge grow with each leg.
+
+**Sources:** Wikipedia, "Parlay (gambling)" and "Mathematics of bookmaking" (CC BY-SA); Tools page calculations in this app.`,
       },
       {
         key: "betting-quiz",
@@ -416,21 +547,86 @@ Recent results, team loyalty, "due for a win", parlay dreams, or a system with n
         title: "Sourcing and preparing sport data",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Good models start with clean data
+
+### Free and open sources
+- **Official league sites** (NHL, MLB, NBA): box scores, standings, schedules.
+- **Sports-Reference family** (Hockey-, Baseball-, Basketball-, Pro-Football-Reference): long histories, CSV export.
+- **MoneyPuck, Natural Stat Trick** (hockey): expected goals and shot data.
+- **Baseball Savant / Retrosheet** (baseball): pitch-level and historical game logs.
+- **Kaggle open datasets**: ready-made historical results and odds.
+- **This app's history**: your past bets, forecasts and closing lines.
+
+Always check the site's terms of use before scraping, and credit the source.
+
+### Preparing the data
+1. **Define the question.** For example: "Will the home team win?"
+2. **One row per game**, with the date, both teams, the result and features.
+3. **Use only information known before the game.** Using the final score to predict the winner is called **leakage**, and it makes a model look far better than it is.
+4. **Handle missing values** (postponed games, team relocations).
+5. **Keep team names consistent** across sources.
+6. **Split by time:** build on older seasons and test on the most recent one.
+
+### Useful starting features
+Goal or run differential, home/away, rest days, back-to-backs, starting goalie or pitcher, recent form over a fixed window.
+
+**Sources:** sports-reference.com; moneypuck.com; baseballsavant.mlb.com; kaggle.com/datasets.`,
       },
       {
         key: "building-a-simple-rating-model",
         title: "Building a simple rating model",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## A rating model in a spreadsheet
+
+### Option 1: Elo ratings
+Elo was invented for chess and is widely used in sports (FiveThirtyEight published open NFL, NBA and MLB Elo data).
+
+1. Every team starts at **1500**.
+2. Expected win chance for team A: **E = 1 ÷ (1 + 10^((Rb − Ra) ÷ 400))**
+3. After the game: **new rating = old + K × (result − E)**, where result is 1 for a win and 0 for a loss. K is often 20.
+4. Add about 50–100 points to the home team's rating before calculating E.
+
+A 100-point gap gives the stronger team about a **64%** win chance.
+
+### Option 2: Points-differential rating
+Average goal (or run) differential per game, adjusted for home advantage. Convert it to a probability with a simple lookup from past games: "teams +0.5 goals better won X% of the time."
+
+### Turning it into a forecast
+Your model outputs a probability, for example 58%. Enter it as your **forecast** on the bet slip. The app then shows your EV against the market price.
+
+### Keep it simple
+A model with three good inputs that you understand beats a model with thirty you can't explain. Write down the rules **before** you look at tonight's odds.
+
+**Sources:** Wikipedia, "Elo rating system" (CC BY-SA); FiveThirtyEight open data on GitHub (CC BY 4.0).`,
       },
       {
         key: "comparing-your-model-to-the-market",
         title: "Comparing your model to the market",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## You vs. the market
+
+The market's **no-vig probability** is a very strong benchmark: it combines information from thousands of bettors and professional oddsmakers.
+
+### Step by step
+1. Convert both sides' odds to implied probabilities.
+2. Remove the vig: divide each by their total. The bet slip shows this as **No-vig fair**.
+3. Compare: your model's 58% vs. the market's 52% gives a **6-point disagreement**.
+
+### Interpreting a disagreement
+- **Small gaps (under 3 points)** are usually noise. The vig alone is about 2.3 points per side.
+- **Large gaps** are more often a sign your model is missing something (an injury, the starting goalie) than a real edge.
+- Check the news before trusting a big edge.
+
+### Measuring who was right
+- **Brier score:** the average of (forecast − result)². Lower is better. Compute it for your model and for the no-vig market over the same games.
+- **Closing line value:** did the line move toward your number before the game started?
+- **Calibration:** when you say 60%, does it happen about 60% of the time? See your Calibration page.
+
+If the market's Brier score beats yours over 100+ games, that is a normal and useful finding. It shows how efficient betting markets are.
+
+**Sources:** Wikipedia, "Brier score" and "Efficient-market hypothesis" (CC BY-SA).`,
       },
       {
         key: "line-movement",
@@ -459,14 +655,47 @@ If you consistently bet at prices better than the close — you took +150 and it
         title: "Why models fail: sample size, overfitting and variance",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Three ways a good-looking model fools you
+
+### 1. Sample size
+A bettor who wins 55% of 40 bets could easily have a true win rate of 50%. The standard error of a win rate is about √(p(1−p)/n). For n = 40 that is ±7.9 points. You need **hundreds to thousands** of bets before a 2–3 point edge is distinguishable from luck.
+
+### 2. Overfitting
+If you add enough rules ("home teams on Tuesdays after a loss when it snows…"), any model can fit past results perfectly. It is memorizing noise, not learning patterns.
+**Defences:** few inputs, decide the rules before testing, and always test on games the model has never seen (out-of-sample).
+
+### 3. Variance
+Even a correct 55% forecast loses 45% of the time. Losing streaks of 6–8 bets are normal over a season. Results swing much more than skill does, which is why this class scores **forecast accuracy and CLV** rather than profit.
+
+### Other traps
+- **Data leakage:** using information that wasn't available before the game.
+- **Survivorship bias:** only studying "systems" that happened to work.
+- **The market adapts:** once an edge is public, prices adjust and it disappears.
+
+**Take-away:** be suspicious of any model that looks great on past data. Judge it by its performance on future games.
+
+**Sources:** Wikipedia, "Overfitting", "Law of large numbers" and "Gambler's fallacy" (CC BY-SA).`,
       },
       {
         key: "assignment-model-vs-market-report",
         title: "Assignment: model vs. market report",
         minutes: 4,
         kind: "assignment",
-        body: `Content coming soon.`,
+        body: `## Assignment: model vs. market report
+
+Over at least **two weeks** (or the betting window your instructor sets):
+
+1. **Build** a simple model (Elo, points differential, or one of your own) and write down its rules **before** you start.
+2. **Forecast** every game you bet in the app using your model's probability. Bet only small, consistent stakes.
+3. **Report** (500–750 words plus one chart):
+   - Your model's rules and data sources.
+   - Your Brier score vs. the market no-vig Brier score over the same games.
+   - Your average closing line value (from the Calibration page).
+   - Your calibration chart. Were you overconfident or underconfident?
+   - Your profit/loss, and why it does or doesn't tell you whether the model is good.
+   - One change you would make, and how you would test it without overfitting.
+
+**Grading:** method and honesty (40%), correct use of Brier/CLV/calibration (40%), reflection (20%). A model that loses money but is analysed well can earn full marks.`,
       },
     ],
   },
@@ -506,37 +735,141 @@ If you consistently bet at prices better than the close — you took +150 and it
         title: "Cognitive biases in wagering decisions",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## How the brain misreads chance
+
+Psychologists have documented systematic errors that matter a lot in betting.
+
+- **Gambler's fallacy:** believing a result is "due" after a streak. Independent events have no memory.
+- **Hot-hand belief:** expecting a streak to continue regardless of the underlying odds.
+- **Illusion of control:** believing knowledge or rituals affect random outcomes more than they do.
+- **Near-miss effect:** a bet that "almost" won feels like progress and encourages more betting, even though it was simply a loss.
+- **Loss aversion:** losses hurt about twice as much as equal gains feel good (Kahneman and Tversky). This drives chasing.
+- **Overconfidence:** most people's "90% sure" picks win far less than 90% of the time. Your Calibration page measures this directly.
+- **Anchoring:** fixating on the first number seen, such as an opening line or a pundit's pick.
+- **Selective memory:** remembering wins clearly and forgetting losses.
+
+### Why sportsbooks benefit
+Live betting, cash-out buttons, boosted parlays and instant notifications speed up decisions, and fast decisions make these biases stronger.
+
+### What helps
+Write the reason down before you bet, use fixed stake sizes, take breaks, and review your journal honestly.
+
+**Sources:** Wikipedia, "Gambler's fallacy", "Illusion of control", "Loss aversion" and "Prospect theory" (CC BY-SA); Responsible Gambling Council, responsiblegambling.org.`,
       },
       {
         key: "risk-indicators-among-post-secondary-students",
         title: "Risk indicators among post-secondary students",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Why students are a higher-risk group
+
+Research in Canada and elsewhere consistently finds that **young adults (18–24)** have higher rates of problem gambling than older adults. Contributing factors:
+
+- **Brain development:** the parts of the brain that control impulses keep maturing into the mid-20s.
+- **New independence:** first access to credit, student loans and a regular income.
+- **Social exposure:** group chats, shared parlays, watching games with friends.
+- **Heavy advertising** during sports broadcasts and on social media.
+- **Overlap with other risks:** alcohol, gaming loot boxes, financial stress.
+- **Sports knowledge** gives a false sense of skill ("I know hockey, so I'll win").
+
+### Warning signs to watch for
+- Betting with tuition, rent or loan money.
+- Borrowing, or selling things, to bet or to cover losses.
+- Chasing losses; raising stakes to get the same excitement.
+- Missing class, work or sleep because of betting.
+- Hiding or lying about how much you bet.
+- Mood depending on results; irritability when trying to cut back.
+
+A recognised self-check is the **Problem Gambling Severity Index (PGSI)**, nine questions developed in Canada.
+
+### If you notice these signs
+Talk to someone early. In Alberta, call the **Addiction Helpline at 1-866-332-2322** (24/7, free, confidential, includes gambling) or contact campus counselling. See the Support Resources page.
+
+**Sources:** Canadian Centre on Substance Use and Addiction (ccsa.ca), Problem Gambling Severity Index; Alberta Health Services, Addiction Helpline listing; Responsible Gambling Council.`,
       },
       {
         key: "responsible-gambling-tools-what-operators-and-re",
         title: "Responsible-gambling tools: what operators and regulators offer",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## Tools that exist to help you stay in control
+
+### Tools on regulated sites
+- **Deposit limits:** a daily, weekly or monthly cap. Lowering a limit takes effect immediately; raising it usually requires a waiting period.
+- **Loss and wager limits:** caps on how much you can lose or bet.
+- **Time limits and reality checks:** pop-ups showing how long you've played and your net result.
+- **Cool-off periods:** a short lockout (24 hours to a few weeks).
+- **Self-exclusion:** a longer ban (6 months to several years) that you can't undo early.
+- **Activity statements:** a full history of deposits, bets and net losses.
+
+### What regulators require
+- Alberta's open market includes a **centralized self-exclusion system**: one sign-up covers every registered site. Advertising rules prohibit targeting minors and vulnerable people.
+- Every Alberta operator must be independently **RG Check accredited** (a Responsible Gambling Council program).
+- **GameSense** (from BCLC, used by AGLC in Alberta) provides advisors and plain-language information about odds and myths.
+- Ontario's AGCO standards require similar limits and self-exclusion.
+
+### Using them well
+Set limits **before** you start, when you're calm, not after a loss. Treat any urge to raise a limit as a warning sign.
+
+**Sources:** alberta.ca, "Alberta's iGaming Strategy"; abigaming.ca launch release, July 2026; gamesense.com; responsiblegambling.org (RG Check).`,
       },
       {
         key: "advertising-standards-in-canada-and-how-ads-shap",
         title: "Advertising standards in Canada and how ads shape behaviour",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.`,
+        body: `## The rules, and the persuasion
+
+### Canadian standards
+- **Ontario (AGCO):** since **February 28, 2024**, active and recently retired athletes, and celebrities likely to appeal to minors, have been banned from internet gambling ads, except in responsible-gambling messages. Advertising of inducements (bonuses) is only allowed on the operator's own site or in direct messages to people who opted in.
+- **Alberta:** the iGaming framework includes strict rules on advertising, marketing and promotions. Operators may not target minors or high-risk and vulnerable individuals.
+- **Federal:** Senate Bill S-269 proposed a national framework for sports-betting ads. Health groups have called for restrictions similar to those on tobacco.
+- **Canadian Gaming Association** has its own voluntary advertising code.
+
+### How ads shape behaviour
+- **Normalization:** odds during broadcasts make betting seem like part of being a fan.
+- **Free bets and boosts** lower the perceived cost of starting.
+- **Highlighting wins** (screenshots of big parlays) while losses stay invisible.
+- **Urgency:** "Bet now," live odds, countdown timers.
+- **Skill framing:** "Bet smarter" suggests skill beats the margin.
+
+### Activity
+Watch one game broadcast and count every betting reference: ads, odds on screen, sponsored segments. Classify each using the list above.
+
+**Sources:** AGCO, Registrar's Standards for Internet Gaming (agco.ca), February 2024 update; alberta.ca, "Alberta's iGaming Strategy"; Parliament of Canada, Bill S-269.`,
       },
       {
         key: "support-and-referral-pathways-in-alberta",
         title: "Support and referral pathways in Alberta",
         minutes: 4,
         kind: "lesson",
-        body: `Content coming soon.
+        body: `## Where to go for help in Alberta
 
-See the [Support Resources](/support) page.`,
+### 24/7 phone support
+- **Addiction Helpline: 1-866-332-2322**. Free and confidential, 24 hours a day, 7 days a week; covers problem gambling. Staffed by nurses, social workers and psychologists.
+- **Health Link: 811** for general health advice and referrals.
+- **Mental Health Helpline: 1-877-303-2642**.
+- **211 Alberta** connects you with community services, including support for **family members** worried about someone else's gambling.
+- In an emergency, call **911**.
+
+### Self-help and tools
+- **GameSense** (AGLC): information, myths vs. facts, and advisors.
+- **Self-exclusion**: available through AGLC and, in the open market, a centralized system that covers all registered sites.
+- **Gamblers Anonymous** (gamblersanonymous.org) and **Gam-Anon** for peer support.
+
+### On campus
+Your college's counselling services are free and confidential for students. Your instructor can help you find them.
+
+### How a referral usually works
+1. Call the helpline or visit counselling.
+2. A short screening, often using the Problem Gambling Severity Index.
+3. A referral to outpatient counselling, a group program or online support, depending on your needs.
+
+You don't need to be "in crisis" to call. Early conversations work best.
+
+See the [Support Resources](/support) page.
+
+**Sources:** Alberta Health Services, Addiction & Mental Health helplines (albertahealthservices.ca); Recovery Alberta (recoveryalberta.ca); abigaming.ca FAQs (211 Alberta).`,
       },
     ],
   },
