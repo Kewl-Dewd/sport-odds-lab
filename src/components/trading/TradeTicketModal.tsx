@@ -176,7 +176,7 @@ export function TradeTicketModal({
           </button>
         </div>
 
-        {step === "entry" && !gate.cleared && !gate.loading && (
+        {step === "entry" && type === "BUY" && !gate.cleared && !gate.loading && (
           <div className="p-5 space-y-3">
             <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm space-y-2">
               <p className="font-semibold">Complete "Before you start" first</p>
@@ -191,7 +191,7 @@ export function TradeTicketModal({
           </div>
         )}
 
-        {step === "entry" && gate.cleared && (
+        {step === "entry" && (gate.cleared || type === "SELL") && (
           <div className="p-5 space-y-5">
             {/* Outcome */}
             <div className="rounded-lg border p-3 flex items-center justify-between">
