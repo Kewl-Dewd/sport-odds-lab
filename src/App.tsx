@@ -42,6 +42,10 @@ import ClassBoardPage from "@/features/classes/ClassBoardPage";
 import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 import GetAccess from "./pages/GetAccess.tsx";
+import Gradebook from "./pages/Gradebook";
+import QuickSetup from "./pages/QuickSetup";
+import ForInstructors from "./pages/ForInstructors";
+import ForAdministrators from "./pages/ForAdministrators";
 import CheckoutReturn from "./pages/CheckoutReturn.tsx";
 import { RequireAccess } from "@/components/access/RequireAccess";
 
@@ -73,6 +77,10 @@ const App = () => (
                     <Route path="/calibration" element={<ProtectedRoute><Calibration /></ProtectedRoute>} />
                     <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
                     <Route path="/support" element={<Support />} />
+                    <Route path="/instructors" element={<ForInstructors />} />
+                    <Route path="/for-administrators" element={<ForAdministrators />} />
+                    <Route path="/instructor/quick-setup" element={<ProtectedRoute requireInstructor><QuickSetup /></ProtectedRoute>} />
+                    <Route path="/instructor/gradebook" element={<ProtectedRoute requireInstructor><Gradebook /></ProtectedRoute>} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />
                     <Route path="/instructor" element={<Navigate to="/instructor/classes" replace />} />
