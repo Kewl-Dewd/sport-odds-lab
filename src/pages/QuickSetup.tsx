@@ -49,7 +49,7 @@ export default function QuickSetup() {
       const contestStart = length === "weekend" ? startDate : new Date(end.getTime() - 14 * 864e5);
       await supabase.from("class_rounds").insert({
         class_id: klass.id, name: length === "weekend" ? "Weekend contest" : "Final contest",
-        kind: length === "weekend" ? "weekend" : "custom", description: "Scored on forecast accuracy, not winnings.",
+        kind: length === "weekend" ? "weekend" : "semester", description: "Scored on forecast accuracy, not winnings.",
         starts_at: contestStart.toISOString(), ends_at: end.toISOString(), starting_bankroll: 1000,
         is_contest: true, scoring: "brier",
       } as never);
