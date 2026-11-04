@@ -66,7 +66,7 @@ export default function Gradebook() {
   const klass = classes.find((c) => c.id === classId);
 
   return (
-    <div className="space-y-6">
+    <div className="container py-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Gradebook</h1>
         <p className="text-muted-foreground text-sm">Set what each part is worth, then download a file you can import into Moodle, Canvas or D2L.</p>

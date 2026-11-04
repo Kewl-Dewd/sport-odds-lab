@@ -15,7 +15,7 @@ const features = [
 export default function ForInstructors() {
   const plan = COURSE_PLANS[0];
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
+    <div className="container py-6 max-w-4xl mx-auto space-y-10">
       <section className="text-center space-y-4 pt-4">
         <h1 className="text-3xl md:text-4xl font-bold">Teach how sports markets really work</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">A ready-to-run classroom sportsbook for sport management and business courses. Free for instructors; students pay $10 for a year.</p>

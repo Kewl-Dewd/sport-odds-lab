@@ -30,7 +30,7 @@ const sections = [
 
 export default function ForAdministrators() {
   return (
-    <div className="max-w-3xl mx-auto space-y-6 print:max-w-none">
+    <div className="container py-6 max-w-3xl mx-auto space-y-6 print:max-w-none">
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold">Sports Market Lab — information for department chairs and administrators</h1>

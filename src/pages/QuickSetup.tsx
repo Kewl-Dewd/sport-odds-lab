@@ -61,7 +61,7 @@ export default function QuickSetup() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="container py-6 space-y-6 max-w-3xl">
       <div>
         <h1 className="text-2xl font-bold">Quick class setup</h1>
         <p className="text-muted-foreground text-sm">Pick a course plan and length. Lessons, due dates, a contest and all six leagues are set up for you — change anything later.</p>
