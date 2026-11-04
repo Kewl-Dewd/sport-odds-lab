@@ -44,6 +44,7 @@ export function AppLayout() {
             someone you know, see{" "}
             <Link to="/support" className="underline text-primary">Support Resources</Link>.
           </p>
+          <p className="space-x-3"><Link to="/instructors" className="underline">For instructors</Link><Link to="/for-administrators" className="underline">For administrators</Link></p>
           <p>© 2026 Avason Systems · Sports Market Lab</p>
         </div>
       </footer>

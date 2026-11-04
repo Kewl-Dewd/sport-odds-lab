@@ -116,6 +116,9 @@ export default function Index() {
               <Button variant="outline" size="lg" asChild>
                 <Link to="/how-it-works">How It Works</Link>
               </Button>
+              <Button variant="ghost" size="lg" asChild>
+                <Link to="/instructors">For instructors</Link>
+              </Button>
             </div>
 
           </div>
