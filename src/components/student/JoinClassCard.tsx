@@ -36,7 +36,7 @@ export function JoinClassCard() {
           Join your class
         </CardTitle>
         <CardDescription>
-          Enter the 6-character class code your instructor gave you to get your
+          Enter the class code your instructor gave you to get your
           bankroll, coursework, and the class betting board.
         </CardDescription>
       </CardHeader>

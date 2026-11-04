@@ -54,7 +54,7 @@ export default function JoinClassPage() {
             Join a class
           </CardTitle>
           <CardDescription>
-            Enter the 6-character join code from your instructor.
+            Enter the class code from your instructor (for example, SPM2020).
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
