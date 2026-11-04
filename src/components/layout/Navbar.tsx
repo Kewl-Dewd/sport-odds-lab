@@ -8,6 +8,7 @@ import {
   NotebookPen, Target, ShieldCheck, School, Building2,
   Calculator,
   FileSpreadsheet,
+  Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -118,6 +119,18 @@ export function Navbar() {
               >
                 <FileSpreadsheet className="h-4 w-4" />
                 Gradebook
+              </Link>
+              <Link
+                to="/instructor/quick-setup"
+                className={cn(
+                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  location.pathname.startsWith("/instructor/quick-setup")
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <Rocket className="h-4 w-4" />
+                Quick setup
               </Link>
               {/* Legacy simulation consoles (Experiments / Control Center) retired —
                   Classes is the single instructor console. */}
@@ -232,6 +245,9 @@ export function Navbar() {
                 </Link>
                 <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <FileSpreadsheet className="h-4 w-4" /> Gradebook
+                </Link>
+                <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                  <Rocket className="h-4 w-4" /> Quick class setup
                 </Link>
                 <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <Users className="h-4 w-4" /> My Students
