@@ -15,6 +15,11 @@ import { useActiveClass } from "@/context/ClassContext";
 import { LessonMarkdown } from "@/components/learn/LessonMarkdown";
 import { useAssignedLessons, topicTitle, type AssignedLesson } from "@/hooks/useCurriculum";
 import { useCompleteLesson, useMyCourseworkProgress } from "@/features/coursework/useCoursework";
+import { lessonDesign, moduleQuiz, moduleQuizKey } from "@/data/lessonDesign";
+import { LEGACY_TOPICS } from "@/data/curriculum";
+import { useMyQuizBest } from "@/hooks/useQuizzes";
+import { LessonActivities, LessonObjectives } from "@/components/learn/LessonDesignBlocks";
+import { QuizCard } from "@/components/learn/QuizCard";
 
 function dueLabel(due: string | null) {
   if (!due) return null;
@@ -29,6 +34,7 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
   const { data: lessons = [], isLoading } = useAssignedLessons(classId, { publishedOnly: true });
   const { data: progress = new Map() } = useMyCourseworkProgress(classId);
   const complete = useCompleteLesson();
+  const { data: best = new Map<string, number>() } = useMyQuizBest(classId);
   const [busy, setBusy] = useState<string | null>(null);
 
   const topics = useMemo(() => {
@@ -135,6 +141,7 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
                             </span>
                           </summary>
                           <div className="mt-3 space-y-3 border-t pt-3">
+                            {(() => { const d = lessonDesign(l.curriculum_key); return d ? <LessonObjectives design={d} /> : null; })()}
                             {l.body_md && <LessonMarkdown body={l.body_md} />}
                             {l.url && (
                               <a
@@ -146,6 +153,22 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
                                 Open resource <ExternalLink className="h-3.5 w-3.5" />
                               </a>
                             )}
+                            {(() => {
+                              const d = lessonDesign(l.curriculum_key);
+                              if (!d || compact) return null;
+                              return (
+                                <LessonActivities
+                                  design={d}
+                                  classId={classId}
+                                  quizKey={l.curriculum_key!}
+                                  best={best.get(l.curriculum_key!)}
+                                  savedReflection={progress.get(l.id)?.response}
+                                  onSaveReflection={async (text) => {
+                                    await complete.mutateAsync({ lesson_id: l.id, class_id: classId!, response: text });
+                                  }}
+                                />
+                              );
+                            })()}
                             <Button
                               size="sm"
                               variant={isDone ? "outline" : "default"}
@@ -162,6 +185,13 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
                         </details>
                       );
                     })}
+                    {!compact && (() => {
+                      const tk = LEGACY_TOPICS[topicKey] ?? topicKey;
+                      const qs = moduleQuiz(tk);
+                      if (!qs.length) return null;
+                      const key = moduleQuizKey(tk);
+                      return <QuizCard classId={classId} quizKey={key} title="Module quiz" questions={qs} best={best.get(key)} />;
+                    })()}
                   </AccordionContent>
                 </AccordionItem>
               );

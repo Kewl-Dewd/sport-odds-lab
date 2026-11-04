@@ -31,7 +31,7 @@ export interface CurriculumTopic {
   modules: CurriculumModule[];
 }
 
-export const CURRICULUM: CurriculumTopic[] = [
+const RAW_CURRICULUM: CurriculumTopic[] = [
   {
     key: "responsible-play",
     title: "1. Before you start: the real-world risks",
@@ -1142,6 +1142,23 @@ Every AGLC-registered site must offer:
     ],
   },
 ];
+
+// Course order for the 15-week course-in-a-box. "Getting started" folds into
+// Using the app, and Alberta law folds into the Canadian industry module.
+// Lesson keys never change, so existing assignments and progress keep working.
+const T = (k: string) => RAW_CURRICULUM.find((t) => t.key === k)!;
+export const CURRICULUM: CurriculumTopic[] = [
+  T("responsible-play"),
+  { ...T("using-the-app"), title: "2. Using the app", summary: "What this app is, a tour of every screen, placing a bet correctly and keeping a journal your instructor can grade.", modules: [...T("intro").modules, ...T("using-the-app").modules] },
+  { ...T("canadian-industry"), title: "3. The Canadian wagering industry", summary: "Legal single-event wagering in Canada and Alberta, who regulates it, and who profits.", modules: [...T("canadian-industry").modules, ...T("alberta-law").modules] },
+  { ...T("how-betting-works"), title: "4. The mathematics of odds" },
+  { ...T("strategy"), title: "5. Risk, variance and the house edge" },
+  { ...T("data-models"), title: "6. Data, models and market prices" },
+  { ...T("bias-advertising-support"), title: "7. Bias, advertising and support" },
+];
+
+/** Old topic keys that were folded into other modules. */
+export const LEGACY_TOPICS: Record<string, string> = { intro: "using-the-app", "alberta-law": "canadian-industry" };
 
 export const CURRICULUM_MODULES: (CurriculumModule & { topic: string; topicTitle: string })[] =
   CURRICULUM.flatMap((t) =>

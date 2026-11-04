@@ -44,6 +44,7 @@ import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
 import GetAccess from "./pages/GetAccess.tsx";
 import Gradebook from "./pages/Gradebook";
 import QuickSetup from "./pages/QuickSetup";
+import InstructorKit from "./pages/InstructorKit";
 import ForInstructors from "./pages/ForInstructors";
 import ForAdministrators from "./pages/ForAdministrators";
 import CheckoutReturn from "./pages/CheckoutReturn.tsx";
@@ -80,6 +81,7 @@ const App = () => (
                     <Route path="/instructors" element={<ForInstructors />} />
                     <Route path="/for-administrators" element={<ForAdministrators />} />
                     <Route path="/instructor/quick-setup" element={<ProtectedRoute requireInstructor><QuickSetup /></ProtectedRoute>} />
+                    <Route path="/instructor/kit" element={<ProtectedRoute requireInstructor><InstructorKit /></ProtectedRoute>} />
                     <Route path="/instructor/gradebook" element={<ProtectedRoute requireInstructor><Gradebook /></ProtectedRoute>} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
                     <Route path="/glossary" element={<ProtectedRoute><Glossary /></ProtectedRoute>} />

@@ -1,6 +1,7 @@
 import logoBeaker from "@/assets/logo-beaker.png";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { BookOpenCheck } from "lucide-react";
 import {
   Menu, X, TrendingUp, LayoutDashboard, BarChart3,
   Briefcase, Trophy, BookOpen, GraduationCap, FlaskConical,
@@ -119,6 +120,18 @@ export function Navbar() {
               >
                 <FileSpreadsheet className="h-4 w-4" />
                 Gradebook
+              </Link>
+              <Link
+                to="/instructor/kit"
+                className={cn(
+                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  location.pathname.startsWith("/instructor/kit")
+                    ? "bg-primary/10 text-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <BookOpenCheck className="h-4 w-4" />
+                Course kit
               </Link>
               <Link
                 to="/instructor/quick-setup"
@@ -245,6 +258,9 @@ export function Navbar() {
                 </Link>
                 <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <FileSpreadsheet className="h-4 w-4" /> Gradebook
+                </Link>
+                <Link to="/instructor/kit" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                  <BookOpenCheck className="h-4 w-4" /> Course kit
                 </Link>
                 <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
                   <Rocket className="h-4 w-4" /> Quick class setup

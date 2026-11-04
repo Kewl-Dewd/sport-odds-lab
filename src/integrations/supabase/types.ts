@@ -424,6 +424,50 @@ export type Database = {
           },
         ]
       }
+      class_quiz_attempts: {
+        Row: {
+          answers: Json
+          class_id: string
+          correct: number
+          created_at: string
+          id: string
+          quiz_key: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          class_id: string
+          correct: number
+          created_at?: string
+          id?: string
+          quiz_key: string
+          score: number
+          total: number
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          class_id?: string
+          correct?: number
+          created_at?: string
+          id?: string
+          quiz_key?: string
+          score?: number
+          total?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_quiz_attempts_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       class_rounds: {
         Row: {
           class_id: string
@@ -502,6 +546,7 @@ export type Database = {
           max_stake_per_bet: number | null
           name: string
           owner_id: string
+          quiz_grading: string
           require_journal: boolean
           semester_end: string | null
           semester_start: string | null
@@ -524,6 +569,7 @@ export type Database = {
           max_stake_per_bet?: number | null
           name: string
           owner_id: string
+          quiz_grading?: string
           require_journal?: boolean
           semester_end?: string | null
           semester_start?: string | null
@@ -546,6 +592,7 @@ export type Database = {
           max_stake_per_bet?: number | null
           name?: string
           owner_id?: string
+          quiz_grading?: string
           require_journal?: boolean
           semester_end?: string | null
           semester_start?: string | null

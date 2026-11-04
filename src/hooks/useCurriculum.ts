@@ -3,7 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
-import { CURRICULUM, type CurriculumModule } from "@/data/curriculum";
+import { CURRICULUM, LEGACY_TOPICS, type CurriculumModule } from "@/data/curriculum";
 
 export interface AssignedLesson {
   id: string;
@@ -98,5 +98,6 @@ export function useRemoveAssignedLesson() {
 
 /** Topic display title for a stored topic key (falls back to the raw value). */
 export function topicTitle(key: string) {
-  return CURRICULUM.find((t) => t.key === key)?.title ?? (key === "General" ? "Other coursework" : key);
+  const k = LEGACY_TOPICS[key] ?? key;
+  return CURRICULUM.find((t) => t.key === k)?.title ?? (key === "General" ? "Other coursework" : key);
 }

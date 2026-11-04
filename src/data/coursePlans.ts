@@ -1,6 +1,7 @@
 // Ready-made course plans used by Quick setup. Each plan lists curriculum
 // module keys by week; the responsible-play gate lessons always come first.
 import { CURRICULUM, GATE_LESSON_KEYS, type CurriculumModule } from "@/data/curriculum";
+import { COURSE_WEEKS } from "@/data/courseKit";
 
 export type CourseLength = "weekend" | "six-weeks" | "semester";
 
@@ -15,6 +16,13 @@ export interface CoursePlan {
 const RG = [...GATE_LESSON_KEYS, "rg-reflection"];
 
 export const COURSE_PLANS: CoursePlan[] = [
+  {
+    key: "full-15-week",
+    title: "Full 15-week course",
+    audience: "A complete semester course in sport betting markets",
+    summary: "All seven modules over 15 weeks with quizzes, a midterm and a final project. Matches the printable syllabus in the Course kit.",
+    weeks: COURSE_WEEKS.map((w) => ({ title: w.title, modules: w.lessons })),
+  },
   {
     key: "sport-business",
     title: "Sport Business",
