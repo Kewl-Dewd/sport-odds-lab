@@ -41,7 +41,7 @@ export function MobileTabBar() {
 
   return (
     <nav
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/85"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Primary"
     >
@@ -54,12 +54,15 @@ export function MobileTabBar() {
               <Link
                 to={t.href}
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] text-[11px] font-medium transition-colors",
-                  active ? "text-primary" : "text-muted-foreground",
+                  "relative flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] text-[11px] font-medium transition-all duration-150",
+                  active ? "text-emerald-500 font-semibold dark:text-emerald-400" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                <t.icon className={cn("h-5 w-5", active && "text-primary")} />
-                {t.label}
+                {active && (
+                  <span className="absolute top-0 w-8 h-0.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                )}
+                <t.icon className={cn("h-4 w-4", active && "text-emerald-500 dark:text-emerald-400")} />
+                <span>{t.label}</span>
               </Link>
             </li>
           );

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ClassSwitcher } from "@/components/student/ClassSwitcher";
 import { ViewSwitcher } from "@/components/layout/ViewSwitcher";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
 import { useAuth } from "@/context/AuthContext";
 import { useMode, MODE_LABELS, SINGLE_MODE } from "@/context/ModeContext";
@@ -69,95 +70,101 @@ export function Navbar() {
     navigate("/");
   };
 
-
   return (
-    <header className="sticky top-0 z-50 border-b glass">
-      <div className="container flex h-16 md:h-20 items-center justify-between py-2">
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg" onClick={() => setMobileOpen(false)}>
-          <img src={logoBeaker} alt="" className="h-8 w-8 md:h-9 md:w-9 object-contain" />
-          <span className="hidden sm:inline">Sports Market Lab</span>
-          <span className="sm:hidden">SML</span>
+    <header className="sticky top-0 z-50 border-b border-border/80 glass">
+      <div className="container flex h-16 items-center justify-between py-2">
+        <Link to="/" className="flex items-center gap-2.5 font-bold text-base tracking-tight" onClick={() => setMobileOpen(false)}>
+          <div className="relative flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+            <img src={logoBeaker} alt="" className="h-5 w-5 object-contain" />
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold tracking-tight text-foreground">Sports Market Lab</span>
+            <span className="hidden sm:inline-flex items-center rounded border border-border/80 bg-muted/50 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground uppercase">
+              Terminal
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1">
-          {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
-            <Link
-              key={link.href}
-              to={link.href}
-              className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                location.pathname === link.href
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => {
+            const isActive = location.pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={cn(
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
+                  isActive
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           {isInstructor && (
             <>
               <Link
                 to="/instructor/classes"
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/classes")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <School className="h-4 w-4" />
+                <School className="h-3.5 w-3.5" />
                 Classes
               </Link>
               <Link
                 to="/instructor/gradebook"
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/gradebook")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <FileSpreadsheet className="h-4 w-4" />
+                <FileSpreadsheet className="h-3.5 w-3.5" />
                 Gradebook
               </Link>
               <Link
                 to="/instructor/kit"
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/kit")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <BookOpenCheck className="h-4 w-4" />
+                <BookOpenCheck className="h-3.5 w-3.5" />
                 Course kit
               </Link>
               <Link
                 to="/instructor/quick-setup"
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/quick-setup")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <Rocket className="h-4 w-4" />
+                <Rocket className="h-3.5 w-3.5" />
                 Quick setup
               </Link>
-              {/* Legacy simulation consoles (Experiments / Control Center) retired —
-                  Classes is the single instructor console. */}
 
               <Link
                 to="/admin/users"
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/admin")
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
-                <Users className="h-4 w-4" />
+                <Users className="h-3.5 w-3.5" />
                 My Students
               </Link>
             </>
@@ -166,13 +173,13 @@ export function Navbar() {
             <Link
               to="/admin/platform"
               className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                 location.pathname === "/admin/platform"
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
-              <Building2 className="h-4 w-4" />
+              <Building2 className="h-3.5 w-3.5" />
               Platform
             </Link>
           )}
@@ -180,60 +187,65 @@ export function Navbar() {
             <Link
               to="/admin/users"
               className={cn(
-                "px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5",
+                "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                 location.pathname === "/admin/users"
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
-              <Users className="h-4 w-4" />
+              <Users className="h-3.5 w-3.5" />
               Users
             </Link>
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2">
           {user && mode && !SINGLE_MODE && (
             <button
               onClick={switchMode}
-              className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-medium text-foreground hover:bg-primary/20 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md border border-border/80 bg-muted/40 px-2.5 py-1 text-xs font-mono font-medium text-foreground hover:bg-muted transition-colors"
               title="Switch market mode"
             >
-              <Zap className="h-3 w-3 text-primary" />
+              <Zap className="h-3 w-3 text-emerald-500" />
               {MODE_LABELS[mode]}
-              <Repeat className="h-3 w-3 opacity-60" />
+              <Repeat className="h-3 w-3 opacity-60 ml-0.5" />
             </button>
           )}
           {user && viewAs === "student" && <ClassSwitcher />}
           <ViewSwitcher />
 
+          <ThemeToggle />
+
           {user ? (
             <>
-              <span className="text-xs text-muted-foreground max-w-[140px] truncate">{user.email}</span>
-              <Button variant="outline" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-1.5" /> Sign out
+              <span className="text-xs font-mono text-muted-foreground max-w-[130px] truncate">{user.email}</span>
+              <Button variant="outline" size="sm" onClick={handleSignOut} className="h-9 text-xs">
+                <LogOut className="h-3.5 w-3.5 mr-1.5" /> Sign out
               </Button>
             </>
           ) : (
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/auth"><LogIn className="h-4 w-4 mr-1.5" /> Sign in</Link>
+            <Button variant="default" size="sm" asChild className="h-9 text-xs font-medium">
+              <Link to="/auth"><LogIn className="h-3.5 w-3.5 mr-1.5" /> Sign in</Link>
             </Button>
           )}
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        {/* Mobile controls */}
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle />
+          <button
+            className="p-2 rounded-md border border-border/60 hover:bg-muted transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t animate-slide-up max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+        <div className="md:hidden border-t border-border/80 bg-background/95 backdrop-blur animate-slide-up max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
           <nav className="container flex flex-col gap-1 py-3 pb-6">
             {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
@@ -241,10 +253,10 @@ export function Navbar() {
                 to={link.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                   location.pathname === link.href
-                    ? "bg-primary/10 text-foreground"
-                    : "text-muted-foreground hover:bg-muted"
+                    ? "bg-muted text-foreground font-semibold border border-border/60"
+                    : "text-muted-foreground hover:bg-muted/50"
                 )}
               >
                 <link.icon className="h-4 w-4" />
@@ -253,38 +265,38 @@ export function Navbar() {
             ))}
             {isInstructor && (
               <>
-                <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <School className="h-4 w-4" /> Classes
                 </Link>
-                <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <FileSpreadsheet className="h-4 w-4" /> Gradebook
                 </Link>
-                <Link to="/instructor/kit" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Link to="/instructor/kit" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <BookOpenCheck className="h-4 w-4" /> Course kit
                 </Link>
-                <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <Rocket className="h-4 w-4" /> Quick class setup
                 </Link>
-                <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+                <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <Users className="h-4 w-4" /> My Students
                 </Link>
               </>
             )}
             {isPlatformAdmin && (
-              <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+              <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                 <Building2 className="h-4 w-4" /> Platform
               </Link>
             )}
             {isPlatformAdmin && (
-              <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted">
+              <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
                 <Users className="h-4 w-4" /> Users
               </Link>
             )}
             {user && mode && !SINGLE_MODE && (
               <div className="px-3 py-2">
-                <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between">
+                <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between font-mono text-xs">
                   <span className="inline-flex items-center gap-1.5">
-                    <Zap className="h-4 w-4 text-primary" /> Mode: {MODE_LABELS[mode]}
+                    <Zap className="h-4 w-4 text-emerald-500" /> Mode: {MODE_LABELS[mode]}
                   </span>
                   <Repeat className="h-3.5 w-3.5 opacity-60" />
                 </Button>
@@ -301,7 +313,7 @@ export function Navbar() {
                   <LogOut className="h-4 w-4 mr-1.5" /> Sign out ({user.email})
                 </Button>
               ) : (
-                <Button variant="outline" size="sm" asChild className="w-full">
+                <Button variant="default" size="sm" asChild className="w-full">
                   <Link to="/auth"><LogIn className="h-4 w-4 mr-1.5" /> Sign in</Link>
                 </Button>
               )}

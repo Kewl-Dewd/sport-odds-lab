@@ -10,18 +10,18 @@ import { cn } from "@/lib/utils";
 type Board = "bankroll" | "return" | "efficiency" | "accuracy" | "activity";
 
 const boards: { key: Board; label: string; icon: typeof Trophy; description: string }[] = [
-  { key: "bankroll", label: "Bankroll", icon: Trophy, description: "Biggest bankroll — starting bankroll minus stakes plus settled payouts." },
-  { key: "return", label: "Best Return %", icon: TrendingUp, description: "Best percentage return on the starting bankroll." },
-  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest settled profit per bet placed." },
-  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win rate on bets that have been graded." },
-  { key: "activity", label: "Most Active", icon: Zap, description: "Most bets placed." },
+  { key: "bankroll", label: "Bankroll", icon: Trophy, description: "Total available bankroll (starting bankroll minus stakes plus settled payouts)." },
+  { key: "return", label: "Best Return %", icon: TrendingUp, description: "Percentage return on capital across all settled positions." },
+  { key: "efficiency", label: "Most Efficient", icon: Gauge, description: "Highest net profit earned per wager accepted." },
+  { key: "accuracy", label: "Most Accurate", icon: Target, description: "Highest win percentage on graded wagers." },
+  { key: "activity", label: "Most Active", icon: Zap, description: "Total number of wagers placed into the book." },
 ];
 
 const rankIcon = (rank: number) => {
-  if (rank === 1) return <Trophy className="h-5 w-5 text-warning" />;
-  if (rank === 2) return <Medal className="h-5 w-5 text-muted-foreground" />;
-  if (rank === 3) return <Medal className="h-5 w-5 text-warning/60" />;
-  return <span className="text-sm font-mono text-muted-foreground w-5 text-center inline-block">{rank}</span>;
+  if (rank === 1) return <Trophy className="h-4 w-4 text-amber-500" />;
+  if (rank === 2) return <Medal className="h-4 w-4 text-slate-400" />;
+  if (rank === 3) return <Medal className="h-4 w-4 text-amber-600/70" />;
+  return <span className="text-xs font-mono text-muted-foreground w-4 text-center inline-block">{rank}</span>;
 };
 
 const perBet = (e: StandingRow) => (Number(e.bet_count) > 0 ? Number(e.net_pnl) / Number(e.bet_count) : 0);
@@ -58,12 +58,18 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="container py-8 space-y-6 animate-slide-up">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Leaderboard</h1>
-        <p className="text-muted-foreground">{activeEnrollment?.klass.name ?? "Your class"}</p>
+    <div className="container max-w-6xl py-6 md:py-10 space-y-6 animate-slide-up">
+      {/* Header */}
+      <div className="border-b border-border/80 pb-5">
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          Class Standings
+        </h1>
+        <p className="text-xs sm:text-sm font-mono text-muted-foreground mt-1">
+          {activeEnrollment?.klass.name ?? "Classroom Arena"} · Graded simulation performance
+        </p>
       </div>
 
+      {/* Metric Selector Buttons */}
       <div className="flex flex-wrap gap-2">
         {boards.map((b) => (
           <Button
@@ -71,7 +77,7 @@ export default function Leaderboard() {
             variant={board === b.key ? "default" : "outline"}
             size="sm"
             onClick={() => setBoard(b.key)}
-            className="gap-1.5"
+            className="h-8 text-xs font-mono gap-1.5 uppercase tracking-wider"
           >
             <b.icon className="h-3.5 w-3.5" />
             <span className="hidden sm:inline">{b.label}</span>
@@ -80,20 +86,27 @@ export default function Leaderboard() {
         ))}
       </div>
 
-      <p className="text-sm text-muted-foreground">{currentBoard.description}</p>
+      <p className="text-xs font-mono text-muted-foreground">{currentBoard.description}</p>
 
+      {/* Top 3 Podium */}
       {entries.length >= 3 && (
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
           {entries.slice(0, 3).map((e, i) => {
             const rank = i + 1;
             return (
-              <div key={e.user_id} className={cn("stat-card text-center", rank === 1 && "border-warning/40 bg-warning/5")}>
+              <div
+                key={e.user_id}
+                className={cn(
+                  "stat-card text-center relative overflow-hidden",
+                  rank === 1 && "border-amber-500/40 bg-amber-500/5",
+                )}
+              >
                 <div className="flex justify-center mb-2">{rankIcon(rank)}</div>
-                <h3 className="font-semibold text-lg">{e.display_name}</h3>
-                <p className={cn("text-2xl font-bold font-mono", Number(e.net_pnl) >= 0 ? "price-up" : "price-down")}>
+                <h3 className="font-bold text-base sm:text-lg text-foreground truncate">{e.display_name}</h3>
+                <p className={cn("text-xl sm:text-2xl font-bold font-mono tracking-tight mt-1", Number(e.net_pnl) >= 0 ? "price-up" : "price-down")}>
                   {formatValue(e)}
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-[11px] font-mono text-muted-foreground mt-1.5">
                   {e.bet_count} bets · {money(e.bankroll, 0)} bankroll
                 </p>
               </div>
@@ -102,45 +115,46 @@ export default function Leaderboard() {
         </div>
       )}
 
+      {/* Standings Table */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">All Bettors</CardTitle>
+        <CardHeader className="pb-3 border-b border-border/60">
+          <CardTitle className="text-base font-bold">Class Roster Standings</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-2">
           {isLoading ? (
-            <p className="text-sm text-muted-foreground text-center py-6">Loading standings…</p>
+            <p className="text-xs font-mono text-muted-foreground text-center py-8">Syncing standings…</p>
           ) : entries.length === 0 ? (
-            <p className="text-sm text-muted-foreground text-center py-6">No students in this class yet.</p>
+            <p className="text-xs font-mono text-muted-foreground text-center py-8">No students enrolled in this classroom yet.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs font-mono">
                 <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="pb-3 font-medium w-12">Rank</th>
-                    <th className="pb-3 font-medium">Bettor</th>
-                    <th className="pb-3 font-medium text-right">Bankroll</th>
-                    <th className="pb-3 font-medium text-right">Return</th>
-                    <th className="pb-3 font-medium text-right">Bets</th>
-                    <th className="pb-3 font-medium text-right hidden sm:table-cell">Open</th>
-                    <th className="pb-3 font-medium text-right hidden sm:table-cell">Win Rate</th>
-                    <th className="pb-3 font-medium text-right hidden lg:table-cell">P&L / bet</th>
+                  <tr className="border-b border-border/80 text-left text-muted-foreground uppercase text-[10px] tracking-wider">
+                    <th className="py-2.5 font-semibold w-12">Rank</th>
+                    <th className="py-2.5 font-semibold font-sans">Student</th>
+                    <th className="py-2.5 font-semibold text-right">Bankroll</th>
+                    <th className="py-2.5 font-semibold text-right">ROI %</th>
+                    <th className="py-2.5 font-semibold text-right">Bets</th>
+                    <th className="py-2.5 font-semibold text-right hidden sm:table-cell">At Risk</th>
+                    <th className="py-2.5 font-semibold text-right hidden sm:table-cell">Win Rate</th>
+                    <th className="py-2.5 font-semibold text-right hidden lg:table-cell">Profit / Bet</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border/50">
                   {entries.map((e, i) => {
                     const wr = winRate(e);
                     return (
-                      <tr key={e.user_id} className="border-b last:border-0">
+                      <tr key={e.user_id} className="hover:bg-muted/40 transition-colors">
                         <td className="py-3">{rankIcon(i + 1)}</td>
-                        <td className="py-3 font-medium">{e.display_name}</td>
-                        <td className="py-3 text-right font-mono font-semibold">{money(e.bankroll, 0)}</td>
-                        <td className={cn("py-3 text-right font-mono", Number(e.roi_pct) >= 0 ? "price-up" : "price-down")}>
+                        <td className="py-3 font-semibold font-sans text-foreground text-xs">{e.display_name}</td>
+                        <td className="py-3 text-right font-bold text-foreground">{money(e.bankroll, 0)}</td>
+                        <td className={cn("py-3 text-right font-bold", Number(e.roi_pct) >= 0 ? "price-up" : "price-down")}>
                           {signedPct(e.roi_pct)}
                         </td>
-                        <td className="py-3 text-right font-mono">{e.bet_count}</td>
-                        <td className="py-3 text-right font-mono hidden sm:table-cell">{money(e.open_stake, 0)}</td>
-                        <td className="py-3 text-right font-mono hidden sm:table-cell">{wr === null ? "—" : `${wr.toFixed(0)}%`}</td>
-                        <td className="py-3 text-right font-mono hidden lg:table-cell">{signedMoney(perBet(e))}</td>
+                        <td className="py-3 text-right text-muted-foreground">{e.bet_count}</td>
+                        <td className="py-3 text-right text-muted-foreground hidden sm:table-cell">{money(e.open_stake, 0)}</td>
+                        <td className="py-3 text-right text-muted-foreground hidden sm:table-cell">{wr === null ? "—" : `${wr.toFixed(0)}%`}</td>
+                        <td className="py-3 text-right text-muted-foreground hidden lg:table-cell">{signedMoney(perBet(e))}</td>
                       </tr>
                     );
                   })}

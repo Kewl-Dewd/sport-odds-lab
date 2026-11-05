@@ -18,10 +18,22 @@ import { useBoardLeagues, useSetBoardLeagues } from "@/features/classes/useBoard
 
 const statusBadge = (status: MarketStatus) => {
   switch (status) {
-    case "open": return <span className="badge-live"><span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse-subtle" />Open</span>;
-    case "suspended": return <span className="badge-upcoming">Suspended</span>;
-    case "settled": return <span className="badge-closed">Settled</span>;
-    default: return <span className="badge-closed">{status}</span>;
+    case "open":
+      return (
+        <span className="badge-live">
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+          </span>
+          OPEN
+        </span>
+      );
+    case "suspended":
+      return <span className="badge-upcoming">SUSPENDED</span>;
+    case "settled":
+      return <span className="badge-closed">SETTLED</span>;
+    default:
+      return <span className="badge-closed">{String(status).toUpperCase()}</span>;
   }
 };
 
@@ -40,7 +52,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   "custom": "Custom",
 };
 
-
 export default function Markets() {
   const { markets: allMarkets, trades, liveBoardLoading, liveBoardError, loadLiveMarkets } = useMarket();
   const { mode } = useMode();
@@ -57,10 +68,10 @@ export default function Markets() {
     const scoped = mode ? allMarkets.filter((m) => marketMatchesMode(m, mode)) : allMarkets;
     return scoped.filter((m) => {
       const slug = m.metadata?.externalLeague;
-      // Feed markets must be in an enabled league; manual markets always show.
       return m.metadata?.dataSource !== "odds-api" || (slug ? enabledLeagues.includes(slug) : false);
     });
   }, [allMarkets, mode, enabledLeagues]);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<MarketStatus | "all">("all");
   const [leagueFilter, setLeagueFilter] = useState<string>("all");
@@ -110,32 +121,64 @@ export default function Markets() {
   const activeFilters = [statusFilter !== "all", leagueFilter !== "all", sportFilter !== "all", categoryFilter !== "all"].filter(Boolean).length;
 
   return (
-    <div className="container py-5 md:py-8 space-y-5 md:space-y-6 animate-slide-up">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold">Markets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
-        <p className="text-muted-foreground">Browse the board and place your bets</p>
-      </div>
-
-      <div className="flex items-center gap-3 text-sm text-muted-foreground flex-wrap">
-        {liveBoardLoading && <span className="flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" />Loading live odds…</span>}
-        {!liveBoardLoading && liveBoardError && <span className="text-destructive">{liveBoardError}</span>}
-        <Button variant="outline" size="sm" onClick={() => void loadLiveMarkets(enabledLeagues)} disabled={liveBoardLoading}>
-          <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", liveBoardLoading && "animate-spin")} />
-          Refresh board
-        </Button>
-      </div>
-
-      {canEdit && classId && (
-        <div className="rounded-xl border-2 border-primary/40 bg-primary/5 p-4 sm:p-5 space-y-3">
+    <div className="container max-w-6xl py-6 md:py-10 space-y-6 animate-slide-up">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/80 pb-5">
+        <div>
           <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4 text-primary" />
-            <p className="text-base font-semibold">Instructor controls · Leagues on the board</p>
-            <Badge variant="secondary" className="text-[10px]">Instructor only</Badge>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+              Odds Board
+            </h1>
+            {mode && (
+              <span className="rounded-md border border-border/80 bg-muted/60 px-2 py-0.5 text-xs font-mono font-medium text-foreground">
+                {MODE_LABELS[mode]}
+              </span>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground">
-            Turn leagues on or off for your students. The board shows games for today and the next two days.
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Real-time lines from The Odds API · Virtual stakes and live hold tracking
           </p>
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-3 pt-1">
+        </div>
+
+        <div className="flex items-center gap-2">
+          {liveBoardLoading && (
+            <span className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+              Syncing feed…
+            </span>
+          )}
+          {!liveBoardLoading && liveBoardError && (
+            <span className="text-xs text-rose-500 font-mono font-medium">{liveBoardError}</span>
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void loadLiveMarkets(enabledLeagues)}
+            disabled={liveBoardLoading}
+            className="h-8 text-xs font-medium"
+          >
+            <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", liveBoardLoading && "animate-spin")} />
+            Refresh Odds
+          </Button>
+        </div>
+      </div>
+
+      {/* Instructor League Controls */}
+      {canEdit && classId && (
+        <div className="rounded-lg border border-emerald-500/30 bg-card p-4 sm:p-5 space-y-3 shadow-subtle-card dark:shadow-terminal-card">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="h-4 w-4 text-emerald-500" />
+              <p className="text-sm sm:text-base font-semibold text-foreground">Instructor Controls · Active Leagues</p>
+            </div>
+            <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+              INSTRUCTOR ACCESS
+            </Badge>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Configure leagues enabled for class betting. Games cover today and the next two calendar days.
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 sm:gap-2.5 pt-1">
             {MAJOR_LEAGUES.map((l) => {
               const on = enabledLeagues.includes(l.key);
               const toggle = () => {
@@ -149,64 +192,81 @@ export default function Markets() {
                 <label
                   key={l.key}
                   className={cn(
-                    "flex items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 cursor-pointer transition-colors",
-                    on ? "border-primary" : "border-border opacity-70",
+                    "flex items-center justify-between gap-3 rounded-md border px-3 py-2 cursor-pointer transition-all duration-150 text-xs font-medium",
+                    on
+                      ? "border-emerald-500/50 bg-emerald-500/5 text-foreground shadow-xs"
+                      : "border-border/60 bg-muted/30 text-muted-foreground opacity-75 hover:opacity-100",
                   )}
                 >
-                  <span className="text-sm font-medium">{l.label}</span>
+                  <span className="font-mono">{l.label}</span>
                   <Switch checked={on} onCheckedChange={toggle} disabled={setBoardLeagues.isPending} />
                 </label>
               );
             })}
           </div>
-          <p className="text-xs text-muted-foreground">At least one league must stay on.</p>
         </div>
       )}
 
-
-      {/* Search & Filters */}
+      {/* Search & Filters Toolbar */}
       <div className="space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search markets, outcomes, leagues..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search teams, markets, leagues..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 text-xs"
+            />
           </div>
-          <div className="flex gap-2 overflow-x-auto -mx-1 px-1 pb-1 sm:flex-wrap sm:overflow-visible sm:mx-0 sm:px-0">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             {(["all", "open", "suspended", "settled"] as const).map((f) => (
-              <Button key={f} variant={statusFilter === f ? "default" : "outline"} size="sm" onClick={() => setStatusFilter(f)} className="capitalize shrink-0">
+              <Button
+                key={f}
+                variant={statusFilter === f ? "default" : "outline"}
+                size="sm"
+                onClick={() => setStatusFilter(f)}
+                className="h-9 px-3 text-xs font-mono uppercase shrink-0"
+              >
                 {f}
               </Button>
             ))}
           </div>
         </div>
 
-        <div className="flex gap-2 sm:gap-3 items-center overflow-x-auto -mx-1 px-1 pb-1 sm:flex-wrap sm:overflow-visible sm:mx-0 sm:px-0">
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground shrink-0">
-            <Filter className="h-3.5 w-3.5" />Filters{activeFilters > 0 && <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{activeFilters}</Badge>}
+        <div className="flex gap-2 items-center overflow-x-auto pb-1 text-xs">
+          <div className="flex items-center gap-1 text-muted-foreground shrink-0 font-mono text-[11px]">
+            <Filter className="h-3 w-3" />
+            <span>FILTER:</span>
+            {activeFilters > 0 && (
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-emerald-500/40 text-emerald-500">
+                {activeFilters}
+              </Badge>
+            )}
           </div>
           <Select value={leagueFilter} onValueChange={setLeagueFilter}>
-            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="League" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-8 text-xs shrink-0 font-mono"><SelectValue placeholder="League" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Leagues</SelectItem>
               {leagues.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={sportFilter} onValueChange={setSportFilter}>
-            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="Sport" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-8 text-xs shrink-0 font-mono"><SelectValue placeholder="Sport" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Sports</SelectItem>
               {sports.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-            <SelectTrigger className="w-36 h-9 sm:h-8 text-xs shrink-0"><SelectValue placeholder="Category" /></SelectTrigger>
+            <SelectTrigger className="w-36 h-8 text-xs shrink-0 font-mono"><SelectValue placeholder="Category" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
               {categories.map((c) => <SelectItem key={c!} value={c!}>{CATEGORY_LABELS[c!] ?? c}</SelectItem>)}
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as typeof sortBy)}>
-            <SelectTrigger className="w-32 h-9 sm:h-8 text-xs shrink-0">
+            <SelectTrigger className="w-32 h-8 text-xs shrink-0 font-mono">
               <SlidersHorizontal className="h-3 w-3 mr-1" /><SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -217,113 +277,150 @@ export default function Markets() {
             </SelectContent>
           </Select>
           {activeFilters > 0 && (
-            <button onClick={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); setCategoryFilter("all"); }}
-              className="text-xs text-muted-foreground hover:text-foreground underline">Clear filters</button>
+            <button
+              onClick={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); setCategoryFilter("all"); }}
+              className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-4 shrink-0 font-mono"
+            >
+              Reset
+            </button>
           )}
         </div>
       </div>
 
-      <p className="text-xs text-muted-foreground">{filtered.length} market{filtered.length !== 1 ? "s" : ""}</p>
+      <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
+        <span>{filtered.length} active market{filtered.length !== 1 ? "s" : ""}</span>
+        <span>FORMAT: AMERICAN ODDS (IMPLIED PROBABILITY)</span>
+      </div>
 
-      {/* Market Cards */}
-      <div className="grid gap-4">
+      {/* Market Cards Grid */}
+      <div className="grid gap-3.5">
         {filtered.map((market) => {
           const isMulti = market.outcomes.length > 2;
           const sortedOutcomes = [...market.outcomes].sort((a, b) => b.price - a.price);
-          const topOutcome = sortedOutcomes[0];
           const priceSum = market.outcomes.reduce((s, o) => s + o.price, 0);
           const vol = volumeByMarket.get(market.id);
           const catLabel = CATEGORY_LABELS[market.metadata?.category ?? "custom"] ?? market.metadata?.category;
 
           return (
             <div key={market.id} className="market-card">
-              <Link to={`/markets/${market.id}`} className="block p-4 sm:p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <Link to={`/markets/${market.id}`} className="block p-4 sm:p-5 hover:bg-muted/10 transition-colors">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       {statusBadge(market.status)}
-                      <Badge variant="outline" className="text-xs">{market.league}</Badge>
-                      <Badge variant="outline" className="text-xs">{market.sport}</Badge>
-                      {catLabel && <Badge variant="secondary" className="text-[10px]">{catLabel}</Badge>}
-                      {isMulti && <Badge variant="secondary" className="text-xs">{market.outcomes.length} outcomes</Badge>}
+                      <Badge variant="outline" className="text-[10px] font-mono px-2 py-0 border-border/80">
+                        {market.league}
+                      </Badge>
+                      <Badge variant="outline" className="text-[10px] font-mono px-2 py-0 text-muted-foreground border-border/60">
+                        {market.sport}
+                      </Badge>
+                      {catLabel && (
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                          · {catLabel}
+                        </span>
+                      )}
+                      {isMulti && (
+                        <span className="text-[10px] font-mono text-muted-foreground">
+                          ({market.outcomes.length} outcomes)
+                        </span>
+                      )}
                     </div>
-                    <h3 className="text-base sm:text-lg font-semibold">{market.title}</h3>
-                    <div className="flex items-center gap-3 mt-0.5 flex-wrap">
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" />{market.startTime}
-                      </p>
+                    <h3 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+                      {market.title}
+                    </h3>
+                    <div className="flex items-center gap-3 text-xs font-mono text-muted-foreground flex-wrap pt-0.5">
+                      <span className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {market.startTime}
+                      </span>
                       {vol && (
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <BarChart3 className="h-3 w-3" />${vol.volume.toFixed(0)} handle · {vol.count} bets
-                        </p>
+                        <span className="flex items-center gap-1">
+                          <BarChart3 className="h-3 w-3 text-emerald-500" />
+                          ${vol.volume.toFixed(0)} handle · {vol.count} bets
+                        </span>
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground mt-1 shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground mt-1 shrink-0" />
                 </div>
 
-                {/* Outcomes */}
+                {/* Outcomes Display */}
                 {market.outcomes.length <= 3 ? (
-                  <div className="flex gap-3 flex-wrap">
-                    {market.outcomes.map((o) => (
-                      <div key={o.id} className="flex-1 min-w-[calc(50%-0.375rem)] sm:min-w-[100px] rounded-lg border p-3">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <p className="text-sm font-medium truncate">{o.name}</p>
-                          <span className="text-lg font-bold font-mono ml-2">{toAmerican(o.price)}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
+                    {market.outcomes.map((o) => {
+                      const fairChance = ((o.price / Math.max(priceSum, 0.01)) * 100);
+                      return (
+                        <div
+                          key={o.id}
+                          className="rounded-md border border-border/80 bg-background/60 p-3 transition-colors hover:border-border"
+                        >
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className="text-xs font-semibold truncate text-foreground">{o.name}</span>
+                            <span className="text-base font-bold font-mono tracking-tight text-foreground ml-2">
+                              {toAmerican(o.price)}
+                            </span>
+                          </div>
+                          <div className="h-1 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                              style={{ width: `${fairChance}%` }}
+                            />
+                          </div>
+                          <div className="flex justify-between items-center text-[10px] font-mono text-muted-foreground mt-1.5">
+                            <span>Fair chance</span>
+                            <span className="font-semibold text-foreground">{fairChance.toFixed(0)}%</span>
+                          </div>
                         </div>
-                        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                          <div className="h-full rounded-full bg-primary transition-all duration-500"
-                            style={{ width: `${(o.price / Math.max(priceSum, 0.01)) * 100}%` }} />
-                        </div>
-                        <p className="text-xs text-muted-foreground text-right mt-1">
-                          {((o.price / Math.max(priceSum, 0.01)) * 100).toFixed(0)}% fair chance
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
-                  <div className="space-y-1.5">
+                  <div className="space-y-1.5 pt-1">
                     {sortedOutcomes.slice(0, 4).map((o, i) => {
                       const pct = (o.price / Math.max(priceSum, 0.01)) * 100;
                       return (
-                        <div key={o.id} className="flex items-center gap-3 text-sm">
-                          <span className="text-xs text-muted-foreground w-4 text-right">{i + 1}.</span>
-                          <span className="flex-1 truncate font-medium">{o.name}</span>
+                        <div key={o.id} className="flex items-center gap-3 text-xs font-mono py-1 border-b border-border/40 last:border-0">
+                          <span className="text-muted-foreground w-4 text-right">{i + 1}.</span>
+                          <span className="flex-1 truncate font-medium text-foreground">{o.name}</span>
                           <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
-                            <div className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-primary" : "bg-primary/50")}
-                              style={{ width: `${pct}%` }} />
+                            <div
+                              className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-emerald-500" : "bg-emerald-500/60")}
+                              style={{ width: `${pct}%` }}
+                            />
                           </div>
-                          <span className="font-mono font-bold text-sm w-14 text-right">{toAmerican(o.price)}</span>
-                          <span className="text-xs text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
+                          <span className="font-bold text-sm w-16 text-right text-foreground">{toAmerican(o.price)}</span>
+                          <span className="text-muted-foreground w-10 text-right">{pct.toFixed(0)}%</span>
                         </div>
                       );
                     })}
                     {market.outcomes.length > 4 && (
-                      <p className="text-xs text-muted-foreground pl-7">+{market.outcomes.length - 4} more</p>
+                      <p className="text-[11px] font-mono text-muted-foreground pl-7 pt-1">
+                        +{market.outcomes.length - 4} more selections
+                      </p>
                     )}
                   </div>
                 )}
               </Link>
 
-              {/* Quick Trade Buttons */}
+              {/* Quick Trade Cell Actions */}
               {market.status === "open" && (
                 <div className="px-4 sm:px-5 pb-4 pt-0">
                   <div className="flex gap-2 flex-wrap">
                     {market.outcomes.slice(0, 4).map((o) => (
-                      <Button
+                      <button
                         key={o.id}
-                        variant="outline"
-                        size="sm"
-                        className="text-xs flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[80px] h-9"
+                        type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           setTradeModal({ marketId: market.id, outcomeId: o.id });
                         }}
+                        className="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[100px] h-9 px-3 rounded-md border border-border/80 bg-muted/40 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-[0.98] transition-all flex items-center justify-between text-xs"
                       >
-                        <TrendingUp className="mr-1 h-3 w-3 shrink-0" />
-                        <span className="truncate">{o.name}</span>
-                        <span className="ml-1.5 font-mono shrink-0">{toAmerican(o.price)}</span>
-                      </Button>
+                        <span className="truncate font-medium text-foreground mr-1.5">{o.name}</span>
+                        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+                          {toAmerican(o.price)}
+                        </span>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -331,35 +428,36 @@ export default function Markets() {
             </div>
           );
         })}
+
         {filtered.length === 0 && (
           markets.length === 0 ? (
             liveBoardLoading ? (
               <EmptyState
                 icon={Loader2}
-                title="Loading the board…"
-                description="Pulling today's games and the latest prices from the odds feed."
+                title="Syncing live board…"
+                description="Ingesting today's games and live odds from The Odds API."
               />
             ) : liveBoardError ? (
               <EmptyState
                 icon={RefreshCw}
-                title="Couldn't load the odds feed"
-                description={`${liveBoardError} — this is a connection problem, not an empty board. Try again in a moment.`}
+                title="Odds feed connection error"
+                description={`${liveBoardError} — please check network connection or retry in a moment.`}
                 actionLabel="Retry"
                 onAction={() => void loadLiveMarkets(enabledLeagues)}
               />
             ) : (
               <EmptyState
                 icon={BarChart3}
-                title="No games on the board right now"
-                description="Your class board shows games from the leagues your instructor has switched on, for today and the next two days. There are no games in that window yet — check back closer to game day."
+                title="No games scheduled"
+                description="There are currently no games in the selected leagues for the next 48 hours. Check back closer to matchday."
               />
             )
           ) : (
             <EmptyState
               icon={Search}
-              title="No matches"
-              description="Try clearing filters or searching by team, league, or outcome."
-              actionLabel="Clear filters"
+              title="No matching markets"
+              description="No games matched your search criteria. Try resetting filters."
+              actionLabel="Clear Filters"
               onAction={() => { setLeagueFilter("all"); setSportFilter("all"); setStatusFilter("all"); setCategoryFilter("all"); setSearch(""); }}
             />
           )

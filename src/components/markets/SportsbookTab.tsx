@@ -34,9 +34,9 @@ export function SportsbookTab({ market }: Props) {
   if (!surface || !surface.enabled) {
     return (
       <Card>
-        <CardContent className="py-12 text-center text-muted-foreground">
-          <p className="text-sm">Sportsbook is not enabled for this market.</p>
-          <p className="text-xs mt-1">Ask your instructor to import lines from the live odds API.</p>
+        <CardContent className="py-12 text-center text-muted-foreground font-mono text-xs">
+          <p className="text-sm font-semibold font-sans">Sportsbook is not enabled for this market.</p>
+          <p className="mt-1 text-muted-foreground">Ask your instructor to import lines from the live odds API.</p>
         </CardContent>
       </Card>
     );
@@ -45,9 +45,9 @@ export function SportsbookTab({ market }: Props) {
   if (surface.lines.length === 0) {
     return (
       <Card>
-        <CardContent className="py-12 text-center text-muted-foreground">
-          <p className="text-sm">No lines have been posted yet.</p>
-          <p className="text-xs mt-1">Lines will appear here once the instructor pulls them.</p>
+        <CardContent className="py-12 text-center text-muted-foreground font-mono text-xs">
+          <p className="text-sm font-semibold font-sans">No lines have been posted yet.</p>
+          <p className="mt-1 text-muted-foreground">Lines will appear here once the instructor syncs them.</p>
         </CardContent>
       </Card>
     );
@@ -78,11 +78,11 @@ export function SportsbookTab({ market }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Header / source */}
-      <div className="flex items-center justify-between flex-wrap gap-2">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Badge variant="outline">
-            {surface.source === "odds-api" ? "Live odds API" : "Manual lines"}
+      {/* Header / Source Banner */}
+      <div className="flex items-center justify-between flex-wrap gap-2 border-b border-border/70 pb-3">
+        <div className="flex items-center gap-2 text-xs font-mono text-muted-foreground">
+          <Badge variant="outline" className="text-[10px] uppercase font-semibold">
+            {surface.source === "odds-api" ? "Live Odds Feed" : "Manual Lines"}
           </Badge>
           {surface.lastUpdated && (
             <span className="flex items-center gap-1">
@@ -91,23 +91,27 @@ export function SportsbookTab({ market }: Props) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-1.5 text-xs">
+        <div className="flex items-center gap-1.5 text-xs font-mono">
           <Wallet className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-muted-foreground">Cash:</span>
-          <span className="font-mono font-semibold">${portfolio.cash.toFixed(2)}</span>
+          <span className="text-muted-foreground">Cash Balance:</span>
+          <span className="font-bold text-foreground">${portfolio.cash.toFixed(2)}</span>
         </div>
       </div>
 
       {surface.note && (
-        <div className="rounded-lg border bg-muted/40 p-3 text-xs">{surface.note}</div>
+        <div className="rounded-lg border border-border/80 bg-muted/30 p-3 text-xs font-mono text-muted-foreground">
+          {surface.note}
+        </div>
       )}
 
       {Object.entries(grouped).map(([kind, lines]) => (
         <Card key={kind}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">{KIND_LABELS[kind] ?? kind}</CardTitle>
+          <CardHeader className="pb-3 border-b border-border/60">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider font-mono text-muted-foreground">
+              {KIND_LABELS[kind] ?? kind}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-2.5 pt-3">
             {lines.map((line) => {
               const stakeStr = stakes[line.id] ?? "";
               const stake = parseFloat(stakeStr);
@@ -120,27 +124,27 @@ export function SportsbookTab({ market }: Props) {
               return (
                 <div
                   key={line.id}
-                  className="rounded-lg border p-3 grid sm:grid-cols-[1fr_auto] gap-3 items-center"
+                  className="rounded-lg border border-border/80 bg-background/50 p-3.5 grid sm:grid-cols-[1fr_auto] gap-3 items-center hover:border-border transition-colors"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-medium text-sm">{line.label}</span>
-                      <Badge variant="secondary" className="font-mono text-xs">
+                      <span className="font-semibold text-sm text-foreground">{line.label}</span>
+                      <Badge variant="outline" className="font-mono text-xs font-bold border-border/80 text-foreground">
                         {formatAmerican(american)}
                       </Badge>
                       <span className="text-xs text-muted-foreground font-mono">
                         ({line.decimalOdds.toFixed(2)})
                       </span>
-                      <span className="text-xs text-muted-foreground">
-                        Implied {impliedPct.toFixed(1)}%
+                      <span className="text-xs text-muted-foreground font-mono">
+                        · {impliedPct.toFixed(1)}% fair chance
                       </span>
                     </div>
                   </div>
 
                   {isOpen ? (
-                    <div className="flex items-end gap-2">
+                    <div className="flex items-end gap-2.5">
                       <div className="space-y-1">
-                        <Label className="text-[10px] uppercase text-muted-foreground">
+                        <Label className="text-[10px] font-mono uppercase text-muted-foreground">
                           Stake ($)
                         </Label>
                         <Input
@@ -152,30 +156,31 @@ export function SportsbookTab({ market }: Props) {
                           onChange={(e) =>
                             setStakes((prev) => ({ ...prev, [line.id]: e.target.value }))
                           }
-                          className={cn("h-9 w-24 text-sm font-mono", overStake && "border-destructive")}
+                          className={cn("h-8 w-24 text-xs font-mono font-bold", overStake && "border-rose-500")}
                           placeholder="10"
                         />
                       </div>
-                      <div className="text-xs space-y-0.5 min-w-[110px]">
+                      <div className="text-xs font-mono space-y-0.5 min-w-[100px]">
                         <div>
-                          <span className="text-muted-foreground">Payout: </span>
-                          <span className="font-mono font-semibold">${payout.toFixed(2)}</span>
+                          <span className="text-muted-foreground">Return: </span>
+                          <span className="font-bold text-foreground">${payout.toFixed(2)}</span>
                         </div>
                         <div>
                           <span className="text-muted-foreground">Profit: </span>
-                          <span className="font-mono text-success">+${profit.toFixed(2)}</span>
+                          <span className="font-bold text-emerald-500 dark:text-emerald-400">+${profit.toFixed(2)}</span>
                         </div>
                       </div>
                       <Button
                         size="sm"
+                        className="h-8 text-xs font-mono"
                         onClick={() => handlePlace(line)}
                         disabled={!validStake || overStake}
                       >
-                        Place wager
+                        Place Wager
                       </Button>
                     </div>
                   ) : (
-                    <Badge variant="outline" className="text-xs">Closed</Badge>
+                    <Badge variant="outline" className="text-xs font-mono">Closed</Badge>
                   )}
                 </div>
               );
@@ -184,33 +189,33 @@ export function SportsbookTab({ market }: Props) {
         </Card>
       ))}
 
-      {/* My open wagers */}
+      {/* My Open Wagers */}
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            My open wagers ({openWagers.length})
+        <CardHeader className="pb-3 border-b border-border/60">
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+            Open Wagers ({openWagers.length})
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-3">
           {openWagers.length === 0 ? (
-            <p className="text-xs text-muted-foreground">No open wagers on this market.</p>
+            <p className="text-xs text-muted-foreground py-3 font-mono">No active wagers on this event.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="divide-y divide-border/60 font-mono text-xs">
               {openWagers.map((w) => (
                 <div
                   key={w.id}
-                  className="flex items-center justify-between text-sm border-b last:border-0 py-2"
+                  className="flex items-center justify-between py-2.5"
                 >
                   <div>
-                    <p className="font-medium">{w.label}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-semibold text-foreground font-sans text-sm">{w.label}</p>
+                    <p className="text-[11px] text-muted-foreground">
                       {new Date(w.placedAt).toLocaleString()} · @ {w.decimalOdds.toFixed(2)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-mono">${w.stake.toFixed(2)}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-bold text-foreground">${w.stake.toFixed(2)}</p>
+                    <p className="text-[11px] text-emerald-500 dark:text-emerald-400">
                       To win ${(w.stake * w.decimalOdds - w.stake).toFixed(2)}
                     </p>
                   </div>
@@ -223,21 +228,21 @@ export function SportsbookTab({ market }: Props) {
 
       {settledWagers.length > 0 && (
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm">Settled wagers</CardTitle>
+          <CardHeader className="pb-3 border-b border-border/60">
+            <CardTitle className="text-sm font-bold">Settled Wagers</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          <CardContent className="pt-3">
+            <div className="divide-y divide-border/60 font-mono text-xs">
               {settledWagers.map((w) => {
                 const profit = (w.settledPayout ?? 0) - w.stake;
                 return (
                   <div
                     key={w.id}
-                    className="flex items-center justify-between text-sm border-b last:border-0 py-2"
+                    className="flex items-center justify-between py-2.5"
                   >
                     <div>
-                      <p className="font-medium">{w.label}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="font-semibold text-foreground font-sans text-sm">{w.label}</p>
+                      <p className="text-[11px] text-muted-foreground">
                         ${w.stake.toFixed(2)} @ {w.decimalOdds.toFixed(2)}
                       </p>
                     </div>
@@ -246,14 +251,14 @@ export function SportsbookTab({ market }: Props) {
                         variant={
                           w.status === "won" ? "default" : w.status === "lost" ? "destructive" : "secondary"
                         }
-                        className="text-xs uppercase"
+                        className="text-[10px] font-mono uppercase"
                       >
                         {w.status}
                       </Badge>
                       <p
                         className={cn(
-                          "font-mono text-xs mt-0.5",
-                          profit > 0 ? "price-up" : profit < 0 ? "price-down" : "",
+                          "text-xs font-bold mt-0.5",
+                          profit > 0 ? "text-emerald-500" : profit < 0 ? "text-rose-500" : "text-muted-foreground",
                         )}
                       >
                         {profit >= 0 ? "+" : ""}${profit.toFixed(2)}

@@ -29,23 +29,43 @@ export function AppLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-500">
       <Navbar />
       <AccessBanner />
       <main className="flex-1">
         <Outlet />
       </main>
 
-      <footer className="border-t py-6">
-        <div className="container text-center text-xs sm:text-sm text-muted-foreground space-y-2">
-          <p className="max-w-3xl mx-auto">
-            Educational simulation for post-secondary coursework. Virtual funds only, with no
-            cash value. Not affiliated with any sportsbook. If gambling is affecting you or
-            someone you know, see{" "}
-            <Link to="/support" className="underline text-primary">Support Resources</Link>.
+      <footer className="border-t border-border/70 py-8 bg-muted/20">
+        <div className="container max-w-6xl text-center text-xs text-muted-foreground space-y-3">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground/80">
+              Classroom Simulator · Virtual Funds Only · No Real Money Wagered
+            </span>
+          </div>
+          <p className="max-w-2xl mx-auto leading-relaxed text-muted-foreground/90">
+            Educational market simulation for economics, finance, and sports analytics coursework.
+            If gambling affects you or someone you know, visit{" "}
+            <Link to="/support" className="underline underline-offset-4 hover:text-foreground transition-colors">
+              Support Resources
+            </Link>.
           </p>
-          <p className="space-x-3"><Link to="/instructors" className="underline">For instructors</Link><Link to="/for-administrators" className="underline">For administrators</Link></p>
-          <p>© 2026 Avason Systems · Sports Market Lab</p>
+          <div className="flex items-center justify-center gap-4 pt-1 font-medium">
+            <Link to="/how-it-works" className="hover:text-foreground transition-colors">How It Works</Link>
+            <span className="text-border">·</span>
+            <Link to="/instructors" className="hover:text-foreground transition-colors">For Instructors</Link>
+            <span className="text-border">·</span>
+            <Link to="/for-administrators" className="hover:text-foreground transition-colors">For Administrators</Link>
+            <span className="text-border">·</span>
+            <Link to="/support" className="hover:text-foreground transition-colors">Support & Ethics</Link>
+          </div>
+          <p className="text-[11px] font-mono text-muted-foreground/60 pt-2">
+            © 2026 Sports Market Lab · High-Performance Analytics Terminal
+          </p>
         </div>
       </footer>
 

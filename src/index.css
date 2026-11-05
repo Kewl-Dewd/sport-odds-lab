@@ -1,101 +1,98 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 220 25% 10%;
+    --background: 220 20% 98%;
+    --foreground: 224 35% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 10%;
+    --card-foreground: 224 35% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 10%;
+    --popover-foreground: 224 35% 10%;
 
-    --primary: 216 60% 27%;
+    --primary: 152 76% 36%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 15% 92%;
-    --secondary-foreground: 220 25% 15%;
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 224 35% 15%;
 
-    --muted: 220 15% 94%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 220 14% 94%;
+    --muted-foreground: 220 10% 44%;
 
-    --accent: 34 87% 53%;
-    --accent-foreground: 216 60% 15%;
+    --accent: 220 14% 92%;
+    --accent-foreground: 224 35% 10%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 350 89% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 153 60% 38%;
+    --success: 152 76% 36%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 92% 44%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
-    --ring: 216 60% 27%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 152 76% 36%;
 
-    --radius: 0.75rem;
+    --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-primary: 152 76% 36%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 152 76% 36%;
   }
 
   .dark {
-    --background: 222 30% 8%;
-    --foreground: 210 20% 95%;
+    --background: 225 18% 5%;
+    --foreground: 210 20% 98%;
 
-    --card: 222 25% 12%;
-    --card-foreground: 210 20% 95%;
+    --card: 225 14% 8%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 222 25% 12%;
-    --popover-foreground: 210 20% 95%;
+    --popover: 225 14% 9%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 34 87% 55%;
-    --primary-foreground: 222 30% 8%;
+    --primary: 152 76% 46%;
+    --primary-foreground: 225 25% 6%;
 
-    --secondary: 222 20% 18%;
+    --secondary: 225 12% 13%;
     --secondary-foreground: 210 20% 90%;
 
-    --muted: 222 20% 16%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 225 12% 11%;
+    --muted-foreground: 218 11% 60%;
 
-    --accent: 216 60% 55%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 225 12% 16%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 62% 45%;
+    --destructive: 350 89% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 153 60% 45%;
-    --success-foreground: 222 30% 8%;
+    --success: 152 76% 46%;
+    --success-foreground: 225 25% 6%;
 
-    --warning: 38 92% 55%;
-    --warning-foreground: 222 30% 8%;
+    --warning: 38 92% 52%;
+    --warning-foreground: 225 25% 6%;
 
-    --border: 222 20% 20%;
-    --input: 222 20% 20%;
-    --ring: 34 87% 55%;
+    --border: 225 12% 15%;
+    --input: 225 12% 15%;
+    --ring: 152 76% 46%;
 
-    --sidebar-background: 222 25% 10%;
+    --sidebar-background: 225 15% 7%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-primary: 152 76% 46%;
+    --sidebar-primary-foreground: 225 25% 6%;
+    --sidebar-accent: 225 12% 14%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 225 12% 15%;
+    --sidebar-ring: 152 76% 46%;
   }
 }
 
@@ -106,16 +103,24 @@
 
   html {
     -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Monospace figures alignment for odds, handles, and timers */
+  .font-mono, [data-tabular-nums] {
+    font-feature-settings: "tnum" 1, "zero" 1;
+    font-variant-numeric: tabular-nums;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold tracking-tight text-foreground;
   }
 
   /* Avoid iOS auto-zoom when focusing form fields on small screens */
@@ -126,23 +131,42 @@
       font-size: 16px;
     }
   }
+
+  /* Radix compensations */
+  body[data-scroll-locked] {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
+  }
 }
 
 @layer components {
+  /* Modern Terminal Card */
   .stat-card {
-    @apply bg-card rounded-xl border p-5 transition-all duration-200 hover:shadow-md;
+    @apply relative overflow-hidden rounded-lg border border-border/80 bg-card p-4 sm:p-5 transition-all duration-200 hover:border-border;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+
+  .stat-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
   }
 
   .price-up {
-    @apply text-success;
+    @apply text-emerald-500 font-semibold dark:text-emerald-400;
   }
 
   .price-down {
-    @apply text-destructive;
+    @apply text-rose-500 font-semibold dark:text-rose-400;
   }
 
+  /* Sleek contemporary sports market card */
   .market-card {
-    @apply bg-card rounded-xl border overflow-hidden transition-all duration-200 hover:shadow-lg hover:border-primary/30;
+    @apply relative overflow-hidden rounded-lg border border-border/70 bg-card transition-all duration-200 hover:border-border hover:shadow-terminal-hover;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
   }
 
   .nav-link {
@@ -150,48 +174,79 @@
   }
 
   .nav-link-active {
-    @apply text-foreground;
+    @apply text-foreground font-semibold;
   }
 
+  /* Precision status badges */
   .badge-live {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-medium;
-    color: hsl(var(--success));
+    @apply inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400;
   }
 
   .badge-upcoming {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-accent/15 px-2.5 py-0.5 text-xs font-medium text-accent;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-mono font-medium text-amber-600 dark:text-amber-400;
   }
 
   .badge-closed {
-    @apply inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-mono font-medium text-muted-foreground;
+  }
+
+  /* Modern terminal odds cell */
+  .odds-button-cell {
+    @apply flex flex-col items-center justify-center rounded-md border border-border/80 bg-muted/40 p-2.5 transition-all duration-150 hover:border-primary/50 hover:bg-primary/10 active:scale-[0.98];
   }
 }
 
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    background-image: linear-gradient(135deg, hsl(var(--foreground)) 30%, hsl(var(--primary)) 100%);
+  }
+
+  .text-gradient-emerald {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
   }
 
   .glass {
-    @apply backdrop-blur-lg;
-    background: hsl(var(--card) / 0.8);
+    @apply backdrop-blur-md border-b border-border/80;
+    background: hsl(var(--background) / 0.85);
+  }
+
+  /* Contemporary fine technical grid */
+  .bg-grid-pattern {
+    background-size: 32px 32px;
+    background-image: 
+      linear-gradient(to right, rgba(120, 130, 150, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(120, 130, 150, 0.06) 1px, transparent 1px);
+  }
+
+  .dark .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  }
+
+  /* Subtle radar/glow radial */
+  .hero-glow {
+    background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(16, 185, 129, 0.15), transparent 70%);
   }
 }
 
-@layer base {
-  /* Reserve the scrollbar so opening a menu never shifts or side-scrolls the
-     page, and never let a stray dropdown leave the page horizontally scrolled. */
-  html {
-    scrollbar-gutter: stable;
-  }
-  body {
-    overflow-x: hidden;
-  }
-  /* Radix compensates for the scrollbar while a menu is open; with a stable
-     gutter that compensation only causes the layout to jump. */
-  body[data-scroll-locked] {
-    margin-right: 0 !important;
-    padding-right: 0 !important;
-  }
+/* Polished Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.45);
 }

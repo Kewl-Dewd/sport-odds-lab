@@ -3,23 +3,29 @@ import {
   DollarSign, BarChart3, TrendingUp, TrendingDown, CheckCircle,
   ArrowRight, Scale, Droplets, Calculator, PieChart,
   Target, Trophy, Flag, Shuffle, Wallet, ShieldAlert, Users, Coins,
+  HelpCircle, BookOpen
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 
 export default function HowItWorks() {
   return (
-    <div className="container py-8 md:py-12 space-y-10 animate-slide-up max-w-4xl mx-auto">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl md:text-4xl font-bold">How It Works</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sports Market Lab runs a classroom sportsbook on live odds. Your instructor is the house — here&apos;s how the betting and the book work.
+    <div className="container py-8 md:py-14 space-y-12 animate-slide-up max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="text-center space-y-3 border-b border-border/70 pb-8">
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400">
+          <BookOpen className="h-3.5 w-3.5" /> CURRICULUM GUIDE
+        </div>
+        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
+          How Sports Market Lab Works
+        </h1>
+        <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          A classroom sportsbook simulation powered by live market odds. Your instructor acts as the house — here is how the wagering mathematics, odds pricing, and hold economics operate.
         </p>
       </div>
 
-      {/* Prediction-market and racetrack tabs are hidden for now (sportsbook-only focus).
-          Their content blocks are kept below so they can be re-enabled later. */}
       <Tabs defaultValue="sportsbook" className="space-y-8">
         <TabsList className="hidden">
           <TabsTrigger value="sportsbook">
@@ -27,453 +33,239 @@ export default function HowItWorks() {
           </TabsTrigger>
         </TabsList>
 
-        {/* ─────────────────────── PREDICTION MARKET ─────────────────────── */}
-        <TabsContent value="prediction" className="space-y-16">
+        {/* PREDICTION MARKET (Hidden fallback) */}
+        <TabsContent value="prediction" className="space-y-12">
           <div className="text-center space-y-2">
             <h2 className="text-2xl font-bold">Prediction Market</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A prediction market is like a stock exchange for future events. Instead of buying company shares,
-              you buy shares in possible outcomes. Prices move with trader activity.
+              A prediction market is like an exchange for event outcomes. Prices move with trader activity using automated market makers.
             </p>
           </div>
 
-          <section className="space-y-8">
-            <h3 className="text-xl font-bold text-center">Four Steps to Trading</h3>
-            <div className="grid sm:grid-cols-2 gap-6">
-              {[
-                { icon: DollarSign, step: "1", title: "Get Virtual Cash", body: "Each student starts with virtual money (typically $10,000). This is your trading capital — no real money is involved." },
-                { icon: BarChart3, step: "2", title: "Browse Markets", body: "Find sports events to trade on. Each market has outcomes priced between 1¢ and 99¢ that reflect implied probability." },
-                { icon: TrendingUp, step: "3", title: "Buy & Sell Shares", body: "Buy shares if you think an outcome is underpriced. Sell if you think it's overpriced." },
-                { icon: CheckCircle, step: "4", title: "Collect Payouts", body: "When the event concludes, winning shares pay $1.00 each. Losing shares pay $0. Profit = payout − cost." },
-              ].map((s) => (
-                <Card key={s.step}>
-                  <CardContent className="p-6 flex gap-4">
-                    <div className="h-12 w-12 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <s.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground font-mono">Step {s.step}</p>
-                      <h4 className="font-semibold text-lg mb-1">{s.title}</h4>
-                      <p className="text-sm text-muted-foreground">{s.body}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
           <section className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold">How Prices Move</h3>
-              <p className="text-muted-foreground max-w-xl mx-auto">Prices aren't fixed odds set by a bookmaker — they change dynamically with trading activity.</p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <TrendingUp className="h-8 w-8 text-success mx-auto" />
-                <h4 className="font-semibold">Buying Pushes Price Up</h4>
-                <p className="text-sm text-muted-foreground">When traders buy shares in "Lakers Win," its price rises. More buyers = higher implied probability.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <TrendingDown className="h-8 w-8 text-destructive mx-auto" />
-                <h4 className="font-semibold">Selling Pushes Price Down</h4>
-                <p className="text-sm text-muted-foreground">Selling lowers the price. If traders think an outcome is overpriced, selling corrects it.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <Scale className="h-8 w-8 text-accent mx-auto" />
-                <h4 className="font-semibold">Prices Stay Balanced</h4>
-                <p className="text-sm text-muted-foreground">In a two-outcome market, prices sum to ~$1.00. If one goes up, the other goes down.</p>
-              </CardContent></Card>
-            </div>
-          </section>
-
-          <section className="rounded-2xl bg-gradient-to-r from-primary/5 to-accent/5 border p-8 md:p-10 space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <Calculator className="h-6 w-6 text-primary" />
-              <h3 className="text-xl font-bold">Why Prediction Markets Differ from Fixed Odds</h3>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm">Traditional Sportsbook</h4>
-                <ul className="text-sm text-muted-foreground space-y-2">
-                  <li className="flex items-start gap-2"><span className="text-destructive">✗</span> Odds set by the house</li>
-                  <li className="flex items-start gap-2"><span className="text-destructive">✗</span> Prices don't change with demand</li>
-                  <li className="flex items-start gap-2"><span className="text-destructive">✗</span> House always takes a cut</li>
-                  <li className="flex items-start gap-2"><span className="text-destructive">✗</span> You bet against the house</li>
-                </ul>
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm">Prediction Market (this tab)</h4>
-                <ul className="text-sm text-muted-foreground space-y-2">
-                  <li className="flex items-start gap-2"><span className="text-success">✓</span> Prices set by trader activity</li>
-                  <li className="flex items-start gap-2"><span className="text-success">✓</span> Every trade moves the price</li>
-                  <li className="flex items-start gap-2"><span className="text-success">✓</span> Math-based market maker, no house edge</li>
-                  <li className="flex items-start gap-2"><span className="text-success">✓</span> You trade against other participants</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2"><h3 className="text-xl font-bold">Understanding Implied Probability</h3></div>
-            <div className="grid sm:grid-cols-2 gap-6">
-              <Card><CardContent className="p-6 space-y-4">
-                <PieChart className="h-6 w-6 text-primary" />
-                <h4 className="font-semibold">Price = Probability</h4>
-                <p className="text-sm text-muted-foreground">A share priced at <strong>65¢</strong> means the market believes there's a <strong>65% chance</strong> that outcome happens.</p>
-                <div className="rounded-lg bg-muted p-4 space-y-2 text-sm font-mono">
-                  <div className="flex justify-between"><span>Lakers Win</span><span className="font-bold">65¢ = 65%</span></div>
-                  <div className="flex justify-between"><span>Celtics Win</span><span className="font-bold">35¢ = 35%</span></div>
-                  <div className="flex justify-between border-t pt-2"><span>Total</span><span className="font-bold">$1.00 = 100%</span></div>
-                </div>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-4">
-                <Droplets className="h-6 w-6 text-accent" />
-                <h4 className="font-semibold">Liquidity & Price Impact</h4>
-                <p className="text-sm text-muted-foreground">The <strong>liquidity parameter</strong> controls how much prices move per trade. Higher liquidity = more stable prices.</p>
-                <div className="rounded-lg bg-muted p-4 space-y-2 text-sm">
-                  <div className="flex justify-between"><span>Low liquidity (50)</span><span className="text-warning font-medium">Prices swing more</span></div>
-                  <div className="flex justify-between"><span>High liquidity (200)</span><span className="text-success font-medium">Prices more stable</span></div>
-                </div>
-              </CardContent></Card>
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2"><h3 className="text-xl font-bold">How Settlement Works</h3></div>
-            <Card><CardContent className="p-6 md:p-8">
-              <div className="rounded-lg border p-5 space-y-3">
-                <h4 className="font-bold text-lg">Example: Lakers vs Celtics</h4>
-                <p className="text-sm text-muted-foreground">You buy 100 shares of "Lakers Win" at 40¢ each.</p>
-                <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                  <div className="rounded-lg bg-success/5 border border-success/20 p-4 space-y-2">
-                    <p className="font-semibold text-success">If Lakers Win ✓</p>
-                    <div className="font-mono space-y-1">
-                      <p>Cost: 100 × $0.40 = <strong>$40.00</strong></p>
-                      <p>Payout: 100 × $1.00 = <strong>$100.00</strong></p>
-                      <p className="text-success font-bold">Profit: +$60.00</p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-4 space-y-2">
-                    <p className="font-semibold text-destructive">If Celtics Win ✗</p>
-                    <div className="font-mono space-y-1">
-                      <p>Cost: 100 × $0.40 = <strong>$40.00</strong></p>
-                      <p>Payout: 100 × $0.00 = <strong>$0.00</strong></p>
-                      <p className="text-destructive font-bold">Loss: -$40.00</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground text-center mt-4">
-                Settlement is triggered by your instructor when the event concludes. Payouts are automatic.
-              </p>
-            </CardContent></Card>
-          </section>
-        </TabsContent>
-
-        {/* ─────────────────────── SPORTSBOOK ─────────────────────── */}
-        <TabsContent value="sportsbook" className="space-y-16">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">Sportsbook</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              The sportsbook tab shows real moneyline, spread, and totals lines from a live odds API. You're betting <em>against the book</em>
-              {" "}at fixed odds — your payout is locked in the moment you place the wager.
-            </p>
-          </div>
-
-          <section className="space-y-8">
-            <h3 className="text-xl font-bold text-center">Four Steps to Wagering</h3>
-            <div className="grid sm:grid-cols-2 gap-6">
-              {[
-                { icon: Wallet, step: "1", title: "Use Your Bankroll", body: "Every student starts a class or contest window with a virtual bankroll. That bankroll is the only thing you can risk." },
-                { icon: Target, step: "2", title: "Pick a Line", body: "Choose a moneyline (who wins), a point spread (who covers), or a total (over/under combined points). Each line has fixed decimal or American odds." },
-                { icon: Coins, step: "3", title: "Place Your Stake", body: "Enter how much you want to risk. Your potential payout = stake × decimal odds. The price is locked the moment you confirm." },
-                { icon: CheckCircle, step: "4", title: "Settle on the Result", body: "When the game finishes the instructor enters the score. Wins pay your full stake plus profit; losses forfeit the stake; pushes refund the stake." },
-              ].map((s) => (
-                <Card key={s.step}>
-                  <CardContent className="p-6 flex gap-4">
-                    <div className="h-12 w-12 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <s.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground font-mono">Step {s.step}</p>
-                      <h4 className="font-semibold text-lg mb-1">{s.title}</h4>
-                      <p className="text-sm text-muted-foreground">{s.body}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold">Reading the Three Bet Types</h3>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card><CardContent className="p-6 space-y-3">
-                <Trophy className="h-7 w-7 text-primary" />
-                <h4 className="font-semibold">Moneyline</h4>
-                <p className="text-sm text-muted-foreground">Pick who wins outright. Favorites pay less than your stake (e.g. −150), underdogs pay more (e.g. +130).</p>
-                <div className="rounded-lg bg-muted p-3 text-xs font-mono space-y-1">
-                  <div className="flex justify-between"><span>Lakers ML</span><span>−150</span></div>
-                  <div className="flex justify-between"><span>Celtics ML</span><span>+130</span></div>
-                </div>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3">
-                <Scale className="h-7 w-7 text-accent" />
-                <h4 className="font-semibold">Point Spread</h4>
-                <p className="text-sm text-muted-foreground">Bet on the margin. The favorite must win by more than the spread; the underdog can lose by less (or win outright) and still cover.</p>
-                <div className="rounded-lg bg-muted p-3 text-xs font-mono space-y-1">
-                  <div className="flex justify-between"><span>Lakers −4.5</span><span>−110</span></div>
-                  <div className="flex justify-between"><span>Celtics +4.5</span><span>−110</span></div>
-                </div>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3">
-                <BarChart3 className="h-7 w-7 text-success" />
-                <h4 className="font-semibold">Total (Over/Under)</h4>
-                <p className="text-sm text-muted-foreground">Bet whether the combined final score is over or under the posted line, regardless of who wins.</p>
-                <div className="rounded-lg bg-muted p-3 text-xs font-mono space-y-1">
-                  <div className="flex justify-between"><span>Over 218.5</span><span>−110</span></div>
-                  <div className="flex justify-between"><span>Under 218.5</span><span>−110</span></div>
-                </div>
-              </CardContent></Card>
-            </div>
-          </section>
-
-          <section className="rounded-2xl bg-gradient-to-r from-primary/5 to-accent/5 border p-8 md:p-10 space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <Calculator className="h-6 w-6 text-primary" />
-              <h3 className="text-xl font-bold">American vs Decimal Odds</h3>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm">American Odds</h4>
-                <p className="text-sm text-muted-foreground">A negative number (−150) is the stake needed to win $100. A positive number (+130) is the profit on a $100 stake.</p>
-                <div className="rounded-lg bg-muted p-3 font-mono text-xs space-y-1">
-                  <div>−150 → bet $150 to win $100</div>
-                  <div>+130 → bet $100 to win $130</div>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm">Decimal Odds</h4>
-                <p className="text-sm text-muted-foreground">Multiply your stake by the decimal to get total return (stake + profit). Easier for math: implied probability = 1 ÷ decimal.</p>
-                <div className="rounded-lg bg-muted p-3 font-mono text-xs space-y-1">
-                  <div>1.67 → $10 returns $16.70</div>
-                  <div>2.30 → $10 returns $23.00</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2"><h3 className="text-xl font-bold">Sportsbook Settlement</h3></div>
-            <Card><CardContent className="p-6 md:p-8">
-              <div className="rounded-lg border p-5 space-y-3">
-                <h4 className="font-bold text-lg">Example: Lakers −4.5 at −110</h4>
-                <p className="text-sm text-muted-foreground">You stake $50 on Lakers −4.5 (decimal odds 1.91).</p>
-                <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                  <div className="rounded-lg bg-success/5 border border-success/20 p-4 space-y-2">
-                    <p className="font-semibold text-success">If Lakers win by 5+ ✓</p>
-                    <div className="font-mono space-y-1">
-                      <p>Stake: <strong>$50.00</strong></p>
-                      <p>Payout: 50 × 1.91 = <strong>$95.50</strong></p>
-                      <p className="text-success font-bold">Profit: +$45.50</p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-destructive/5 border border-destructive/20 p-4 space-y-2">
-                    <p className="font-semibold text-destructive">If Lakers lose or win by ≤4 ✗</p>
-                    <div className="font-mono space-y-1">
-                      <p>Stake: <strong>$50.00</strong></p>
-                      <p>Payout: <strong>$0.00</strong></p>
-                      <p className="text-destructive font-bold">Loss: −$50.00</p>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">If the margin lands exactly on the spread (e.g. Lakers win by exactly 4 on a −4.0 line), the wager is a <strong>push</strong> and your stake is refunded.</p>
-              </div>
-            </CardContent></Card>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold">Your instructor runs the book</h3>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
-                Every class is its own sportsbook. Students bet against the house, and the house is
-                the instructor — so the class can watch the book&apos;s economics play out in real time.
-              </p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card><CardContent className="p-6 space-y-3">
-                <Coins className="h-7 w-7 text-primary" />
-                <h4 className="font-semibold">Handle</h4>
-                <p className="text-sm text-muted-foreground">The total amount wagered into the book. Volume, not profit — a big handle can still be a losing week for the house.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3">
-                <ShieldAlert className="h-7 w-7 text-warning" />
-                <h4 className="font-semibold">Liability</h4>
-                <p className="text-sm text-muted-foreground">What the book would owe if every open bet won. Lopsided action on one side is how a book gets hurt.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3">
-                <Scale className="h-7 w-7 text-success" />
-                <h4 className="font-semibold">Hold %</h4>
-                <p className="text-sm text-muted-foreground">The share of settled handle the book keeps. Real sportsbooks hold roughly 4–8% over time thanks to the vig.</p>
-              </CardContent></Card>
-            </div>
-            <Card><CardContent className="p-6 md:p-8 space-y-3">
-              <h4 className="font-bold text-lg">Example: a balanced book</h4>
-              <p className="text-sm text-muted-foreground">Two students bet $100 each on opposite sides of a −110 / −110 spread.</p>
-              <div className="rounded-lg bg-muted p-4 font-mono text-sm space-y-1">
-                <div>Handle: $200.00</div>
-                <div>Winner paid: 100 × 1.91 = $191.00</div>
-                <div>Loser&apos;s stake kept: $100.00</div>
-                <div className="font-bold">Book profit: $200.00 − $191.00 = $9.00 (4.5% hold)</div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                That $9 is the vig. The book doesn&apos;t need to predict the game — it needs balanced
-                action. Your class&apos;s live numbers are on the <strong>Class Board</strong> under &quot;The book.&quot;
-              </p>
-            </CardContent></Card>
-          </section>
-        </TabsContent>
-
-        {/* ─────────────────────── RACETRACK (hidden) ─────────────────────── */}
-        <TabsContent value="racetrack" className="space-y-16">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">Racetrack (Pari-mutuel)</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              In a pari-mutuel race, all wagers in each pool are combined. The track takes a small cut, then the
-              remaining money is divided among the winning tickets. Your odds aren't fixed — they're determined by
-              how everyone else bet.
-            </p>
-          </div>
-
-          <section className="space-y-8">
-            <h3 className="text-xl font-bold text-center">Four Steps to Betting a Race</h3>
-            <div className="grid sm:grid-cols-2 gap-6">
-              {[
-                { icon: Flag, step: "1", title: "Read the Card", body: "Each race has runners with a post position, name, and morning-line odds (the track's opening estimate)." },
-                { icon: Shuffle, step: "2", title: "Pick a Pool", body: "Choose Win (1st only), Place (1st or 2nd), or Show (1st, 2nd, or 3rd). Wider pools pay less but win more often." },
-                { icon: Coins, step: "3", title: "Place Your Stake", body: "Your stake goes into a shared pool with everyone else's. Indicative odds update as money flows in." },
-                { icon: Trophy, step: "4", title: "Collect at the Finish", body: "After the instructor sets the finish order, the pool minus the takeout is split proportionally among winning tickets." },
-              ].map((s) => (
-                <Card key={s.step}>
-                  <CardContent className="p-6 flex gap-4">
-                    <div className="h-12 w-12 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <s.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground font-mono">Step {s.step}</p>
-                      <h4 className="font-semibold text-lg mb-1">{s.title}</h4>
-                      <p className="text-sm text-muted-foreground">{s.body}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-bold">Win, Place, and Show Pools</h3>
-              <p className="text-muted-foreground max-w-xl mx-auto">Each pool is separate. A horse can pay in one pool and not the others.</p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <Trophy className="h-8 w-8 text-warning mx-auto" />
-                <h4 className="font-semibold">Win</h4>
-                <p className="text-sm text-muted-foreground">Pays only if your horse finishes 1st. Highest reward, highest risk.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <Users className="h-8 w-8 text-primary mx-auto" />
-                <h4 className="font-semibold">Place</h4>
-                <p className="text-sm text-muted-foreground">Pays if your horse finishes 1st <strong>or</strong> 2nd. Pool split between two horses.</p>
-              </CardContent></Card>
-              <Card><CardContent className="p-6 space-y-3 text-center">
-                <CheckCircle className="h-8 w-8 text-success mx-auto" />
-                <h4 className="font-semibold">Show</h4>
-                <p className="text-sm text-muted-foreground">Pays if your horse finishes 1st, 2nd, <strong>or</strong> 3rd. Lowest payout, best hit rate.</p>
-              </CardContent></Card>
-            </div>
-          </section>
-
-          <section className="rounded-2xl bg-gradient-to-r from-primary/5 to-accent/5 border p-8 md:p-10 space-y-4">
-            <div className="flex items-center gap-3 mb-2">
-              <Calculator className="h-6 w-6 text-primary" />
-              <h3 className="text-xl font-bold">How Pari-mutuel Payouts Are Calculated</h3>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              For each pool: <strong>distributable pool = total pool × (1 − takeout)</strong>. That distributable amount is then split equally
-              across the winning positions, and within each position split proportionally by stake. Your payout per dollar staked equals
-              the share given to your horse divided by the total dollars wagered on that horse in that pool.
-            </p>
-            <div className="rounded-lg bg-muted p-4 font-mono text-sm space-y-1">
-              <div>payout per $1 = (pool × (1 − takeout) / # winning positions) ÷ stake on your horse</div>
-              <div>your payout = stake × payout per $1</div>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Default takeout in this app is <strong>16%</strong>, similar to a real US track. The instructor can change it per race.
-            </p>
-          </section>
-
-          <section className="space-y-6">
-            <div className="text-center space-y-2"><h3 className="text-xl font-bold">Win-Pool Settlement Example</h3></div>
-            <Card><CardContent className="p-6 md:p-8">
-              <div className="rounded-lg border p-5 space-y-3">
-                <h4 className="font-bold text-lg">Race 5: Win Pool</h4>
-                <div className="grid sm:grid-cols-2 gap-4 text-sm">
-                  <div className="space-y-2">
-                    <p className="text-muted-foreground">Setup</p>
-                    <div className="font-mono space-y-1">
-                      <p>Total Win pool: <strong>$1,000</strong></p>
-                      <p>Takeout: <strong>16%</strong></p>
-                      <p>Distributable: <strong>$840</strong></p>
-                      <p>Bet on #4: <strong>$200</strong> (you bet $20)</p>
-                    </div>
-                  </div>
-                  <div className="rounded-lg bg-success/5 border border-success/20 p-4 space-y-2">
-                    <p className="font-semibold text-success">If #4 wins ✓</p>
-                    <div className="font-mono space-y-1">
-                      <p>Per $1: $840 ÷ $200 = <strong>$4.20</strong></p>
-                      <p>Your payout: 20 × $4.20 = <strong>$84.00</strong></p>
-                      <p className="text-success font-bold">Profit: +$64.00</p>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-xs text-muted-foreground">If <strong>no one</strong> bet on the winning horse in a given pool, that pool refunds all stakes (a "no-winner" return).</p>
-              </div>
-            </CardContent></Card>
-          </section>
-
-          <section className="space-y-3">
-            <div className="text-center space-y-2"><h3 className="text-xl font-bold">Things to Watch For</h3></div>
+            <h3 className="text-lg font-bold text-center uppercase tracking-wider font-mono text-muted-foreground">Execution Steps</h3>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Card><CardContent className="p-5 flex gap-3">
-                <ShieldAlert className="h-5 w-5 text-warning shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-semibold text-sm">Late Money Moves Odds</p>
-                  <p className="text-xs text-muted-foreground">A heavy bet just before post time can crash the indicative odds. Watch the pool, not just the morning line.</p>
-                </div>
-              </CardContent></Card>
-              <Card><CardContent className="p-5 flex gap-3">
-                <ShieldAlert className="h-5 w-5 text-warning shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="font-semibold text-sm">Scratched Runners Refund</p>
-                  <p className="text-xs text-muted-foreground">If a horse is scratched before the race, all stakes on that horse are returned regardless of pool.</p>
-                </div>
-              </CardContent></Card>
+              {[
+                { icon: DollarSign, step: "01", title: "Virtual Capital", body: "Each student starts with virtual money. This is your simulation bankroll — no real money is ever involved." },
+                { icon: BarChart3, step: "02", title: "Browse the Board", body: "Find sports events to trade on. Each market outcome is priced between 1¢ and 99¢ reflecting implied probability." },
+                { icon: TrendingUp, step: "03", title: "Buy & Sell Units", body: "Acquire units if you evaluate an outcome as underpriced. Cash out if the market has moved in your favor." },
+                { icon: CheckCircle, step: "04", title: "Collect Settlements", body: "When the event concludes, winning shares pay $1.00 each. Losing shares pay $0. Profit = payout − stake." },
+              ].map((s) => (
+                <Card key={s.step} className="shadow-subtle-card dark:shadow-terminal-card">
+                  <CardContent className="p-5 flex gap-4">
+                    <div className="h-10 w-10 shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 font-mono text-xs font-bold">
+                      {s.step}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-base mb-1 text-foreground">{s.title}</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{s.body}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
+          </section>
+        </TabsContent>
+
+        {/* SPORTSBOOK */}
+        <TabsContent value="sportsbook" className="space-y-12">
+          {/* Bet Types */}
+          <section className="space-y-4">
+            <div className="text-center space-y-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">MARKET STRUCTURE</span>
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Understanding the Three Wager Types</h3>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4 pt-2">
+              <Card>
+                <CardContent className="p-5 space-y-3">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-emerald-500">
+                    <Trophy className="h-4 w-4" />
+                  </div>
+                  <h4 className="font-bold text-base text-foreground">Moneyline</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Pick who wins outright. Favorites require laying more money (e.g. −150), while underdogs yield higher profits (e.g. +130).
+                  </p>
+                  <div className="rounded-md border border-border/80 bg-background/60 p-2.5 text-xs font-mono space-y-1.5">
+                    <div className="flex justify-between"><span>Lakers ML</span><span className="font-bold text-foreground">−150</span></div>
+                    <div className="flex justify-between"><span>Celtics ML</span><span className="font-bold text-emerald-500">+130</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-5 space-y-3">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-amber-500">
+                    <Scale className="h-4 w-4" />
+                  </div>
+                  <h4 className="font-bold text-base text-foreground">Point Spread</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Bet on the point margin. The favorite must win by more than the spread line; the underdog covers by keeping it closer or winning.
+                  </p>
+                  <div className="rounded-md border border-border/80 bg-background/60 p-2.5 text-xs font-mono space-y-1.5">
+                    <div className="flex justify-between"><span>Lakers −4.5</span><span className="font-bold text-foreground">−110</span></div>
+                    <div className="flex justify-between"><span>Celtics +4.5</span><span className="font-bold text-foreground">−110</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-5 space-y-3">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-sky-500">
+                    <BarChart3 className="h-4 w-4" />
+                  </div>
+                  <h4 className="font-bold text-base text-foreground">Totals (Over/Under)</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Wager on whether the combined score ends over or under the projected total benchmark, regardless of which team triumphs.
+                  </p>
+                  <div className="rounded-md border border-border/80 bg-background/60 p-2.5 text-xs font-mono space-y-1.5">
+                    <div className="flex justify-between"><span>Over 218.5</span><span className="font-bold text-foreground">−110</span></div>
+                    <div className="flex justify-between"><span>Under 218.5</span><span className="font-bold text-foreground">−110</span></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
+          {/* American vs Decimal Odds Box */}
+          <section className="rounded-xl border border-border/80 bg-card p-6 md:p-8 space-y-4 shadow-terminal-card">
+            <div className="flex items-center gap-2.5 border-b border-border/60 pb-3">
+              <Calculator className="h-5 w-5 text-emerald-500" />
+              <h3 className="text-lg font-bold text-foreground">American vs. Decimal Odds Formatting</h3>
+            </div>
+            <div className="grid md:grid-cols-2 gap-5 pt-1">
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-foreground">American Lines (+ / −)</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Negative figures (−150) indicate the stake required to win $100 profit. Positive figures (+130) indicate the net profit on a $100 stake.
+                </p>
+                <div className="rounded-md border border-border/80 bg-muted/30 p-3 font-mono text-xs space-y-1 text-muted-foreground">
+                  <div><span className="text-foreground font-bold">−150</span> → Stake $150 to win $100 profit</div>
+                  <div><span className="text-emerald-500 font-bold">+130</span> → Stake $100 to win $130 profit</div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-semibold text-sm text-foreground">Decimal Odds (European Standard)</h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Multiplies your stake by the decimal multiplier to output total payout (stake returned + profit). Implied chance = 1 ÷ decimal.
+                </p>
+                <div className="rounded-md border border-border/80 bg-muted/30 p-3 font-mono text-xs space-y-1 text-muted-foreground">
+                  <div><span className="text-foreground font-bold">1.67</span> → $10 stake yields $16.70 total return</div>
+                  <div><span className="text-emerald-500 font-bold">2.30</span> → $10 stake yields $23.00 total return</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Settlement Walkthrough */}
+          <section className="space-y-4">
+            <div className="text-center space-y-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">MATH OF SETTLEMENT</span>
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Settlement Mechanics</h3>
+            </div>
+            <Card>
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <h4 className="font-bold text-base text-foreground">Example Scenario: Lakers −4.5 @ −110</h4>
+                  <Badge variant="outline" className="font-mono text-xs">DECIMAL: 1.91</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Suppose you wager $50.00 on Lakers −4.5 point spread:
+                </p>
+                <div className="grid sm:grid-cols-2 gap-4 text-xs font-mono">
+                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-2">
+                    <p className="font-bold text-emerald-600 dark:text-emerald-400 font-sans text-sm">Outcome: Lakers win by 5+ points ✓</p>
+                    <div className="space-y-1 text-muted-foreground">
+                      <p>Initial Stake: <span className="text-foreground font-bold">$50.00</span></p>
+                      <p>Payout Return: 50 × 1.91 = <span className="text-foreground font-bold">$95.50</span></p>
+                      <p className="text-emerald-500 font-bold text-sm pt-1 border-t border-emerald-500/20">Net Profit: +$45.50</p>
+                    </div>
+                  </div>
+                  <div className="rounded-lg bg-rose-500/10 border border-rose-500/30 p-4 space-y-2">
+                    <p className="font-bold text-rose-500 font-sans text-sm">Outcome: Lakers lose or win by ≤4 ✗</p>
+                    <div className="space-y-1 text-muted-foreground">
+                      <p>Initial Stake: <span className="text-foreground font-bold">$50.00</span></p>
+                      <p>Payout Return: <span className="text-foreground font-bold">$0.00</span></p>
+                      <p className="text-rose-500 font-bold text-sm pt-1 border-t border-rose-500/20">Net Loss: −$50.00</p>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground font-mono">
+                  * If the final margin equals the spread line exactly (e.g. line is −4.0 and margin is 4), the wager pushes and stakes are 100% refunded.
+                </p>
+              </CardContent>
+            </Card>
+          </section>
+
+          {/* House Economics (Handle, Liability, Hold) */}
+          <section className="space-y-4">
+            <div className="text-center space-y-1">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">THE INSTRUCTOR IS THE HOUSE</span>
+              <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">The Economics of "The Book"</h3>
+            </div>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Card>
+                <CardContent className="p-5 space-y-2">
+                  <Coins className="h-6 w-6 text-emerald-500 mb-1" />
+                  <h4 className="font-bold text-sm text-foreground">Total Handle</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Gross volume wagered into the book. High handle does not equal profit — unhedged lopsided handle creates massive liability for the house.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-5 space-y-2">
+                  <ShieldAlert className="h-6 w-6 text-amber-500 mb-1" />
+                  <h4 className="font-bold text-sm text-foreground">Open Liability</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The maximum payout the instructor's book owes if unsettled student bets cash. Risk management requires tracking this ratio continuously.
+                  </p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-5 space-y-2">
+                  <Scale className="h-6 w-6 text-sky-500 mb-1" />
+                  <h4 className="font-bold text-sm text-foreground">Hold Percentage</h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Percentage of settled handle retained as profit by the bookmaker. Institutional sportsbooks average 4–8% hold over volume via the vig.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardContent className="p-6 space-y-3 font-mono text-xs">
+                <h4 className="font-bold text-sm font-sans text-foreground">Demonstration: A Perfectly Balanced Book</h4>
+                <p className="text-muted-foreground font-sans">
+                  Two students stake $100.00 each on opposing sides of a standard −110 / −110 point spread line:
+                </p>
+                <div className="rounded-md border border-border/80 bg-muted/40 p-4 space-y-1.5 text-muted-foreground">
+                  <div>Total Book Handle: <span className="font-bold text-foreground">$200.00</span></div>
+                  <div>Winning Ticket Return: 100 × 1.91 = <span className="font-bold text-foreground">$191.00</span></div>
+                  <div>Losing Ticket Stake Retained: <span className="font-bold text-foreground">$100.00</span></div>
+                  <div className="pt-1.5 border-t border-border/60 font-bold text-emerald-500 text-sm">
+                    Guaranteed Book Hold: $200.00 − $191.00 = $9.00 (4.5% Hold Percentage)
+                  </div>
+                </div>
+                <p className="text-[11px] text-muted-foreground font-sans leading-relaxed">
+                  Notice that the book never needed to predict the outcome of the match — it simply maintained balanced volume on both sides and harvested the 4.5% vigorish margin.
+                </p>
+              </CardContent>
+            </Card>
           </section>
         </TabsContent>
       </Tabs>
 
-      <div className="text-center space-y-4 pt-4 pb-8">
-        <h2 className="text-xl font-bold">Ready to start?</h2>
+      {/* Bottom CTA */}
+      <div className="text-center space-y-4 pt-6 pb-4 border-t border-border/70">
+        <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Ready to analyze live lines?</h2>
         <div className="flex gap-3 justify-center flex-wrap">
-          <Button variant="hero" size="lg" asChild>
-            <Link to="/markets">Browse Markets<ArrowRight className="ml-1.5 h-4 w-4" /></Link>
+          <Button variant="hero" size="lg" asChild className="h-10 px-6 font-mono text-xs uppercase">
+            <Link to="/markets">
+              View Odds Board <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Link>
           </Button>
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/glossary">Glossary</Link>
+          <Button variant="outline" size="lg" asChild className="h-10 px-6 font-mono text-xs uppercase">
+            <Link to="/glossary">Financial Glossary</Link>
           </Button>
         </div>
       </div>
