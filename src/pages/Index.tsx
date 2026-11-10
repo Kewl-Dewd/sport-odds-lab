@@ -241,7 +241,7 @@ export default function Index() {
                   </Link>
                 </div>
               </div>
-              <p className="mt-9 text-center font-editorial text-xl italic text-muted-foreground sm:translate-x-8">
+              <p className="mt-16 text-center font-editorial text-xl italic text-muted-foreground">
                 “The price is never just a price.”
               </p>
             </div>

@@ -164,7 +164,7 @@
   }
 
   .landing-shell .glass {
-    background: hsl(var(--background) / 0.94);
+    background: hsl(var(--background));
     @apply border-border;
   }
 
