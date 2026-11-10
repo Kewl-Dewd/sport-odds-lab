@@ -28,8 +28,10 @@ export function AppLayout() {
     return () => window.clearTimeout(timer);
   }, [location.pathname]);
 
+  const isLanding = location.pathname === "/";
+
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-500">
+    <div className={`min-h-screen flex flex-col bg-background text-foreground ${isLanding ? "landing-shell selection:bg-accent/25 selection:text-foreground" : "selection:bg-emerald-500/20 selection:text-emerald-500"}`}>
       <Navbar />
       <AccessBanner />
       <main className="flex-1">
@@ -64,7 +66,7 @@ export function AppLayout() {
             <Link to="/support" className="hover:text-foreground transition-colors">Support & Ethics</Link>
           </div>
           <p className="text-[11px] font-mono text-muted-foreground/60 pt-2">
-            © 2026 Sports Market Lab · High-Performance Analytics Terminal
+            © 2026 Sports Market Lab · {isLanding ? "Read the market. Reward the reasoning." : "High-Performance Analytics Terminal"}
           </p>
         </div>
       </footer>

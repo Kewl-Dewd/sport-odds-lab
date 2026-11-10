@@ -140,6 +140,71 @@
 }
 
 @layer components {
+  /* Warm editorial public homepage, scoped so classroom screens keep their own theme. */
+  .landing-shell,
+  .dark .landing-shell {
+    --background: 42 38% 94%;
+    --foreground: 218 50% 16%;
+    --card: 40 44% 97%;
+    --card-foreground: 218 50% 16%;
+    --popover: 40 44% 97%;
+    --popover-foreground: 218 50% 16%;
+    --primary: 216 60% 26%;
+    --primary-foreground: 42 45% 96%;
+    --secondary: 39 27% 88%;
+    --secondary-foreground: 218 50% 16%;
+    --muted: 39 25% 89%;
+    --muted-foreground: 217 15% 40%;
+    --accent: 33 92% 53%;
+    --accent-foreground: 218 55% 14%;
+    --border: 32 18% 76%;
+    --input: 32 18% 76%;
+    --ring: 33 92% 53%;
+    --radius: 0.25rem;
+  }
+
+  .landing-shell .glass {
+    background: hsl(var(--background));
+    @apply border-border;
+  }
+
+  .landing-shell header {
+    @apply backdrop-blur-none;
+  }
+
+  .landing-shell footer {
+    @apply bg-card;
+  }
+
+  .landing-page {
+    background-image: linear-gradient(hsl(var(--foreground) / 0.025) 1px, transparent 1px);
+    background-size: 100% 9rem;
+  }
+
+  .paper-grain {
+    isolation: isolate;
+  }
+
+  .paper-grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.075;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  .paper-grain > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .landing-ticker {
+    animation: landing-ticker 34s linear infinite;
+  }
+
   /* Modern Terminal Card */
   .stat-card {
     @apply relative overflow-hidden rounded-lg border border-border/80 bg-card p-4 sm:p-5 transition-all duration-200 hover:border-border;
@@ -229,6 +294,24 @@
   /* Subtle radar/glow radial */
   .hero-glow {
     background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(16, 185, 129, 0.15), transparent 70%);
+  }
+}
+
+@keyframes landing-ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-ticker {
+    animation: none;
+  }
+
+  .landing-page *,
+  .landing-page *::before,
+  .landing-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

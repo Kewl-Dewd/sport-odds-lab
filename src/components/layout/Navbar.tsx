@@ -58,6 +58,7 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, isInstructor, isPlatformAdmin, signOut, viewAs } = useAuth();
   const { mode, clearMode } = useMode();
+  const isLanding = location.pathname === "/";
 
   const switchMode = () => {
     clearMode();
@@ -74,13 +75,13 @@ export function Navbar() {
     <header className="sticky top-0 z-50 border-b border-border/80 glass">
       <div className="container flex h-16 items-center justify-between py-2">
         <Link to="/" className="flex items-center gap-2.5 font-bold text-base tracking-tight" onClick={() => setMobileOpen(false)}>
-          <div className="relative flex items-center justify-center h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-            <img src={logoBeaker} alt="" className="h-5 w-5 object-contain" />
+          <div className={`relative flex h-9 w-9 items-center justify-center ${isLanding ? "-rotate-3 border border-primary/20 bg-primary/5" : "rounded-lg border border-emerald-500/20 bg-emerald-500/10"}`}>
+            <img src={logoBeaker} alt="" className="h-7 w-7 object-contain" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="font-semibold tracking-tight text-foreground">Sports Market Lab</span>
+            <span className={`${isLanding ? "font-display text-lg font-semibold tracking-[-0.035em]" : "font-semibold tracking-tight"} text-foreground`}>Sports Market Lab</span>
             <span className="hidden sm:inline-flex items-center rounded border border-border/80 bg-muted/50 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground uppercase">
-              Terminal
+              {isLanding ? "Field Lab" : "Terminal"}
             </span>
           </div>
         </Link>
