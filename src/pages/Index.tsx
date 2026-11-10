@@ -18,11 +18,11 @@ import {
 } from "lucide-react";
 
 const tickerItems = [
-  "REAL MARKET ODDS",
-  "VIRTUAL STAKES",
-  "FORECAST FIRST",
-  "15-WEEK COURSE",
-  "ZERO REAL MONEY WAGERED",
+  { league: "NBA", match: "BOS Celtics -140", opp: "NY Knicks +120", vig: "4.1%" },
+  { league: "NFL", match: "KC Chiefs -3.5 (-110)", opp: "SF 49ers +3.5 (-110)", vig: "4.7%" },
+  { league: "EPL", match: "Man City -175", opp: "Real Madrid +220", vig: "4.4%" },
+  { league: "MLB", match: "LAD Dodgers -160", opp: "NY Yankees +135", vig: "4.3%" },
+  { league: "METRICS", match: "Classroom Hold: 5.2%", opp: "Simulated Handle: $428,500", vig: "ACTIVE" },
 ];
 
 const coursePrinciples = [
@@ -81,13 +81,19 @@ export default function Index() {
   return (
     <div className="landing-page overflow-hidden bg-background text-foreground">
       <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground">
-        <div className="landing-ticker flex w-max items-center py-2.5" aria-label="Course features">
+        <div className="landing-ticker flex w-max items-center py-2.5" aria-label="Sample market lines">
           {[0, 1].map((group) => (
             <div key={group} className="flex items-center" aria-hidden={group === 1}>
               {tickerItems.map((item) => (
-                <div key={`${group}-${item}`} className="flex items-center">
-                  <span className="px-7 font-mono text-[10px] font-semibold tracking-[0.18em] sm:px-10 sm:text-[11px]">
-                    {item}
+                <div key={`${group}-${item.league}-${item.match}`} className="flex items-center gap-3 px-7 sm:px-10">
+                  <span className="rounded-sm border border-primary-foreground/25 bg-primary-foreground/10 px-1.5 py-0.5 font-mono text-[9px] font-bold tracking-[0.14em]">
+                    {item.league}
+                  </span>
+                  <span className="font-mono text-[10px] font-semibold tracking-[0.05em] sm:text-[11px]">{item.match}</span>
+                  <span className="font-mono text-[10px] text-primary-foreground/60 sm:text-[11px]">vs</span>
+                  <span className="font-mono text-[10px] font-semibold tracking-[0.05em] sm:text-[11px]">{item.opp}</span>
+                  <span className="font-mono text-[9px] font-semibold tracking-[0.1em] text-accent sm:text-[10px]">
+                    {item.vig === "ACTIVE" ? "ACTIVE" : `vig ${item.vig}`}
                   </span>
                   <Sparkles className="h-3 w-3 text-accent" strokeWidth={1.8} />
                 </div>
