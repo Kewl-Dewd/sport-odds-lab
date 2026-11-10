@@ -144,7 +144,7 @@ export default function Markets() {
         <div className="flex items-center gap-2">
           {liveBoardLoading && (
             <span className="flex items-center gap-1.5 text-xs font-mono text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
               Syncing feed…
             </span>
           )}
@@ -240,7 +240,7 @@ export default function Markets() {
             <Filter className="h-3 w-3" />
             <span>FILTER:</span>
             {activeFilters > 0 && (
-              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-emerald-500/40 text-emerald-500">
+              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-primary/30 text-primary">
                 {activeFilters}
               </Badge>
             )}
@@ -336,7 +336,7 @@ export default function Markets() {
                       </span>
                       {vol && (
                         <span className="flex items-center gap-1">
-                          <BarChart3 className="h-3 w-3 text-emerald-500" />
+                          <BarChart3 className="h-3 w-3 text-primary" />
                           ${vol.volume.toFixed(0)} handle · {vol.count} bets
                         </span>
                       )}
@@ -353,7 +353,7 @@ export default function Markets() {
                       return (
                         <div
                           key={o.id}
-                          className="rounded-md border border-border/80 bg-background/60 p-3 transition-colors hover:border-border"
+                          className="rounded-sm border border-foreground/15 bg-background p-3 transition-colors hover:border-primary/40"
                         >
                           <div className="flex items-center justify-between mb-1.5">
                             <span className="text-xs font-semibold truncate text-foreground">{o.name}</span>
@@ -363,7 +363,7 @@ export default function Markets() {
                           </div>
                           <div className="h-1 rounded-full bg-muted overflow-hidden">
                             <div
-                              className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                              className="h-full rounded-full bg-primary transition-all duration-500"
                               style={{ width: `${fairChance}%` }}
                             />
                           </div>
@@ -385,7 +385,7 @@ export default function Markets() {
                           <span className="flex-1 truncate font-medium text-foreground">{o.name}</span>
                           <div className="w-24 h-1.5 rounded-full bg-muted overflow-hidden shrink-0">
                             <div
-                              className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-emerald-500" : "bg-emerald-500/60")}
+                              className={cn("h-full rounded-full transition-all duration-500", i === 0 ? "bg-primary" : "bg-primary/50")}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -415,10 +415,10 @@ export default function Markets() {
                           e.preventDefault();
                           setTradeModal({ marketId: market.id, outcomeId: o.id });
                         }}
-                        className="flex-1 min-w-[calc(50%-0.25rem)] sm:min-w-[100px] h-9 px-3 rounded-md border border-border/80 bg-muted/40 hover:border-emerald-500/50 hover:bg-emerald-500/10 active:scale-[0.98] transition-all flex items-center justify-between text-xs"
+                        className="flex h-10 min-w-[calc(50%-0.25rem)] flex-1 items-center justify-between rounded-sm border border-foreground/20 bg-card px-3 text-xs shadow-xs transition-all hover:border-primary hover:bg-primary hover:text-primary-foreground active:translate-y-px sm:min-w-[100px]"
                       >
                         <span className="truncate font-medium text-foreground mr-1.5">{o.name}</span>
-                        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 shrink-0">
+                        <span className="font-mono font-bold text-primary shrink-0">
                           {toAmerican(o.price)}
                         </span>
                       </button>

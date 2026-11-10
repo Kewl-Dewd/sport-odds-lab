@@ -244,7 +244,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border/80 bg-background/95 backdrop-blur animate-slide-up max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+        <div className="max-h-[calc(100dvh-4.5rem)] animate-slide-up overflow-y-auto overscroll-contain border-t border-foreground/15 bg-background md:hidden">
           <nav className="container flex flex-col gap-1 py-3 pb-6">
             {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
@@ -254,7 +254,7 @@ export function Navbar() {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-colors",
                   location.pathname === link.href
-                    ? "bg-muted text-foreground font-semibold border border-border/60"
+                    ? "border border-primary bg-primary font-semibold text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted/50"
                 )}
               >

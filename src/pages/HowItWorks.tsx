@@ -170,12 +170,12 @@ export default function HowItWorks() {
                   Suppose you wager $50.00 on Lakers −4.5 point spread:
                 </p>
                 <div className="grid sm:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-2">
-                    <p className="font-bold text-emerald-600 dark:text-emerald-400 font-sans text-sm">Outcome: Lakers win by 5+ points ✓</p>
+                  <div className="space-y-2 rounded-md border border-success/30 bg-success/10 p-4">
+                    <p className="font-sans text-sm font-bold text-success">Outcome: Lakers win by 5+ points ✓</p>
                     <div className="space-y-1 text-muted-foreground">
                       <p>Initial Stake: <span className="text-foreground font-bold">$50.00</span></p>
                       <p>Payout Return: 50 × 1.91 = <span className="text-foreground font-bold">$95.50</span></p>
-                      <p className="text-primary font-bold text-sm pt-1 border-t border-emerald-500/20">Net Profit: +$45.50</p>
+                      <p className="border-t border-success/20 pt-1 text-sm font-bold text-success">Net Profit: +$45.50</p>
                     </div>
                   </div>
                   <div className="rounded-lg bg-rose-500/10 border border-rose-500/30 p-4 space-y-2">
@@ -240,7 +240,7 @@ export default function HowItWorks() {
                   <div>Total Book Handle: <span className="font-bold text-foreground">$200.00</span></div>
                   <div>Winning Ticket Return: 100 × 1.91 = <span className="font-bold text-foreground">$191.00</span></div>
                   <div>Losing Ticket Stake Retained: <span className="font-bold text-foreground">$100.00</span></div>
-                  <div className="pt-1.5 border-t border-border/60 font-bold text-primary text-sm">
+                  <div className="border-t border-border/60 pt-1.5 text-sm font-bold text-success">
                     Guaranteed Book Hold: $200.00 − $191.00 = $9.00 (4.5% Hold Percentage)
                   </div>
                 </div>
