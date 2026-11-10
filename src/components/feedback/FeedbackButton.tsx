@@ -11,11 +11,12 @@ export function FeedbackButton() {
       <Button
         variant="default"
         size="sm"
-        className="fixed bottom-20 right-3 z-50 gap-2 rounded-full px-4 md:bottom-4 md:right-4"
+        className="fixed bottom-20 right-3 z-50 h-11 w-11 gap-2 rounded-full p-0 sm:w-auto sm:px-4 md:bottom-4 md:right-4"
         onClick={() => setOpen(true)}
+        aria-label="Send feedback"
       >
         <MessageSquare className="h-4 w-4" />
-        Feedback
+        <span className="hidden sm:inline">Feedback</span>
       </Button>
       <FeedbackModal open={open} onOpenChange={setOpen} />
     </>

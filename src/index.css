@@ -169,6 +169,11 @@
     background-size: 100% 9rem;
   }
 
+  .studio-shell:not(.landing-shell) main h1:not([class*="clamp"]) {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
   .section-kicker {
     @apply inline-flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground;
   }
