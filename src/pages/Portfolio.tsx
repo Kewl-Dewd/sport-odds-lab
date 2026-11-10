@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   TrendingUp, TrendingDown, PieChart as PieIcon, BarChart3,
@@ -27,19 +27,24 @@ import { money, signedMoney, signedPct } from "@/lib/money";
 import { useStudentBook } from "@/hooks/useStudentBook";
 
 function ScoreBadge({ score, label }: { score: number; label?: string }) {
-  const color = score >= 70 ? "bg-success/15 text-success" : score >= 40 ? "bg-warning/15 text-warning" : "bg-destructive/15 text-destructive";
+  const color =
+    score >= 70
+      ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
+      : score >= 40
+        ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
+        : "bg-rose-500/10 text-rose-500 border-rose-500/30";
   return (
-    <span className={cn("inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-mono font-semibold", color)}>
-      {score}/100{label && <span className="font-normal font-sans">{label}</span>}
+    <span className={cn("inline-flex items-center gap-1.5 rounded border px-2.5 py-0.5 text-xs font-mono font-semibold", color)}>
+      {score}/100{label && <span className="font-normal font-sans text-muted-foreground">{label}</span>}
     </span>
   );
 }
 
 function StatRow({ label, value, icon, className }: { label: string; value: string | number; icon?: React.ReactNode; className?: string }) {
   return (
-    <div className="flex items-center justify-between py-1.5 border-b last:border-0">
-      <span className="text-sm text-muted-foreground flex items-center gap-1.5">{icon}{label}</span>
-      <span className={cn("text-sm font-mono font-medium", className)}>{value}</span>
+    <div className="flex items-center justify-between py-2 border-b border-border/40 last:border-0">
+      <span className="text-xs text-muted-foreground flex items-center gap-1.5">{icon}{label}</span>
+      <span className={cn("text-xs font-mono font-medium", className)}>{value}</span>
     </div>
   );
 }
@@ -99,7 +104,6 @@ export default function Portfolio() {
     [portfolio.userId, trades]
   );
 
-  const cashUtilization = totalValue > 0 ? ((totalValue - cash) / totalValue) * 100 : 0;
   const returnPct = classroom.startingBalance > 0
     ? ((totalValue - classroom.startingBalance) / classroom.startingBalance) * 100
     : 0;
@@ -142,94 +146,136 @@ export default function Portfolio() {
 
   return (
     <div className="container py-8 space-y-8 animate-slide-up print:py-2 print:space-y-4">
-      <div className="flex items-center justify-between flex-wrap gap-3">
+      {/* Top Header */}
+      <div className="flex items-center justify-between flex-wrap gap-4 border-b border-border/50 pb-5">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">My Bets {mode && <span className="text-base font-normal text-muted-foreground">· {MODE_LABELS[mode]}</span>}</h1>
-          <p className="text-muted-foreground">Your open bets, results, and betting analytics</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+              Personal Terminal
+            </span>
+            {mode && (
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                · {MODE_LABELS[mode]}
+              </span>
+            )}
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Portfolio &amp; Analytics</h1>
+          <p className="text-xs md:text-sm text-muted-foreground">
+            Track bankroll velocity, open liability, execution history, and calibration metrics.
+          </p>
         </div>
         <div className="flex gap-2 print:hidden">
-          <Button variant="outline" size="sm" onClick={handleExportPersonalCsv} disabled={!stats}>
-            <Download className="h-3.5 w-3.5 mr-1" />Export
+          <Button variant="outline" size="sm" onClick={handleExportPersonalCsv} disabled={!stats} className="h-8 text-xs font-mono">
+            <Download className="h-3.5 w-3.5 mr-1.5" />Export CSV
           </Button>
-          <Button variant="outline" size="sm" onClick={handlePrintReport}>
-            <Printer className="h-3.5 w-3.5 mr-1" />Print
+          <Button variant="outline" size="sm" onClick={handlePrintReport} className="h-8 text-xs font-mono">
+            <Printer className="h-3.5 w-3.5 mr-1.5" />Print
           </Button>
         </div>
       </div>
 
-      {/* Summary Stats — from the durable bet record */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3">
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Bankroll</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{book.enrolled ? money(book.bankroll) : "—"}</p>
-          <span className={cn("text-xs font-mono", book.roiPct >= 0 ? "price-up" : "price-down")}>
+      {/* Summary Stats Tiles */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Bankroll</span>
+          <p className="text-lg md:text-xl font-bold font-mono tracking-tight">{book.enrolled ? money(book.bankroll) : "—"}</p>
+          <span className={cn("text-xs font-mono font-medium block mt-1", book.roiPct >= 0 ? "text-emerald-500" : "text-rose-500")}>
             {signedPct(book.roiPct)}
           </span>
         </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Starting bankroll</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{book.enrolled ? money(book.startingBankroll) : "—"}</p>
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Starting</span>
+          <p className="text-lg md:text-xl font-bold font-mono tracking-tight">{book.enrolled ? money(book.startingBankroll) : "—"}</p>
+          <span className="text-xs font-mono text-muted-foreground block mt-1">Base balance</span>
         </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">At Risk</span>
-          <p className="text-lg md:text-xl font-bold font-mono">{money(book.atRisk)}</p>
-          <span className="text-xs text-muted-foreground">{book.openBets.length} open</span>
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">At Risk</span>
+          <p className="text-lg md:text-xl font-bold font-mono tracking-tight">{money(book.atRisk)}</p>
+          <span className="text-xs font-mono text-muted-foreground block mt-1">{book.openBets.length} active bets</span>
         </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Could win</span>
-          <p className="text-lg md:text-xl font-bold font-mono text-success">{money(book.toWin)}</p>
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">To Win</span>
+          <p className="text-lg md:text-xl font-bold font-mono tracking-tight text-emerald-500">{money(book.toWin)}</p>
+          <span className="text-xs font-mono text-muted-foreground block mt-1">Potential upside</span>
         </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Settled P&L</span>
-          <p className={cn("text-lg md:text-xl font-bold font-mono", book.netPnl >= 0 ? "price-up" : "price-down")}>
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Settled P&amp;L</span>
+          <p className={cn("text-lg md:text-xl font-bold font-mono tracking-tight", book.netPnl >= 0 ? "text-emerald-500" : "text-rose-500")}>
             {signedMoney(book.netPnl)}
           </p>
+          <span className="text-xs font-mono text-muted-foreground block mt-1">Realized return</span>
         </div>
-        <div className="stat-card">
-          <span className="text-xs text-muted-foreground">Win rate</span>
-          <p className="text-lg md:text-xl font-bold font-mono">
+        <div className="rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm p-3.5 shadow-subtle-card hover:border-emerald-500/30 transition-all">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block mb-1">Win Rate</span>
+          <p className="text-lg md:text-xl font-bold font-mono tracking-tight">
             {book.wins + book.losses > 0 ? `${book.winRate.toFixed(0)}%` : "—"}
           </p>
-          <span className="text-xs text-muted-foreground">{book.wins}W · {book.losses}L</span>
+          <span className="text-xs font-mono text-muted-foreground block mt-1">{book.wins}W · {book.losses}L</span>
         </div>
       </div>
 
-      {/* Bet record */}
-      <Card>
-        <CardHeader><CardTitle className="text-lg">Your bets</CardTitle></CardHeader>
-        <CardContent>
+      {/* Primary Bet Record Card */}
+      <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-subtle-card">
+        <CardHeader className="border-b border-border/40 pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-semibold tracking-tight flex items-center gap-2">
+              <span>Active Orders &amp; Placed Bets</span>
+              <span className="font-mono text-xs px-2 py-0.5 rounded border border-border/60 bg-muted/30 text-muted-foreground">
+                {book.bets.length}
+              </span>
+            </CardTitle>
+            <Link to="/markets" className="text-xs font-mono text-emerald-500 hover:text-emerald-400 hover:underline">
+              + Browse Board
+            </Link>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-2">
           {book.isLoading ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">Loading your bets…</p>
+            <p className="py-8 text-center text-xs font-mono text-muted-foreground">Loading bet records…</p>
           ) : book.bets.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              No bets yet — head to the board to place your first one.
-            </p>
+            <div className="py-10 text-center">
+              <p className="text-sm text-muted-foreground mb-3">No bets placed yet.</p>
+              <Link to="/markets">
+                <Button variant="terminal" size="sm">Go to Markets Board</Button>
+              </Link>
+            </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs">
                 <thead>
-                  <tr className="border-b text-left text-xs uppercase text-muted-foreground">
-                    <th className="py-2">Game</th>
-                    <th className="py-2">Pick</th>
-                    <th className="py-2 text-right">Stake</th>
-                    <th className="py-2 text-right">To win</th>
-                    <th className="py-2 text-right">Status</th>
-                    <th className="py-2 text-right">Result</th>
+                  <tr className="border-b border-border/50 text-left font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+                    <th className="py-2.5 font-medium">Market</th>
+                    <th className="py-2.5 font-medium">Pick</th>
+                    <th className="py-2.5 text-right font-medium">Stake</th>
+                    <th className="py-2.5 text-right font-medium">To Win</th>
+                    <th className="py-2.5 text-right font-medium">Status</th>
+                    <th className="py-2.5 text-right font-medium">Net P&amp;L</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border/30 font-mono">
                   {book.bets.map((b) => {
                     const open = b.status === "open" || b.status === "executed";
                     const net = Number(b.payout ?? 0) - Number(b.stake ?? 0);
                     const toWin = Math.max(0, Number(b.potential_payout ?? b.stake) - Number(b.stake));
                     return (
-                      <tr key={b.id} className="border-b last:border-0">
-                        <td className="py-2.5 pr-3">{b.market_title}</td>
-                        <td className="py-2.5 pr-3 text-muted-foreground">{b.selection}</td>
-                        <td className="py-2.5 text-right font-mono">{money(b.stake)}</td>
-                        <td className="py-2.5 text-right font-mono">{money(toWin)}</td>
-                        <td className="py-2.5 text-right capitalize">{open ? "Open" : b.status}</td>
-                        <td className={cn("py-2.5 text-right font-mono", open ? "text-muted-foreground" : net >= 0 ? "price-up" : "price-down")}>
+                      <tr key={b.id} className="hover:bg-muted/30 transition-colors">
+                        <td className="py-3 pr-3 font-sans font-medium text-foreground">{b.market_title}</td>
+                        <td className="py-3 pr-3 text-muted-foreground">{b.selection}</td>
+                        <td className="py-3 text-right">{money(b.stake)}</td>
+                        <td className="py-3 text-right text-emerald-500">{money(toWin)}</td>
+                        <td className="py-3 text-right">
+                          <span className={cn(
+                            "px-2 py-0.5 rounded text-[10px] uppercase font-semibold border",
+                            open
+                              ? "bg-amber-500/10 text-amber-500 border-amber-500/30"
+                              : net >= 0
+                                ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/30"
+                                : "bg-rose-500/10 text-rose-500 border-rose-500/30"
+                          )}>
+                            {open ? "Open" : b.status}
+                          </span>
+                        </td>
+                        <td className={cn("py-3 text-right font-semibold", open ? "text-muted-foreground" : net >= 0 ? "text-emerald-500" : "text-rose-500")}>
                           {open ? "—" : signedMoney(net)}
                         </td>
                       </tr>
@@ -245,70 +291,79 @@ export default function Portfolio() {
       {/* Decision Quality Scores */}
       {stats && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="stat-card text-center">
-            <Brain className="h-4 w-4 mx-auto text-primary mb-1" />
-            <span className="text-[10px] text-muted-foreground uppercase">Decision Quality</span>
-            <div className="mt-1"><ScoreBadge score={stats.decisionQuality.compositeScore} /></div>
+          <div className="rounded-lg border border-border/60 bg-card/60 p-4 text-center shadow-subtle-card">
+            <Brain className="h-4 w-4 mx-auto text-emerald-500 mb-1.5" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Decision Quality</span>
+            <div className="mt-2"><ScoreBadge score={stats.decisionQuality.compositeScore} /></div>
           </div>
-          <div className="stat-card text-center">
-            <Shield className="h-4 w-4 mx-auto text-primary mb-1" />
-            <span className="text-[10px] text-muted-foreground uppercase">Risk Management</span>
-            <div className="mt-1"><ScoreBadge score={stats.riskMetrics.compositeScore} /></div>
+          <div className="rounded-lg border border-border/60 bg-card/60 p-4 text-center shadow-subtle-card">
+            <Shield className="h-4 w-4 mx-auto text-emerald-500 mb-1.5" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Risk Management</span>
+            <div className="mt-2"><ScoreBadge score={stats.riskMetrics.compositeScore} /></div>
           </div>
-          <div className="stat-card text-center">
-            <Target className="h-4 w-4 mx-auto text-primary mb-1" />
-            <span className="text-[10px] text-muted-foreground uppercase">Win Rate</span>
-            <div className="mt-1">
-              <span className="text-lg font-bold font-mono">{(stats.winRate * 100).toFixed(0)}%</span>
+          <div className="rounded-lg border border-border/60 bg-card/60 p-4 text-center shadow-subtle-card">
+            <Target className="h-4 w-4 mx-auto text-emerald-500 mb-1.5" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Win Rate</span>
+            <div className="mt-2">
+              <span className="text-xl font-bold font-mono tracking-tight">{(stats.winRate * 100).toFixed(0)}%</span>
             </div>
           </div>
-          <div className="stat-card text-center">
-            <Activity className="h-4 w-4 mx-auto text-primary mb-1" />
-            <span className="text-[10px] text-muted-foreground uppercase">Efficiency</span>
-            <div className="mt-1">
-              <span className={cn("text-lg font-bold font-mono", stats.behavioral.returnPerTrade >= 0 ? "price-up" : "price-down")}>
+          <div className="rounded-lg border border-border/60 bg-card/60 p-4 text-center shadow-subtle-card">
+            <Activity className="h-4 w-4 mx-auto text-emerald-500 mb-1.5" />
+            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Efficiency</span>
+            <div className="mt-2">
+              <span className={cn("text-xl font-bold font-mono tracking-tight", stats.behavioral.returnPerTrade >= 0 ? "text-emerald-500" : "text-rose-500")}>
                 ${stats.behavioral.returnPerTrade.toFixed(2)}
               </span>
-              <span className="text-[10px] text-muted-foreground block">/bet</span>
+              <span className="text-[10px] font-mono text-muted-foreground block">/bet</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* Charts row */}
+      {/* Charts Row */}
       <div className="grid lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Bankroll History</CardTitle></CardHeader>
-          <CardContent>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-subtle-card">
+          <CardHeader className="border-b border-border/40 pb-3">
+            <CardTitle className="text-sm font-semibold tracking-tight">Bankroll Trajectory</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
             <PortfolioPerformanceChart snapshots={portfolioHistory} startingCash={classroom.startingBalance} />
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><PieIcon className="h-4 w-4" />Where Your Money Is</CardTitle></CardHeader>
-          <CardContent>
+        <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-subtle-card">
+          <CardHeader className="border-b border-border/40 pb-3">
+            <CardTitle className="text-sm font-semibold tracking-tight flex items-center gap-2">
+              <PieIcon className="h-4 w-4 text-emerald-500" />
+              Capital Allocation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="pt-4">
             <HoldingsDistribution positions={positions} cash={cash} />
           </CardContent>
         </Card>
       </div>
 
       {/* Detailed Analytics Tabs */}
-      <Tabs defaultValue="stats">
-        <TabsList className="flex-wrap">
-          <TabsTrigger value="stats"><BarChart3 className="h-3.5 w-3.5 mr-1" />Personal Stats</TabsTrigger>
-          <TabsTrigger value="decisions"><Brain className="h-3.5 w-3.5 mr-1" />Decision Quality</TabsTrigger>
-          <TabsTrigger value="settled"><CheckCircle className="h-3.5 w-3.5 mr-1" />Settled Outcomes</TabsTrigger>
-          <TabsTrigger value="timing"><Clock className="h-3.5 w-3.5 mr-1" />Bet Timing</TabsTrigger>
-          <TabsTrigger value="positions"><TrendingUp className="h-3.5 w-3.5 mr-1" />Open Bets</TabsTrigger>
+      <Tabs defaultValue="stats" className="space-y-4">
+        <TabsList className="bg-muted/40 p-1 border border-border/60 rounded-lg">
+          <TabsTrigger value="stats" className="text-xs font-mono"><BarChart3 className="h-3.5 w-3.5 mr-1.5" />Personal Stats</TabsTrigger>
+          <TabsTrigger value="decisions" className="text-xs font-mono"><Brain className="h-3.5 w-3.5 mr-1.5" />Decision Quality</TabsTrigger>
+          <TabsTrigger value="settled" className="text-xs font-mono"><CheckCircle className="h-3.5 w-3.5 mr-1.5" />Settled Outcomes</TabsTrigger>
+          <TabsTrigger value="timing" className="text-xs font-mono"><Clock className="h-3.5 w-3.5 mr-1.5" />Bet Timing</TabsTrigger>
+          <TabsTrigger value="positions" className="text-xs font-mono"><TrendingUp className="h-3.5 w-3.5 mr-1.5" />Open Bets</TabsTrigger>
         </TabsList>
 
         {/* Personal Stats Tab */}
         <TabsContent value="stats">
           {stats ? (
             <div className="grid md:grid-cols-3 gap-4">
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Activity</CardTitle></CardHeader>
-                <CardContent className="space-y-0">
-                  <StatRow label="Total bets" value={stats.tradeCount} icon={<Zap className="h-3 w-3" />} />
+              <Card className="border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Activity Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
+                  <StatRow label="Total bets" value={stats.tradeCount} icon={<Zap className="h-3 w-3 text-emerald-500" />} />
                   <StatRow label="Bets placed" value={stats.buyCount} />
                   <StatRow label="Cash-outs" value={stats.sellCount} />
                   <StatRow label="Avg stake" value={`$${stats.avgTradeSize.toFixed(2)}`} />
@@ -316,70 +371,74 @@ export default function Portfolio() {
                   <StatRow label="Games bet" value={stats.marketsTraded} />
                   <StatRow label="Avg time between bets" value={stats.behavioral.avgTimeBetweenTrades > 0 ? `${stats.behavioral.avgTimeBetweenTrades.toFixed(1)}m` : "—"} />
                   {stats.behavioral.overtradingIndicator && (
-                    <div className="flex items-center gap-1.5 pt-2 text-xs text-warning">
-                      <AlertTriangle className="h-3 w-3" />Betting too often
+                    <div className="flex items-center gap-1.5 pt-2 text-xs font-mono text-amber-500">
+                      <AlertTriangle className="h-3 w-3" />High execution frequency flagged
                     </div>
                   )}
                   {stats.behavioral.inactivityIndicator && (
-                    <div className="flex items-center gap-1.5 pt-2 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1.5 pt-2 text-xs font-mono text-muted-foreground">
                       <AlertTriangle className="h-3 w-3" />Below class average activity
                     </div>
                   )}
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Performance</CardTitle></CardHeader>
-                <CardContent className="space-y-0">
+              <Card className="border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Performance Ratios</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
                   <StatRow label="Total return" value={`${stats.totalReturn >= 0 ? "+" : ""}$${stats.totalReturn.toFixed(2)}`}
-                    className={stats.totalReturn >= 0 ? "price-up" : "price-down"} />
+                    className={stats.totalReturn >= 0 ? "text-emerald-500" : "text-rose-500"} />
                   <StatRow label="Return %" value={`${stats.totalReturnPct >= 0 ? "+" : ""}${stats.totalReturnPct.toFixed(1)}%`}
-                    className={stats.totalReturnPct >= 0 ? "price-up" : "price-down"} />
+                    className={stats.totalReturnPct >= 0 ? "text-emerald-500" : "text-rose-500"} />
                   <StatRow label="Win rate" value={`${(stats.winRate * 100).toFixed(0)}%`} />
                   <StatRow label="Wins / Losses" value={`${stats.winCount} / ${stats.lossCount}`} />
-                  <StatRow label="Avg win size" value={`$${stats.avgWinSize.toFixed(2)}`} className="price-up" />
-                  <StatRow label="Avg loss size" value={`$${stats.avgLossSize.toFixed(2)}`} className="price-down" />
+                  <StatRow label="Avg win size" value={`$${stats.avgWinSize.toFixed(2)}`} className="text-emerald-500" />
+                  <StatRow label="Avg loss size" value={`$${stats.avgLossSize.toFixed(2)}`} className="text-rose-500" />
                   <StatRow label="Profit factor" value={stats.profitFactor >= 999 ? "∞" : stats.profitFactor.toFixed(2)} />
                   <StatRow label="Return/bet" value={`$${stats.behavioral.returnPerTrade.toFixed(2)}`}
-                    className={stats.behavioral.returnPerTrade >= 0 ? "price-up" : "price-down"} />
+                    className={stats.behavioral.returnPerTrade >= 0 ? "text-emerald-500" : "text-rose-500"} />
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Strengths & Weaknesses</CardTitle></CardHeader>
-                <CardContent>
+              <Card className="border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Diagnostic Insights</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-3">
                   {stats.strengths.length > 0 && (
-                    <div className="space-y-1.5 mb-3">
-                      <p className="text-[10px] font-medium text-muted-foreground uppercase">Strengths</p>
+                    <div className="space-y-2 mb-4">
+                      <p className="text-[10px] font-mono font-medium text-emerald-500 uppercase tracking-wider">Strengths</p>
                       {stats.strengths.map((s, i) => (
                         <div key={i} className="flex items-start gap-1.5 text-xs">
-                          <CheckCircle className="h-3 w-3 text-success shrink-0 mt-0.5" />
-                          <span>{s}</span>
+                          <CheckCircle className="h-3.5 w-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                          <span className="text-muted-foreground">{s}</span>
                         </div>
                       ))}
                     </div>
                   )}
                   {stats.weaknesses.length > 0 && (
-                    <div className="space-y-1.5">
-                      <p className="text-[10px] font-medium text-muted-foreground uppercase">Areas for Improvement</p>
+                    <div className="space-y-2">
+                      <p className="text-[10px] font-mono font-medium text-amber-500 uppercase tracking-wider">Improvement Areas</p>
                       {stats.weaknesses.map((w, i) => (
                         <div key={i} className="flex items-start gap-1.5 text-xs">
-                          <AlertTriangle className="h-3 w-3 text-warning shrink-0 mt-0.5" />
-                          <span>{w}</span>
+                          <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                          <span className="text-muted-foreground">{w}</span>
                         </div>
                       ))}
                     </div>
                   )}
                   {stats.strengths.length === 0 && stats.weaknesses.length === 0 && (
-                    <p className="text-sm text-muted-foreground text-center py-4">
-                      More bets needed for analysis
+                    <p className="text-xs font-mono text-muted-foreground text-center py-6">
+                      More bet history required for diagnostic output.
                     </p>
                   )}
                 </CardContent>
               </Card>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Place some bets to see your stats.</p>
+            <p className="text-xs font-mono text-muted-foreground text-center py-8">Place bets to generate analytics profile.</p>
           )}
         </TabsContent>
 
@@ -387,67 +446,77 @@ export default function Portfolio() {
         <TabsContent value="decisions">
           {stats ? (
             <div className="grid md:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Brain className="h-4 w-4" />Decision Metrics</CardTitle></CardHeader>
-                <CardContent className="space-y-0">
+              <Card className="border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider flex items-center gap-2 text-muted-foreground">
+                    <Brain className="h-3.5 w-3.5 text-emerald-500" />Execution Metrics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
                   <StatRow label="Early bet score" value={`${(stats.decisionQuality.earlyBuyerScore * 100).toFixed(0)}%`}
-                    icon={<TrendingUp className="h-3 w-3" />} />
-                  <StatRow label="Chasing the line rate" value={`${(stats.decisionQuality.chaseBuyRate * 100).toFixed(0)}%`}
-                    className={stats.decisionQuality.chaseBuyRate > 0.3 ? "price-down" : ""} />
-                  <StatRow label="Betting heavy favorites rate" value={`${(stats.decisionQuality.overconfidentBuyRate * 100).toFixed(0)}%`}
-                    className={stats.decisionQuality.overconfidentBuyRate > 0.2 ? "price-down" : ""} />
-                  <StatRow label="Early cash-out rate" value={`${(stats.decisionQuality.earlySellRate * 100).toFixed(0)}%`}
-                    className={stats.decisionQuality.earlySellRate > 0.4 ? "price-down" : ""} />
+                    icon={<TrendingUp className="h-3 w-3 text-emerald-500" />} />
+                  <StatRow label="Chasing line rate" value={`${(stats.decisionQuality.chaseBuyRate * 100).toFixed(0)}%`}
+                    className={stats.decisionQuality.chaseBuyRate > 0.3 ? "text-rose-500" : ""} />
+                  <StatRow label="Heavy favorite bias" value={`${(stats.decisionQuality.overconfidentBuyRate * 100).toFixed(0)}%`}
+                    className={stats.decisionQuality.overconfidentBuyRate > 0.2 ? "text-rose-500" : ""} />
+                  <StatRow label="Early exit rate" value={`${(stats.decisionQuality.earlySellRate * 100).toFixed(0)}%`}
+                    className={stats.decisionQuality.earlySellRate > 0.4 ? "text-rose-500" : ""} />
                   <StatRow label="Held to settlement" value={`${(stats.decisionQuality.heldToSettlementRate * 100).toFixed(0)}%`} />
                   <StatRow label="Avg edge captured" value={`${(stats.decisionQuality.avgEdgeCaptured * 100).toFixed(1)}¢`}
-                    className={stats.decisionQuality.avgEdgeCaptured >= 0 ? "price-up" : "price-down"} />
+                    className={stats.decisionQuality.avgEdgeCaptured >= 0 ? "text-emerald-500" : "text-rose-500"} />
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Shield className="h-4 w-4" />Risk Metrics</CardTitle></CardHeader>
-                <CardContent className="space-y-0">
+              <Card className="border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider flex items-center gap-2 text-muted-foreground">
+                    <Shield className="h-3.5 w-3.5 text-emerald-500" />Risk Parameters
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-2">
                   <StatRow label="Max concentration" value={`${(stats.riskMetrics.maxConcentration * 100).toFixed(0)}%`}
-                    className={stats.riskMetrics.maxConcentration > 0.5 ? "price-down" : ""} />
+                    className={stats.riskMetrics.maxConcentration > 0.5 ? "text-rose-500" : ""} />
                   <StatRow label="Diversification" value={`${stats.riskMetrics.diversificationCount} markets`} />
                   <StatRow label="All-in frequency" value={`${(stats.riskMetrics.allInFrequency * 100).toFixed(0)}%`}
-                    className={stats.riskMetrics.allInFrequency > 0.3 ? "price-down" : ""} />
+                    className={stats.riskMetrics.allInFrequency > 0.3 ? "text-rose-500" : ""} />
                   <StatRow label="Cash utilization" value={`${(stats.riskMetrics.cashUtilization * 100).toFixed(0)}%`} />
-                  <StatRow label="Max drawdown" value={`$${stats.riskMetrics.maxDrawdown.toFixed(2)}`} className="price-down" />
-                  <StatRow label="Max drawdown %" value={`${stats.riskMetrics.maxDrawdownPct.toFixed(1)}%`} className="price-down" />
+                  <StatRow label="Max drawdown" value={`$${stats.riskMetrics.maxDrawdown.toFixed(2)}`} className="text-rose-500" />
+                  <StatRow label="Max drawdown %" value={`${stats.riskMetrics.maxDrawdownPct.toFixed(1)}%`} className="text-rose-500" />
                 </CardContent>
               </Card>
 
-              <Card className="md:col-span-2">
-                <CardHeader className="pb-2"><CardTitle className="text-sm">Behavioral Patterns</CardTitle></CardHeader>
-                <CardContent>
+              <Card className="md:col-span-2 border-border/60 bg-card/60">
+                <CardHeader className="pb-2 border-b border-border/40">
+                  <CardTitle className="text-xs font-mono uppercase tracking-wider text-muted-foreground">Behavioral Tendencies</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-4">
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Buy High Tendency</p>
-                      <p className={cn("text-xl font-bold font-mono", stats.behavioral.buyHighTendency > 0.6 ? "price-down" : "")}>
+                    <div className="text-center p-3 rounded-lg border border-border/40 bg-background/50">
+                      <p className="text-[11px] font-mono text-muted-foreground uppercase">Buy High Bias</p>
+                      <p className={cn("text-xl font-bold font-mono mt-1", stats.behavioral.buyHighTendency > 0.6 ? "text-rose-500" : "text-foreground")}>
                         {(stats.behavioral.buyHighTendency * 100).toFixed(0)}%
                       </p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Sell Low Tendency</p>
-                      <p className={cn("text-xl font-bold font-mono", stats.behavioral.sellLowTendency > 0.6 ? "price-down" : "")}>
+                    <div className="text-center p-3 rounded-lg border border-border/40 bg-background/50">
+                      <p className="text-[11px] font-mono text-muted-foreground uppercase">Sell Low Bias</p>
+                      <p className={cn("text-xl font-bold font-mono mt-1", stats.behavioral.sellLowTendency > 0.6 ? "text-rose-500" : "text-foreground")}>
                         {(stats.behavioral.sellLowTendency * 100).toFixed(0)}%
                       </p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Overtrading</p>
-                      <p className="text-xl font-bold font-mono">
+                    <div className="text-center p-3 rounded-lg border border-border/40 bg-background/50">
+                      <p className="text-[11px] font-mono text-muted-foreground uppercase">Overtrading</p>
+                      <p className="text-xl font-bold font-mono mt-1">
                         {stats.behavioral.overtradingIndicator ? (
-                          <span className="text-warning">Yes</span>
-                        ) : "No"}
+                          <span className="text-amber-500">Yes</span>
+                        ) : <span className="text-emerald-500">Normal</span>}
                       </p>
                     </div>
-                    <div className="text-center">
-                      <p className="text-xs text-muted-foreground">Inactive</p>
-                      <p className="text-xl font-bold font-mono">
+                    <div className="text-center p-3 rounded-lg border border-border/40 bg-background/50">
+                      <p className="text-[11px] font-mono text-muted-foreground uppercase">Activity Level</p>
+                      <p className="text-xl font-bold font-mono mt-1">
                         {stats.behavioral.inactivityIndicator ? (
-                          <span className="text-warning">Yes</span>
-                        ) : "No"}
+                          <span className="text-amber-500">Low</span>
+                        ) : <span className="text-emerald-500">Active</span>}
                       </p>
                     </div>
                   </div>
@@ -455,51 +524,53 @@ export default function Portfolio() {
               </Card>
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">Place some bets to see decision analytics.</p>
+            <p className="text-xs font-mono text-muted-foreground text-center py-8">Place bets to reveal behavioral diagnostics.</p>
           )}
         </TabsContent>
 
         {/* Settled Outcomes Tab */}
         <TabsContent value="settled">
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Settled Bets</CardTitle></CardHeader>
-            <CardContent>
+          <Card className="border-border/60 bg-card/60">
+            <CardHeader className="border-b border-border/40 pb-3">
+              <CardTitle className="text-sm font-semibold tracking-tight">Graded Bets &amp; Settlements</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
               {settledOutcomes.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">No settled bets yet.</p>
+                <p className="text-xs font-mono text-muted-foreground text-center py-6">No settled outcomes on record.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-xs font-mono">
                     <thead>
-                      <tr className="border-b text-left text-muted-foreground">
-                        <th className="pb-3 font-medium">Market</th>
-                        <th className="pb-3 font-medium">Outcome</th>
-                        <th className="pb-3 font-medium text-right">Type</th>
-                        <th className="pb-3 font-medium text-right">Current odds</th>
-                        <th className="pb-3 font-medium text-right">Settlement</th>
-                        <th className="pb-3 font-medium text-right">Edge</th>
-                        <th className="pb-3 font-medium text-right">P&L</th>
+                      <tr className="border-b border-border/50 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                        <th className="py-2.5 font-medium font-sans">Market</th>
+                        <th className="py-2.5 font-medium font-sans">Outcome</th>
+                        <th className="py-2.5 font-medium text-right">Type</th>
+                        <th className="py-2.5 font-medium text-right">Odds</th>
+                        <th className="py-2.5 font-medium text-right">Settlement</th>
+                        <th className="py-2.5 font-medium text-right">Edge</th>
+                        <th className="py-2.5 font-medium text-right">P&amp;L</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-border/30">
                       {settledOutcomes.map((o) => (
-                        <tr key={o.tradeId} className="border-b last:border-0">
-                          <td className="py-3 font-medium">{o.marketTitle}</td>
-                          <td className="py-3">{o.outcomeName}</td>
+                        <tr key={o.tradeId} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 font-sans font-medium text-foreground">{o.marketTitle}</td>
+                          <td className="py-3 font-sans text-muted-foreground">{o.outcomeName}</td>
                           <td className="py-3 text-right">
-                            <span className={cn("font-semibold", o.type === "BUY" ? "price-up" : "price-down")}>{o.type}</span>
+                            <span className={cn("font-semibold", o.type === "BUY" ? "text-emerald-500" : "text-rose-500")}>{o.type}</span>
                           </td>
-                          <td className="py-3 text-right font-mono">{toAmerican(o.pricePerShare)}</td>
+                          <td className="py-3 text-right">{toAmerican(o.pricePerShare)}</td>
                           <td className="py-3 text-right">
                             {o.settlementValue === 1 ? (
-                              <Badge variant="outline" className="text-success text-xs">Won</Badge>
+                              <Badge variant="outline" className="border-emerald-500/40 text-emerald-500 bg-emerald-500/10 text-[10px]">Won</Badge>
                             ) : (
-                              <Badge variant="outline" className="text-destructive text-xs">Lost</Badge>
+                              <Badge variant="outline" className="border-rose-500/40 text-rose-500 bg-rose-500/10 text-[10px]">Lost</Badge>
                             )}
                           </td>
-                          <td className={cn("py-3 text-right font-mono", o.edgeCaptured >= 0 ? "price-up" : "price-down")}>
+                          <td className={cn("py-3 text-right", o.edgeCaptured >= 0 ? "text-emerald-500" : "text-rose-500")}>
                             {o.edgeCaptured >= 0 ? "+" : ""}{(o.edgeCaptured * 100).toFixed(1)}¢
                           </td>
-                          <td className={cn("py-3 text-right font-mono font-medium", o.totalPnl >= 0 ? "price-up" : "price-down")}>
+                          <td className={cn("py-3 text-right font-semibold", o.totalPnl >= 0 ? "text-emerald-500" : "text-rose-500")}>
                             {o.totalPnl >= 0 ? "+" : ""}${o.totalPnl.toFixed(2)}
                           </td>
                         </tr>
@@ -514,51 +585,53 @@ export default function Portfolio() {
 
         {/* Trade Timing Tab */}
         <TabsContent value="timing">
-          <Card>
-            <CardHeader><CardTitle className="text-sm">Bet Timing Review</CardTitle></CardHeader>
-            <CardContent>
+          <Card className="border-border/60 bg-card/60">
+            <CardHeader className="border-b border-border/40 pb-3">
+              <CardTitle className="text-sm font-semibold tracking-tight">Execution Timing &amp; Line Shift</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-2">
               {tradeTimings.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-6">No bets to review.</p>
+                <p className="text-xs font-mono text-muted-foreground text-center py-6">No timing events to analyze.</p>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="w-full text-xs font-mono">
                     <thead>
-                      <tr className="border-b text-left text-muted-foreground">
-                        <th className="pb-3 font-medium">Time</th>
-                        <th className="pb-3 font-medium">Market</th>
-                        <th className="pb-3 font-medium">Type</th>
-                        <th className="pb-3 font-medium text-right">Price Move</th>
-                        <th className="pb-3 font-medium text-right">Favorable?</th>
-                        <th className="pb-3 font-medium text-right hidden sm:table-cell">Flags</th>
+                      <tr className="border-b border-border/50 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                        <th className="py-2.5 font-medium">Time</th>
+                        <th className="py-2.5 font-medium font-sans">Market</th>
+                        <th className="py-2.5 font-medium">Type</th>
+                        <th className="py-2.5 font-medium text-right">Price Shift</th>
+                        <th className="py-2.5 font-medium text-right">Favorable?</th>
+                        <th className="py-2.5 font-medium text-right hidden sm:table-cell">Flags</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody className="divide-y divide-border/30">
                       {tradeTimings.slice(0, 30).map((t) => (
-                        <tr key={t.tradeId} className="border-b last:border-0">
-                          <td className="py-3 text-xs text-muted-foreground whitespace-nowrap">
+                        <tr key={t.tradeId} className="hover:bg-muted/30 transition-colors">
+                          <td className="py-3 text-muted-foreground whitespace-nowrap">
                             {new Date(t.timestamp).toLocaleTimeString()}
                           </td>
-                          <td className="py-3">
-                            <div className="font-medium">{t.marketTitle}</div>
+                          <td className="py-3 font-sans">
+                            <div className="font-medium text-foreground">{t.marketTitle}</div>
                             <div className="text-xs text-muted-foreground">{t.outcomeName}</div>
                           </td>
                           <td className="py-3">
-                            <span className={cn("font-semibold", t.type === "BUY" ? "price-up" : "price-down")}>{t.type}</span>
+                            <span className={cn("font-semibold", t.type === "BUY" ? "text-emerald-500" : "text-rose-500")}>{t.type}</span>
                           </td>
-                          <td className="py-3 text-right font-mono text-xs">
+                          <td className="py-3 text-right">
                             {toAmerican(t.priceBefore)} → {toAmerican(t.priceAfter)}
                           </td>
                           <td className="py-3 text-right">
                             {t.priceMoveFavorable ? (
-                              <CheckCircle className="h-4 w-4 text-success inline" />
+                              <CheckCircle className="h-4 w-4 text-emerald-500 inline" />
                             ) : (
-                              <XCircle className="h-4 w-4 text-destructive inline" />
+                              <XCircle className="h-4 w-4 text-rose-500 inline" />
                             )}
                           </td>
                           <td className="py-3 text-right hidden sm:table-cell">
                             <div className="flex gap-1 justify-end">
-                              {t.wasChase && <Badge variant="outline" className="text-[10px] text-warning">Chase</Badge>}
-                              {t.wasOverconfident && <Badge variant="outline" className="text-[10px] text-destructive">Overconf.</Badge>}
+                              {t.wasChase && <Badge variant="outline" className="text-[10px] border-amber-500/40 text-amber-500 bg-amber-500/10">Chase</Badge>}
+                              {t.wasOverconfident && <Badge variant="outline" className="text-[10px] border-rose-500/40 text-rose-500 bg-rose-500/10">Overconf.</Badge>}
                             </div>
                           </td>
                         </tr>
@@ -576,27 +649,27 @@ export default function Portfolio() {
           <div className="space-y-6">
             {/* Winners / Losers */}
             {positions.length > 0 && (
-              <div className="grid md:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4 text-success" />Winning Positions
+              <div className="grid md:grid-cols-2 gap-4">
+                <Card className="border-border/60 bg-card/60">
+                  <CardHeader className="pb-3 border-b border-border/40">
+                    <CardTitle className="text-xs font-mono uppercase tracking-wider flex items-center gap-2 text-emerald-500">
+                      <TrendingUp className="h-4 w-4" />Profitable Positions
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-3">
                     {winners.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">No winning bets yet</p>
+                      <p className="text-xs font-mono text-muted-foreground text-center py-4">No winning bets yet</p>
                     ) : (
                       <div className="space-y-2">
                         {winners.slice(0, 5).map((p) => (
-                          <div key={p.outcomeId} className="flex justify-between text-sm py-1.5 border-b last:border-0">
+                          <div key={p.outcomeId} className="flex justify-between text-xs py-2 border-b border-border/30 last:border-0 font-mono">
                             <div>
-                              <p className="font-medium">{p.outcomeName}</p>
-                              <p className="text-xs text-muted-foreground">{p.marketTitle}</p>
+                              <p className="font-sans font-medium text-foreground">{p.outcomeName}</p>
+                              <p className="text-[11px] text-muted-foreground">{p.marketTitle}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-mono price-up font-semibold">+${p.pnl.toFixed(2)}</p>
-                              <p className="text-xs text-muted-foreground font-mono">+{p.pnlPct.toFixed(1)}%</p>
+                              <p className="text-emerald-500 font-semibold">+${p.pnl.toFixed(2)}</p>
+                              <p className="text-[11px] text-muted-foreground">+{p.pnlPct.toFixed(1)}%</p>
                             </div>
                           </div>
                         ))}
@@ -604,26 +677,26 @@ export default function Portfolio() {
                     )}
                   </CardContent>
                 </Card>
-                <Card>
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-sm flex items-center gap-2">
-                      <TrendingDown className="h-4 w-4 text-destructive" />Losing Positions
+                <Card className="border-border/60 bg-card/60">
+                  <CardHeader className="pb-3 border-b border-border/40">
+                    <CardTitle className="text-xs font-mono uppercase tracking-wider flex items-center gap-2 text-rose-500">
+                      <TrendingDown className="h-4 w-4" />Drawdown Positions
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-3">
                     {losers.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">No losing bets yet</p>
+                      <p className="text-xs font-mono text-muted-foreground text-center py-4">No losing bets yet</p>
                     ) : (
                       <div className="space-y-2">
                         {losers.slice(0, 5).map((p) => (
-                          <div key={p.outcomeId} className="flex justify-between text-sm py-1.5 border-b last:border-0">
+                          <div key={p.outcomeId} className="flex justify-between text-xs py-2 border-b border-border/30 last:border-0 font-mono">
                             <div>
-                              <p className="font-medium">{p.outcomeName}</p>
-                              <p className="text-xs text-muted-foreground">{p.marketTitle}</p>
+                              <p className="font-sans font-medium text-foreground">{p.outcomeName}</p>
+                              <p className="text-[11px] text-muted-foreground">{p.marketTitle}</p>
                             </div>
                             <div className="text-right">
-                              <p className="font-mono price-down font-semibold">${p.pnl.toFixed(2)}</p>
-                              <p className="text-xs text-muted-foreground font-mono">{p.pnlPct.toFixed(1)}%</p>
+                              <p className="text-rose-500 font-semibold">${p.pnl.toFixed(2)}</p>
+                              <p className="text-[11px] text-muted-foreground">{p.pnlPct.toFixed(1)}%</p>
                             </div>
                           </div>
                         ))}
@@ -635,48 +708,50 @@ export default function Portfolio() {
             )}
 
             {/* Open Positions Table */}
-            <Card>
-              <CardHeader><CardTitle className="text-lg">My Open Bets</CardTitle></CardHeader>
-              <CardContent>
+            <Card className="border-border/60 bg-card/60">
+              <CardHeader className="border-b border-border/40 pb-3">
+                <CardTitle className="text-sm font-semibold tracking-tight">Active Book Positions</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-2">
                 {book.openBets.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-6 text-center">
-                    No open bets yet. <Link to="/markets" className="text-primary underline">Browse the board</Link> to place your first bet.
+                  <p className="text-xs font-mono text-muted-foreground py-6 text-center">
+                    No open bets currently active. <Link to="/markets" className="text-emerald-500 underline">Browse the board</Link> to enter a trade.
                   </p>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-xs font-mono">
                       <thead>
-                        <tr className="border-b text-left text-muted-foreground">
-                          <th className="pb-3 font-medium">Market</th>
-                          <th className="pb-3 font-medium">Your pick</th>
-                          <th className="pb-3 font-medium text-right">Stake</th>
-                          <th className="pb-3 font-medium text-right">Odds</th>
-                          <th className="pb-3 font-medium text-right">To win</th>
-                          <th className="pb-3 font-medium text-right">Payout if win</th>
-                          <th className="pb-3 font-medium text-right">Forecast</th>
-                          <th className="pb-3 font-medium text-right">CLV</th>
+                        <tr className="border-b border-border/50 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
+                          <th className="py-2.5 font-medium font-sans">Market</th>
+                          <th className="py-2.5 font-medium font-sans">Pick</th>
+                          <th className="py-2.5 font-medium text-right">Stake</th>
+                          <th className="py-2.5 font-medium text-right">Odds</th>
+                          <th className="py-2.5 font-medium text-right">To win</th>
+                          <th className="py-2.5 font-medium text-right">Payout</th>
+                          <th className="py-2.5 font-medium text-right">Forecast</th>
+                          <th className="py-2.5 font-medium text-right">CLV</th>
                         </tr>
                       </thead>
-                      <tbody>
+                      <tbody className="divide-y divide-border/30">
                         {book.openBets.map((b) => {
                           const stake = Number(b.stake ?? 0);
                           const payout = Number(b.potential_payout ?? stake);
                           return (
-                            <tr key={b.id} className="border-b last:border-0">
-                              <td className="py-3 font-medium">{b.market_title}</td>
-                              <td className="py-3">{b.selection}</td>
-                              <td className="py-3 text-right font-mono">{money(stake)}</td>
-                              <td className="py-3 text-right font-mono">
+                            <tr key={b.id} className="hover:bg-muted/30 transition-colors">
+                              <td className="py-3 font-sans font-medium text-foreground">{b.market_title}</td>
+                              <td className="py-3 font-sans text-muted-foreground">{b.selection}</td>
+                              <td className="py-3 text-right">{money(stake)}</td>
+                              <td className="py-3 text-right">
                                 {b.odds_decimal ? toAmerican(Number(b.odds_decimal)) : "—"}
                               </td>
-                              <td className="py-3 text-right font-mono price-up">
+                              <td className="py-3 text-right text-emerald-500">
                                 {money(Math.max(0, payout - stake))}
                               </td>
-                              <td className="py-3 text-right font-mono">{money(payout)}</td>
-                              <td className="py-3 text-right font-mono">
+                              <td className="py-3 text-right">{money(payout)}</td>
+                              <td className="py-3 text-right">
                                 {b.forecast_prob == null ? "—" : `${(Number(b.forecast_prob) * 100).toFixed(0)}%`}
                               </td>
-                              <td className="py-3 text-right font-mono">
+                              <td className="py-3 text-right">
                                 {b.clv_pct == null ? "pending" : `${Number(b.clv_pct) >= 0 ? "+" : ""}${Number(b.clv_pct).toFixed(1)}%`}
                               </td>
                             </tr>
@@ -691,52 +766,6 @@ export default function Portfolio() {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Trade History */}
-      {userTrades.length > 0 && (
-        <Card>
-          <CardHeader><CardTitle className="text-lg">Bet History ({userTrades.length} total)</CardTitle></CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="pb-3 font-medium">Time</th>
-                    <th className="pb-3 font-medium">Market</th>
-                    <th className="pb-3 font-medium">Type</th>
-                    <th className="pb-3 font-medium text-right">Qty</th>
-                    <th className="pb-3 font-medium text-right">Current odds</th>
-                    <th className="pb-3 font-medium text-right">Total</th>
-                    <th className="pb-3 font-medium text-right">Impact</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {userTrades.slice(0, 30).map((t) => (
-                    <tr key={t.id} className="border-b last:border-0">
-                      <td className="py-3 text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(t.timestamp).toLocaleTimeString()}
-                      </td>
-                      <td className="py-3">
-                        <div className="font-medium">{t.marketTitle}</div>
-                        <div className="text-xs text-muted-foreground">{t.outcomeName}</div>
-                      </td>
-                      <td className="py-3">
-                        <span className={cn("font-semibold", t.type === "BUY" ? "price-up" : "price-down")}>{t.type}</span>
-                      </td>
-                      <td className="py-3 text-right font-mono">${t.quantity.toFixed(2)}</td>
-                      <td className="py-3 text-right font-mono">{toAmerican(t.pricePerShare)}</td>
-                      <td className="py-3 text-right font-mono">${t.totalCost.toFixed(2)}</td>
-                      <td className="py-3 text-right font-mono text-xs">
-                        {toAmerican(t.priceBeforeTrade)} → {toAmerican(t.priceAfterTrade)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

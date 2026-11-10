@@ -78,70 +78,70 @@ export function ReferenceOddsCard({ market }: Props) {
   });
 
   return (
-    <Card className="border-info/30 bg-info/5">
-      <CardHeader className="pb-3">
+    <Card className="border-border/60 bg-card/60 backdrop-blur-sm shadow-subtle-card">
+      <CardHeader className="pb-3 border-b border-border/40">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base flex items-center gap-2">
-            <Radio className="h-4 w-4 text-info" />
-            Reference odds
-            <Badge variant="outline" className="text-[10px] border-info/40 text-info">
+          <CardTitle className="text-sm font-semibold tracking-tight flex items-center gap-2">
+            <Radio className="h-4 w-4 text-emerald-500 animate-pulse" />
+            <span>Reference Odds</span>
+            <span className="font-mono text-[10px] uppercase px-1.5 py-0.5 rounded border border-border/60 text-muted-foreground bg-muted/30">
               odds-api.io
-            </Badge>
+            </span>
           </CardTitle>
-          <Button variant="ghost" size="sm" onClick={load} disabled={loading}>
+          <Button variant="ghost" size="sm" onClick={load} disabled={loading} className="h-7 w-7 p-0">
             {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Average implied probability across bookmakers. Compare against the class price to spot disagreement.
-          {updatedAt && <span className="ml-1">Updated {updatedAt}.</span>}
+          Average implied probability across bookmakers vs. class price.
+          {updatedAt && <span className="ml-1 font-mono text-[11px] text-muted-foreground/80">Synced {updatedAt}</span>}
         </p>
       </CardHeader>
-      <CardContent>
-        {error && <p className="text-xs text-muted-foreground italic">{error}</p>}
+      <CardContent className="pt-3">
+        {error && <p className="text-xs text-muted-foreground italic font-mono">{error}</p>}
 
         {snapshot && snapshot.length > 0 && (
           <div className="space-y-2">
             {comparisons.map((c) => {
               const gap = c.classPrice != null ? c.classPrice - c.bookImplied : null;
               return (
-                <div key={c.bookOutcome} className="rounded border bg-background p-2.5">
+                <div key={c.bookOutcome} className="rounded-lg border border-border/50 bg-background/50 p-3 hover:border-emerald-500/30 transition-colors">
                   <div className="flex items-center justify-between text-sm">
                     <span className="font-medium truncate">{c.classOutcome ?? c.bookOutcome}</span>
                     {gap != null && (
                       <Badge
                         variant="outline"
                         className={cn(
-                          "text-[10px] tabular-nums",
+                          "text-[10px] font-mono tabular-nums",
                           Math.abs(gap) < 0.03
-                            ? "border-muted text-muted-foreground"
+                            ? "border-border text-muted-foreground"
                             : gap > 0
-                              ? "border-success/40 text-success"
-                              : "border-destructive/40 text-destructive",
+                              ? "border-emerald-500/40 text-emerald-500 bg-emerald-500/10"
+                              : "border-rose-500/40 text-rose-500 bg-rose-500/10",
                         )}
                       >
                         {gap > 0 ? "+" : ""}{(gap * 100).toFixed(1)}pp
                       </Badge>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-2 mt-1.5 text-xs">
+                  <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-border/30 text-xs">
                     <div>
-                      <p className="text-muted-foreground">Class</p>
-                      <p className="font-mono font-medium">
+                      <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono">Class</p>
+                      <p className="font-mono font-semibold text-foreground">
                         {c.classPrice != null ? `${(c.classPrice * 100).toFixed(1)}%` : "—"}
                       </p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Bookmakers</p>
-                      <p className="font-mono font-medium">{(c.bookImplied * 100).toFixed(1)}%</p>
+                      <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-mono">Bookmakers</p>
+                      <p className="font-mono font-semibold text-foreground">{(c.bookImplied * 100).toFixed(1)}%</p>
                     </div>
                   </div>
                 </div>
               );
             })}
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1 pt-1">
-              <ExternalLink className="h-2.5 w-2.5" />
-              Vig removed via proportional normalization. For teaching only.
+            <p className="text-[10px] font-mono text-muted-foreground flex items-center gap-1.5 pt-1">
+              <ExternalLink className="h-3 w-3" />
+              Vig removed via proportional normalization. For simulation only.
             </p>
           </div>
         )}

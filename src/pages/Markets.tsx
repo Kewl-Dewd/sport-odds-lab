@@ -94,7 +94,7 @@ export default function Markets() {
   }, [trades]);
 
   const filtered = useMemo(() => {
-    let result = markets.filter((m) => {
+    const result = markets.filter((m) => {
       if (statusFilter !== "all" && m.status !== statusFilter) return false;
       if (leagueFilter !== "all" && m.league !== leagueFilter) return false;
       if (sportFilter !== "all" && m.sport !== sportFilter) return false;

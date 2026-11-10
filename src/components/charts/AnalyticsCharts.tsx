@@ -3,16 +3,15 @@ import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PricePoint, PortfolioSnapshot, PositionAnalysis } from "@/lib/marketAnalytics";
 import type { Outcome } from "@/lib/tradingEngine";
 
 const CHART_COLORS = [
-  "hsl(153, 60%, 38%)",  // primary green
-  "hsl(217, 70%, 50%)",  // accent blue
-  "hsl(38, 92%, 50%)",   // warning orange
-  "hsl(0, 72%, 51%)",    // destructive red
-  "hsl(270, 60%, 50%)",  // purple
+  "hsl(160, 84%, 39%)",  // emerald primary
+  "hsl(199, 89%, 48%)",  // cyan accent
+  "hsl(38, 92%, 50%)",   // amber
+  "hsl(350, 89%, 60%)",  // rose
+  "hsl(262, 83%, 58%)",  // violet
 ];
 
 function formatTime(ts: string) {
@@ -42,7 +41,7 @@ export function PriceHistoryChart({
 
   if (data.length === 0) {
     return (
-      <div className="h-56 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
+      <div className="h-56 rounded-lg border border-dashed border-border/60 bg-muted/20 flex items-center justify-center text-muted-foreground text-xs font-mono">
         Price chart updates after trades are placed
       </div>
     );
@@ -51,20 +50,22 @@ export function PriceHistoryChart({
   return (
     <ResponsiveContainer width="100%" height={224}>
       <LineChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="time" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
+        <XAxis dataKey="time" tick={{ fontSize: 11, fontFamily: "var(--font-mono)" }} stroke="hsl(var(--muted-foreground))" />
         <YAxis
           domain={[0, 100]}
           tickFormatter={(v) => `${v}¢`}
-          tick={{ fontSize: 11 }}
+          tick={{ fontSize: 11, fontFamily: "var(--font-mono)" }}
           stroke="hsl(var(--muted-foreground))"
         />
         <Tooltip
           contentStyle={{
             backgroundColor: "hsl(var(--card))",
             border: "1px solid hsl(var(--border))",
-            borderRadius: "8px",
+            borderRadius: "6px",
             fontSize: 12,
+            fontFamily: "var(--font-mono)",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
           }}
           formatter={(value: number) => [`${value.toFixed(1)}¢`, ""]}
         />
@@ -100,7 +101,7 @@ export function VolumeChart({ priceHistory }: { priceHistory: PricePoint[] }) {
 
   if (data.length === 0) {
     return (
-      <div className="h-32 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
+      <div className="h-32 rounded-lg border border-dashed border-border/60 bg-muted/20 flex items-center justify-center text-muted-foreground text-xs font-mono">
         Volume chart updates after trades
       </div>
     );
@@ -109,15 +110,16 @@ export function VolumeChart({ priceHistory }: { priceHistory: PricePoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={128}>
       <BarChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="time" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
-        <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
+        <XAxis dataKey="time" tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} stroke="hsl(var(--muted-foreground))" />
+        <YAxis tickFormatter={(v) => `$${v}`} tick={{ fontSize: 10, fontFamily: "var(--font-mono)" }} stroke="hsl(var(--muted-foreground))" />
         <Tooltip
           contentStyle={{
             backgroundColor: "hsl(var(--card))",
             border: "1px solid hsl(var(--border))",
-            borderRadius: "8px",
+            borderRadius: "6px",
             fontSize: 12,
+            fontFamily: "var(--font-mono)",
           }}
           formatter={(value: number) => [`$${value.toFixed(2)}`, "Volume"]}
         />
@@ -129,7 +131,7 @@ export function VolumeChart({ priceHistory }: { priceHistory: PricePoint[] }) {
 
 // ── Portfolio Performance Chart ────────────────────────────────────
 
-export function PortfolioPerformanceChart({ snapshots, startingCash }: { snapshots: PortfolioSnapshot[]; startingCash: number }) {
+export function PortfolioPerformanceChart({ snapshots }: { snapshots: PortfolioSnapshot[]; startingCash: number }) {
   const data = useMemo(() => {
     if (snapshots.length === 0) return [];
     return snapshots.map((s) => ({
@@ -142,7 +144,7 @@ export function PortfolioPerformanceChart({ snapshots, startingCash }: { snapsho
 
   if (data.length === 0) {
     return (
-      <div className="h-48 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
+      <div className="h-48 rounded-lg border border-dashed border-border/60 bg-muted/20 flex items-center justify-center text-muted-foreground text-xs font-mono">
         Portfolio chart updates as you trade
       </div>
     );
@@ -151,26 +153,27 @@ export function PortfolioPerformanceChart({ snapshots, startingCash }: { snapsho
   return (
     <ResponsiveContainer width="100%" height={200}>
       <AreaChart data={data} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-        <XAxis dataKey="time" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+        <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.5)" />
+        <XAxis dataKey="time" tick={{ fontSize: 11, fontFamily: "var(--font-mono)" }} stroke="hsl(var(--muted-foreground))" />
         <YAxis
           domain={["auto", "auto"]}
           tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`}
-          tick={{ fontSize: 11 }}
+          tick={{ fontSize: 11, fontFamily: "var(--font-mono)" }}
           stroke="hsl(var(--muted-foreground))"
         />
         <Tooltip
           contentStyle={{
             backgroundColor: "hsl(var(--card))",
             border: "1px solid hsl(var(--border))",
-            borderRadius: "8px",
+            borderRadius: "6px",
             fontSize: 12,
+            fontFamily: "var(--font-mono)",
           }}
           formatter={(value: number) => [`$${value.toFixed(2)}`, ""]}
         />
         <Legend wrapperStyle={{ fontSize: 12 }} />
-        <Area type="monotone" dataKey="total" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.1} strokeWidth={2} name="Total Value" />
-        <Area type="monotone" dataKey="cash" stroke={CHART_COLORS[1]} fill={CHART_COLORS[1]} fillOpacity={0.05} strokeWidth={1.5} strokeDasharray="4 4" name="Cash" />
+        <Area type="monotone" dataKey="total" stroke={CHART_COLORS[0]} fill={CHART_COLORS[0]} fillOpacity={0.12} strokeWidth={2} name="Total Value" />
+        <Area type="monotone" dataKey="cash" stroke={CHART_COLORS[1]} fill={CHART_COLORS[1]} fillOpacity={0.06} strokeWidth={1.5} strokeDasharray="4 4" name="Cash" />
       </AreaChart>
     </ResponsiveContainer>
   );
@@ -190,7 +193,7 @@ export function HoldingsDistribution({ positions, cash }: { positions: PositionA
 
   if (data.length <= 1) {
     return (
-      <div className="h-48 rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm">
+      <div className="h-48 rounded-lg border border-dashed border-border/60 bg-muted/20 flex items-center justify-center text-muted-foreground text-xs font-mono">
         Distribution shows after you open positions
       </div>
     );
@@ -218,8 +221,9 @@ export function HoldingsDistribution({ positions, cash }: { positions: PositionA
           contentStyle={{
             backgroundColor: "hsl(var(--card))",
             border: "1px solid hsl(var(--border))",
-            borderRadius: "8px",
+            borderRadius: "6px",
             fontSize: 12,
+            fontFamily: "var(--font-mono)",
           }}
           formatter={(value: number) => [`$${value.toFixed(2)}`, ""]}
         />
@@ -235,13 +239,13 @@ export function PressureIndicator({ buyPressure }: { buyPressure: number }) {
   const sellPct = 100 - buyPct;
   return (
     <div className="space-y-1.5">
-      <div className="flex justify-between text-xs">
-        <span className="price-up font-medium">Buy {buyPct}%</span>
-        <span className="price-down font-medium">Sell {sellPct}%</span>
+      <div className="flex justify-between text-xs font-mono">
+        <span className="text-emerald-500 font-medium">Buy {buyPct}%</span>
+        <span className="text-rose-500 font-medium">Sell {sellPct}%</span>
       </div>
-      <div className="h-2 rounded-full bg-muted overflow-hidden flex">
-        <div className="h-full bg-success transition-all duration-500" style={{ width: `${buyPct}%` }} />
-        <div className="h-full bg-destructive transition-all duration-500" style={{ width: `${sellPct}%` }} />
+      <div className="h-2 rounded-full bg-muted/60 overflow-hidden flex border border-border/40">
+        <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${buyPct}%` }} />
+        <div className="h-full bg-rose-500 transition-all duration-500" style={{ width: `${sellPct}%` }} />
       </div>
     </div>
   );

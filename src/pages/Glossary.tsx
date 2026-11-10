@@ -159,11 +159,11 @@ const TERMS: GlossaryTerm[] = [
 ];
 
 const CATEGORIES: { key: GlossaryTerm["category"]; label: string; color: string }[] = [
-  { key: "pricing", label: "Odds & Lines", color: "bg-primary/10 text-primary" },
-  { key: "trading", label: "Betting", color: "bg-accent/10 text-accent" },
-  { key: "portfolio", label: "Bankroll", color: "bg-success/10 text-success" },
-  { key: "market", label: "The Book", color: "bg-warning/10 text-warning" },
-  { key: "risk", label: "Risk", color: "bg-destructive/10 text-destructive" },
+  { key: "pricing", label: "Odds & Lines", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/30" },
+  { key: "trading", label: "Betting Mechanics", color: "bg-sky-500/10 text-sky-400 border-sky-500/30" },
+  { key: "portfolio", label: "Bankroll Metrics", color: "bg-teal-500/10 text-teal-400 border-teal-500/30" },
+  { key: "market", label: "The Book & Vig", color: "bg-amber-500/10 text-amber-500 border-amber-500/30" },
+  { key: "risk", label: "Risk Management", color: "bg-rose-500/10 text-rose-500 border-rose-500/30" },
 ];
 
 export default function Glossary() {
@@ -183,13 +183,24 @@ export default function Glossary() {
   }, [search, activeCategory]);
 
   return (
-    <div className="container py-8 space-y-6 animate-slide-up max-w-3xl mx-auto">
-      <div className="text-center space-y-2">
-        <div className="flex items-center justify-center gap-2">
-          <BookOpen className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl md:text-3xl font-bold">Glossary</h1>
+    <div className="container py-8 space-y-6 animate-slide-up max-w-4xl mx-auto">
+      {/* Header */}
+      <div className="border-b border-border/50 pb-5">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded border border-emerald-500/30 text-emerald-500 bg-emerald-500/10">
+            Market Taxonomy
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            Sportsbook Vocabulary
+          </span>
         </div>
-        <p className="text-muted-foreground">Key sportsbook terms explained in plain language.</p>
+        <h1 className="text-2xl md:text-3xl font-bold tracking-tight flex items-center gap-2.5">
+          <BookOpen className="h-6 w-6 text-emerald-500" />
+          <span>Market Glossary</span>
+        </h1>
+        <p className="text-xs md:text-sm text-muted-foreground mt-1">
+          Essential sportsbook terminology, pricing mathematics, and risk management definitions.
+        </p>
       </div>
 
       {/* Search & Filter */}
@@ -197,31 +208,36 @@ export default function Glossary() {
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search terms…"
+            placeholder="Search concepts, formulas, or terms (e.g. vig, CLV, spread)…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
+            className="pl-9 font-mono text-xs"
           />
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setActiveCategory(null)}
             className={cn(
-              "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
-              !activeCategory ? "bg-foreground text-background border-foreground" : "hover:bg-muted"
+              "px-3 py-1 rounded-md text-xs font-mono border transition-all",
+              !activeCategory
+                ? "bg-foreground text-background border-foreground font-semibold"
+                : "border-border/60 hover:bg-muted/40 text-muted-foreground"
             )}
           >
             All ({TERMS.length})
           </button>
           {CATEGORIES.map((c) => {
             const count = TERMS.filter((t) => t.category === c.key).length;
+            const isSelected = activeCategory === c.key;
             return (
               <button
                 key={c.key}
-                onClick={() => setActiveCategory(activeCategory === c.key ? null : c.key)}
+                onClick={() => setActiveCategory(isSelected ? null : c.key)}
                 className={cn(
-                  "px-3 py-1 rounded-full text-xs font-medium border transition-colors",
-                  activeCategory === c.key ? c.color + " border-current" : "hover:bg-muted"
+                  "px-3 py-1 rounded-md text-xs font-mono border transition-all",
+                  isSelected
+                    ? c.color + " font-semibold ring-1 ring-current"
+                    : "border-border/60 hover:bg-muted/40 text-muted-foreground"
                 )}
               >
                 {c.label} ({count})
@@ -231,28 +247,31 @@ export default function Glossary() {
         </div>
       </div>
 
-      {/* Terms */}
+      {/* Terms Grid */}
       <div className="space-y-3">
         {filtered.length === 0 && (
-          <p className="text-sm text-muted-foreground text-center py-8">No terms match your search.</p>
+          <div className="text-center py-12 rounded-lg border border-dashed border-border/60 bg-muted/20">
+            <p className="text-xs font-mono text-muted-foreground">No terminology matching query.</p>
+          </div>
         )}
         {filtered.map((t) => {
           const cat = CATEGORIES.find((c) => c.key === t.category);
           return (
-            <Card key={t.term}>
-              <CardContent className="p-5">
+            <Card key={t.term} className="border-border/60 bg-card/60 backdrop-blur-sm shadow-subtle-card hover:border-emerald-500/30 transition-all">
+              <CardContent className="p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-3 mb-2">
-                  <h3 className="font-semibold text-base">{t.term}</h3>
+                  <h3 className="font-semibold text-sm sm:text-base tracking-tight text-foreground">{t.term}</h3>
                   {cat && (
-                    <span className={cn("shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium", cat.color)}>
+                    <span className={cn("shrink-0 rounded px-2 py-0.5 text-[10px] font-mono border", cat.color)}>
                       {cat.label}
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t.definition}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{t.definition}</p>
                 {t.example && (
-                  <div className="mt-2 rounded-lg bg-muted p-3 text-xs text-muted-foreground">
-                    <strong className="text-foreground">Example:</strong> {t.example}
+                  <div className="mt-3 rounded border border-border/40 bg-muted/30 p-2.5 text-xs font-mono text-muted-foreground">
+                    <span className="text-emerald-500 font-semibold uppercase tracking-wider text-[10px] block mb-0.5">Example</span>
+                    {t.example}
                   </div>
                 )}
               </CardContent>
