@@ -14,7 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ["'Plus Jakarta Sans'", "Inter", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        sans: ["'Geist'", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        display: ["'Bricolage Grotesque'", "'Geist'", "sans-serif"],
+        editorial: ["'Instrument Serif'", "Georgia", "serif"],
         mono: ["'JetBrains Mono'", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       colors: {

@@ -28,8 +28,10 @@ export function AppLayout() {
     return () => window.clearTimeout(timer);
   }, [location.pathname]);
 
+  const isLanding = location.pathname === "/";
+
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground selection:bg-emerald-500/20 selection:text-emerald-500">
+    <div className={`min-h-screen flex flex-col bg-background text-foreground ${isLanding ? "landing-shell selection:bg-accent/25 selection:text-foreground" : "selection:bg-emerald-500/20 selection:text-emerald-500"}`}>
       <Navbar />
       <AccessBanner />
       <main className="flex-1">
