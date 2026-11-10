@@ -38,12 +38,12 @@ export function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-border/70 py-8 bg-muted/20">
+      <footer className="border-t border-foreground/15 bg-card py-10">
         <div className="container max-w-6xl text-center text-xs text-muted-foreground space-y-3">
           <div className="flex items-center justify-center gap-2 mb-2">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60"></span>
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
             </span>
             <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground/80">
               Classroom Simulator · Virtual Funds Only · No Real Money Wagered
@@ -65,8 +65,11 @@ export function AppLayout() {
             <span className="text-border">·</span>
             <Link to="/support" className="hover:text-foreground transition-colors">Support & Ethics</Link>
           </div>
-          <p className="text-[11px] font-mono text-muted-foreground/60 pt-2">
-            © 2026 Sports Market Lab · {isLanding ? "Read the market. Reward the reasoning." : "High-Performance Analytics Terminal"}
+          <p className="pt-3 font-editorial text-lg italic text-muted-foreground">
+            Read the market. Reward the reasoning.
+          </p>
+          <p className="pt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70">
+            © 2026 Sports Market Lab · Classroom field lab
           </p>
         </div>
       </footer>
