@@ -177,7 +177,7 @@ export default function Index() {
                     <span>NBA Regular Season</span>
                     <span>Today · 7:30 PM EST</span>
                   </div>
-                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-foreground/10 pb-3">
+                  <div className="mb-4 flex flex-col items-start gap-2 border-b border-foreground/10 pb-3 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span className="font-display text-lg font-semibold tracking-[-0.03em] sm:text-xl">
                       Boston Celtics <span className="font-editorial text-base font-normal italic text-muted-foreground">@</span> New York Knicks
                     </span>
