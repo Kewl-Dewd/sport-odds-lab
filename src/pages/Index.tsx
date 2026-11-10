@@ -74,7 +74,6 @@ export default function Index() {
   const [selectedDemoOutcome, setSelectedDemoOutcome] = useState<"away" | "home">("away");
   const demoStake = 100;
   const demoOdds = selectedDemoOutcome === "away" ? -140 : 120;
-  const demoImplied = selectedDemoOutcome === "away" ? 58.3 : 45.5;
   const demoNoVig = selectedDemoOutcome === "away" ? 56.2 : 43.8;
   const demoProfit = selectedDemoOutcome === "away" ? 71 : 120;
   const demoVig = 3.8;
@@ -174,9 +173,17 @@ export default function Index() {
                 </div>
 
                 <div className="py-5">
-                  <div className="mb-4 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.13em] text-muted-foreground sm:text-[10px]">
-                    <span>NBA · Moneyline</span>
-                    <span>Interactive example</span>
+                  <div className="mb-3 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.13em] text-muted-foreground sm:text-[10px]">
+                    <span>NBA Regular Season</span>
+                    <span>Today · 7:30 PM EST</span>
+                  </div>
+                  <div className="mb-4 flex items-center justify-between gap-3 border-b border-foreground/10 pb-3">
+                    <span className="font-display text-lg font-semibold tracking-[-0.03em] sm:text-xl">
+                      Boston Celtics <span className="font-editorial text-base font-normal italic text-muted-foreground">@</span> New York Knicks
+                    </span>
+                    <span className="shrink-0 border border-foreground/25 px-2 py-1 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                      Moneyline
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <button
@@ -189,9 +196,9 @@ export default function Index() {
                           : "border-foreground/20 bg-background hover:border-primary"
                       }`}
                     >
-                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Boston</span>
+                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Boston (Away)</span>
                       <span className="mt-2 block font-display text-4xl font-semibold tracking-[-0.05em]">−140</span>
-                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Select away</span>
+                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>58.3% implied</span>
                     </button>
                     <button
                       type="button"
@@ -203,9 +210,9 @@ export default function Index() {
                           : "border-foreground/20 bg-background hover:border-primary"
                       }`}
                     >
-                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>New York</span>
+                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>New York (Home)</span>
                       <span className="mt-2 block font-display text-4xl font-semibold tracking-[-0.05em]">+120</span>
-                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Select home</span>
+                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>45.5% implied</span>
                     </button>
                   </div>
                 </div>
@@ -217,8 +224,12 @@ export default function Index() {
                   </div>
                   <dl className="space-y-3 font-mono text-[11px]">
                     <div className="flex items-center justify-between gap-4">
-                      <dt className="text-muted-foreground">Market implied probability</dt>
-                      <dd className="font-semibold text-foreground">{demoImplied}%</dd>
+                      <dt className="text-muted-foreground">Selection</dt>
+                      <dd className="font-semibold text-foreground">{selectedDemoOutcome === "away" ? "BOS Celtics (−140)" : "NY Knicks (+120)"}</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="text-muted-foreground">Virtual stake</dt>
+                      <dd className="font-semibold text-foreground">${demoStake}.00</dd>
                     </div>
                     <div className="flex items-center justify-between gap-4">
                       <dt className="text-muted-foreground">No-vig probability</dt>
