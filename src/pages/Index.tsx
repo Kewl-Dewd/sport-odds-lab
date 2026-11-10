@@ -163,7 +163,7 @@ export default function Index() {
                 $100 virtual stake
               </div>
 
-              <div className="landing-paper-card relative rotate-[1.5deg] border border-foreground/25 bg-card p-5 shadow-[0_30px_70px_-42px_hsl(var(--foreground)/0.65),6px_7px_0_hsl(var(--foreground)/0.08)] sm:p-7">
+              <div className="landing-paper-card relative rotate-[1.5deg] border border-foreground/25 bg-card px-5 pb-5 pt-8 shadow-[0_30px_70px_-42px_hsl(var(--foreground)/0.65),6px_7px_0_hsl(var(--foreground)/0.08)] sm:p-7">
                 <div className="flex items-start justify-between border-b border-foreground/20 pb-5">
                   <div>
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Market study / No. 001</div>
@@ -252,7 +252,7 @@ export default function Index() {
                   </Link>
                 </div>
               </div>
-              <p className="mt-16 text-center font-editorial text-xl italic text-muted-foreground">
+              <p className="mt-24 text-center font-editorial text-xl italic text-muted-foreground">
                 “The price is never just a price.”
               </p>
             </div>
