@@ -1,7 +1,7 @@
-import { Printer } from "lucide-react";
+import { Printer, Check, Building2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 const sections = [
   { title: "What it is", items: [
@@ -30,21 +30,39 @@ const sections = [
 
 export default function ForAdministrators() {
   return (
-    <div className="container py-6 max-w-3xl mx-auto space-y-6 print:max-w-none">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Sports Market Lab — information for department chairs and administrators</h1>
-          <p className="text-muted-foreground text-sm mt-1">A one-page summary instructors can share when proposing the app for a course.</p>
+    <div className="paper-grain relative">
+      <div className="container relative mx-auto max-w-5xl px-5 py-10 sm:py-14 print:max-w-none">
+        <header className="mb-10 grid gap-7 border-b border-foreground/20 pb-9 md:grid-cols-[1fr_auto] md:items-end">
+          <div>
+            <div className="section-kicker mb-5">Department briefing · Course-in-a-box</div>
+            <h1 className="max-w-3xl font-display text-[clamp(2.8rem,6vw,5.4rem)] font-semibold leading-[0.95] tracking-[-0.055em]">
+              A clearer case for the <span className="font-editorial font-normal italic text-primary">classroom.</span>
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground">Sports Market Lab information for department chairs and administrators—a printable summary instructors can share when proposing the app for a course.</p>
+          </div>
+          <Button variant="outline" onClick={() => window.print()} className="shrink-0 print:hidden"><Printer className="mr-2 h-4 w-4" />Print / save PDF</Button>
+        </header>
+
+        <div className="space-y-5">
+          {sections.map((section, index) => (
+            <Card key={section.title} className="break-inside-avoid overflow-hidden">
+              <CardContent className="grid gap-5 p-0 sm:grid-cols-[13rem_1fr] sm:gap-0">
+                <div className="flex items-center gap-4 border-b border-foreground/15 bg-muted/40 p-5 sm:block sm:border-b-0 sm:border-r sm:p-6">
+                  <span className="font-editorial text-4xl italic text-primary">{String(index + 1).padStart(2, "0")}</span>
+                  <h2 className="font-display text-xl tracking-[-0.035em] sm:mt-3">{section.title}</h2>
+                  <Building2 className="ml-auto h-5 w-5 text-accent sm:ml-0 sm:mt-5" strokeWidth={1.5} />
+                </div>
+                <ul className="space-y-3 p-5 text-sm leading-6 text-muted-foreground sm:p-6">
+                  {section.items.map((item) => (
+                    <li key={item} className="flex gap-3"><Check className="mt-1 h-4 w-4 shrink-0 text-primary" />{item}</li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-        <Button variant="outline" onClick={() => window.print()} className="print:hidden shrink-0"><Printer className="h-4 w-4 mr-2" />Print / save PDF</Button>
+        <p className="mt-8 border-t border-foreground/15 pt-5 text-sm text-muted-foreground print:hidden">See the <Link className="text-primary underline underline-offset-4" to="/support">support resources</Link> students are shown, or the <Link className="text-primary underline underline-offset-4" to="/instructors">instructor overview</Link>.</p>
       </div>
-      {sections.map((s) => (
-        <Card key={s.title} className="break-inside-avoid">
-          <CardHeader className="pb-2"><CardTitle className="text-base">{s.title}</CardTitle></CardHeader>
-          <CardContent><ul className="list-disc pl-5 space-y-1.5 text-sm">{s.items.map((i) => <li key={i}>{i}</li>)}</ul></CardContent>
-        </Card>
-      ))}
-      <p className="text-sm text-muted-foreground print:hidden">See the <Link className="underline" to="/support">support resources</Link> students are shown, or the <Link className="underline" to="/instructors">instructor overview</Link>.</p>
     </div>
   );
 }
