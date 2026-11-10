@@ -125,8 +125,9 @@ export default function Markets() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border/80 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          <div className="section-kicker mb-3">Live price study</div>
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
               Odds Board
             </h1>
             {mode && (
@@ -165,13 +166,13 @@ export default function Markets() {
 
       {/* Instructor League Controls */}
       {canEdit && classId && (
-        <div className="rounded-lg border border-emerald-500/30 bg-card p-4 sm:p-5 space-y-3 shadow-subtle-card dark:shadow-terminal-card">
-          <div className="flex items-center justify-between">
+        <div className="space-y-3 rounded-md border border-primary/30 bg-card p-4 shadow-subtle-card sm:p-5">
+          <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="h-4 w-4 text-emerald-500" />
-              <p className="text-sm sm:text-base font-semibold text-foreground">Instructor Controls · Active Leagues</p>
+              <SlidersHorizontal className="h-4 w-4 text-primary" />
+              <p className="font-display text-base font-semibold text-foreground sm:text-lg">Instructor Controls · Active Leagues</p>
             </div>
-            <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
+            <Badge variant="outline" className="border-primary/30 font-mono text-[10px] text-primary">
               INSTRUCTOR ACCESS
             </Badge>
           </div>
@@ -194,8 +195,8 @@ export default function Markets() {
                   className={cn(
                     "flex items-center justify-between gap-3 rounded-md border px-3 py-2 cursor-pointer transition-all duration-150 text-xs font-medium",
                     on
-                      ? "border-emerald-500/50 bg-emerald-500/5 text-foreground shadow-xs"
-                      : "border-border/60 bg-muted/30 text-muted-foreground opacity-75 hover:opacity-100",
+                      ? "border-primary bg-primary text-primary-foreground shadow-[2px_3px_0_hsl(var(--accent))]"
+                      : "border-foreground/15 bg-background text-muted-foreground hover:border-primary/50 hover:text-foreground",
                   )}
                 >
                   <span className="font-mono">{l.label}</span>
