@@ -66,7 +66,7 @@ export function AppLayout() {
             <Link to="/support" className="hover:text-foreground transition-colors">Support & Ethics</Link>
           </div>
           <p className="text-[11px] font-mono text-muted-foreground/60 pt-2">
-            © 2026 Sports Market Lab · High-Performance Analytics Terminal
+            © 2026 Sports Market Lab · {isLanding ? "Read the market. Reward the reasoning." : "High-Performance Analytics Terminal"}
           </p>
         </div>
       </footer>
