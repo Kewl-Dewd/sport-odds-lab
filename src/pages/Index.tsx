@@ -156,7 +156,7 @@ export default function Index() {
             </div>
 
             <div className="relative mx-auto w-full max-w-[480px] lg:col-span-5 lg:mx-0 lg:ml-auto">
-            <div className="relative">
+              <div className="relative">
                 <div className="absolute -left-3 -top-5 z-20 -rotate-6 border border-primary bg-accent px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.13em] text-accent-foreground shadow-[3px_4px_0_hsl(var(--primary))] sm:-left-8">
                   Interactive field note
                 </div>
@@ -253,7 +253,7 @@ export default function Index() {
                     </Link>
                   </div>
                 </div>
-            </div>
+              </div>
 
               <p className="mt-16 text-center font-editorial text-xl italic text-muted-foreground">
                 “The price is never just a price.”
