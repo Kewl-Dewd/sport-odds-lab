@@ -58,8 +58,6 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, isInstructor, isPlatformAdmin, signOut, viewAs } = useAuth();
   const { mode, clearMode } = useMode();
-  const isLanding = location.pathname === "/";
-
   const switchMode = () => {
     clearMode();
     setMobileOpen(false);

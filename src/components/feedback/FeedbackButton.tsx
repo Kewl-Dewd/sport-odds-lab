@@ -9,9 +9,9 @@ export function FeedbackButton() {
   return (
     <>
       <Button
-        variant="secondary"
+        variant="default"
         size="sm"
-        className="fixed bottom-20 md:bottom-4 right-4 z-50 rounded-full shadow-lg gap-2"
+        className="fixed bottom-20 right-3 z-50 gap-2 rounded-full px-4 md:bottom-4 md:right-4"
         onClick={() => setOpen(true)}
       >
         <MessageSquare className="h-4 w-4" />
