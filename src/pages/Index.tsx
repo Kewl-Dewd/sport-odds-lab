@@ -1,434 +1,408 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  TrendingUp, BarChart3, Users, Trophy, ArrowRight, Zap,
-  LineChart, Target, Flag, Calculator, GraduationCap, ShieldCheck,
-  Activity, CheckCircle2, ChevronRight, Layers, Sparkles
+  ArrowDownRight,
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Check,
+  ChevronRight,
+  Circle,
+  FileSpreadsheet,
+  FlaskConical,
+  GraduationCap,
+  LineChart,
+  ShieldCheck,
+  Sparkles,
+  Target,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
-const models = [
+const tickerItems = [
+  "REAL MARKET ODDS",
+  "VIRTUAL STAKES",
+  "FORECAST FIRST",
+  "15-WEEK COURSE",
+  "ZERO REAL MONEY WAGERED",
+];
+
+const coursePrinciples = [
   {
-    icon: LineChart,
-    badge: "Prediction Market",
-    code: "MOD-01",
-    title: "Bet outcome units",
-    description:
-      "Buy and sell units on event outcomes. Prices move with supply and demand using a deterministic LMSR or linear-impact market maker — students see how collective belief becomes a price.",
-    bullets: ["LMSR & linear-impact engines", "Implied probabilities sum to 100%", "Live order book & price history"],
-    accent: "border-emerald-500/30 bg-emerald-500/5",
-    iconBg: "bg-emerald-500/10 text-emerald-500",
-  },
-  {
+    number: "01",
     icon: Target,
-    badge: "Sportsbook",
-    code: "MOD-02",
-    title: "Wager against fixed odds",
-    description:
-      "Place stakes against moneyline, spread, and totals lines pulled live from The Odds API. Odds lock at the moment of acceptance, so students learn how vig and implied probability shape risk.",
-    bullets: ["Moneyline · Spread · Totals", "American & decimal odds", "Live lines from The Odds API"],
-    accent: "border-primary/40 bg-primary/5",
-    iconBg: "bg-primary/10 text-primary",
+    title: "Forecast before you position.",
+    text: "Students state their own win probability, then compare it with the market price, the no-vig probability, and expected value.",
+    note: "Analysis over outcomes",
   },
   {
-    icon: Flag,
-    badge: "Racetrack",
-    code: "MOD-03",
-    title: "Pari-mutuel pools",
-    description:
-      "Win, Place, and Show pools where the house never sets the price. Payouts come from the pool itself after takeout — students discover how crowd behavior determines the final odds.",
-    bullets: ["Win / Place / Show pools", "Live indicative odds", "Configurable track takeout"],
-    accent: "border-amber-500/30 bg-amber-500/5",
-    iconBg: "bg-amber-500/10 text-amber-500",
+    number: "02",
+    icon: LineChart,
+    title: "Follow the price, not the hype.",
+    text: "Opening and closing lines turn every position into a lesson about price, timing, closing line value, and the cost of the vig.",
+    note: "Real odds, locked prices",
   },
   {
-    icon: Calculator,
-    badge: "The book",
-    code: "MOD-04",
-    title: "The instructor is the house",
-    description:
-      "Every class runs like a real sportsbook. The instructor takes the action, carries the liability on open bets, and the class sees the book's handle, payouts, profit and hold percentage.",
-    bullets: ["Handle & payouts tracked live", "Open liability on unsettled bets", "Hold % vs. a real book's 4–8%"],
-    accent: "border-sky-500/30 bg-sky-500/5",
-    iconBg: "bg-sky-500/10 text-sky-500",
-  },
-  {
-    icon: Trophy,
-    badge: "Contests",
-    code: "MOD-05",
-    title: "Windows, rounds & leaderboards",
-    description:
-      "Open the book for a weekend, a unit, or a whole semester. Each window has its own bankroll, stake caps and scored leaderboard by profit, ROI or win rate.",
-    bullets: ["Weekend or semester windows", "Per-round bankrolls & caps", "Profit / ROI / wins scoring"],
-    accent: "border-indigo-500/30 bg-indigo-500/5",
-    iconBg: "bg-indigo-500/10 text-indigo-500",
+    number: "03",
+    icon: BarChart3,
+    title: "Grade the thinking.",
+    text: "Brier scores, calibration, journal completion, and reflections reward sound reasoning—not a lucky weekend of winners.",
+    note: "Evidence over profit",
   },
 ];
 
-const features = [
+const workflow = [
   {
-    icon: Calculator,
-    title: "Transparent pricing",
-    tag: "MATH",
-    description: "Every price comes from a transparent formula that students can study, verify, and simulate.",
+    number: "01",
+    label: "Set the table",
+    title: "Build your classbook.",
+    text: "Choose a ready-made course plan, publish the leagues you want, set the betting window, and invite students with your class code.",
   },
   {
-    icon: GraduationCap,
-    title: "Classroom ready",
-    tag: "CURRICULUM",
-    description: "Easily manage students, run controlled behavioral experiments, and reset between semesters.",
+    number: "02",
+    label: "Make a case",
+    title: "Put a forecast on record.",
+    text: "Students read live prices, write down their estimated probability, and use virtual dollars to test their reasoning against the market.",
   },
   {
-    icon: ShieldCheck,
-    title: "Safe & virtual",
-    tag: "ZERO RISK",
-    description: "Virtual currency, instructor controls, and full activity tracking — zero real money wagered.",
+    number: "03",
+    label: "Look closer",
+    title: "Debrief what happened.",
+    text: "Explore calibration, closing line value, book hold, and variance together. Export grades and reflections when the module is complete.",
   },
-  {
-    icon: Trophy,
-    title: "Compete & debrief",
-    tag: "ANALYTICS",
-    description: "Leaderboards, P&L attribution, behavioral analytics, and post-experiment debriefs built in.",
-  },
-];
-
-const visibleModels = models.filter((m) => m.badge === "Sportsbook" || m.badge === "The book" || m.badge === "Contests");
-
-const TICKER_ITEMS = [
-  { league: "NBA", match: "BOS Celtics -140", opp: "NY Knicks +120", vig: "4.1%" },
-  { league: "NFL", match: "KC Chiefs -3.5 (-110)", opp: "SF 49ers +3.5 (-110)", vig: "4.7%" },
-  { league: "EPL", match: "Man City -175", opp: "Real Madrid +220", vig: "4.4%" },
-  { league: "MLB", match: "LAD Dodgers -160", opp: "NY Yankees +135", vig: "4.3%" },
-  { league: "METRICS", match: "Classroom Hold: 5.2%", opp: "Simulated Handle: $428,500", vig: "ACTIVE" },
 ];
 
 export default function Index() {
-  const [selectedDemoOutcome, setSelectedDemoOutcome] = useState<"away" | "home">("home");
+  const [selectedDemoOutcome, setSelectedDemoOutcome] = useState<"away" | "home">("away");
   const demoStake = 100;
   const demoOdds = selectedDemoOutcome === "away" ? -140 : 120;
   const demoImplied = selectedDemoOutcome === "away" ? 58.3 : 45.5;
-  const demoProfit = selectedDemoOutcome === "away" ? Math.round((demoStake / 140) * 100) : Math.round((demoStake * 120) / 100);
+  const demoNoVig = selectedDemoOutcome === "away" ? 56.2 : 43.8;
+  const demoProfit = selectedDemoOutcome === "away" ? 71 : 120;
+  const demoVig = 3.8;
 
   return (
-    <div className="relative">
-      {/* Precision Ticker Strip */}
-      <div className="border-b border-border/70 bg-card/60 backdrop-blur-sm overflow-hidden py-2 select-none">
-        <div className="flex items-center gap-8 animate-ticker whitespace-nowrap text-xs font-mono">
-          {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((item, idx) => (
-            <div key={idx} className="inline-flex items-center gap-2">
-              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
-                {item.league}
-              </span>
-              <span className="font-medium text-foreground">{item.match}</span>
-              <span className="text-muted-foreground/60">vs</span>
-              <span className="font-medium text-foreground">{item.opp}</span>
-              <span className="text-[10px] text-emerald-500 font-semibold dark:text-emerald-400">vig: {item.vig}</span>
-              <span className="text-border mx-2">|</span>
+    <div className="landing-page overflow-hidden bg-background text-foreground">
+      <div className="border-b border-primary-foreground/10 bg-primary text-primary-foreground">
+        <div className="landing-ticker flex w-max items-center py-2.5" aria-label="Course features">
+          {[0, 1].map((group) => (
+            <div key={group} className="flex items-center" aria-hidden={group === 1}>
+              {tickerItems.map((item) => (
+                <div key={`${group}-${item}`} className="flex items-center">
+                  <span className="px-7 font-mono text-[10px] font-semibold tracking-[0.18em] sm:px-10 sm:text-[11px]">
+                    {item}
+                  </span>
+                  <Sparkles className="h-3 w-3 text-accent" strokeWidth={1.8} />
+                </div>
+              ))}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-grid-pattern hero-glow py-16 md:py-24 border-b border-border/60">
-        <div className="container relative max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Headline */}
-            <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+      <section className="paper-grain relative border-b border-border">
+        <div className="pointer-events-none absolute right-[8%] top-16 hidden h-24 w-24 rounded-full border border-foreground/10 xl:block" />
+        <div className="container relative max-w-[1440px] px-5 pb-20 pt-14 sm:px-8 sm:pt-20 lg:pb-28 lg:pt-24">
+          <div className="grid items-center gap-16 lg:grid-cols-12 lg:gap-8">
+            <div className="relative z-10 lg:col-span-7">
+              <div className="mb-8 flex flex-wrap items-center gap-4">
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-foreground/20 bg-card px-3.5 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.14em] shadow-sm sm:text-[11px]">
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                  </span>
+                  The classroom sportsbook is open
+                </div>
+                <span className="hidden font-editorial text-lg italic text-muted-foreground sm:inline">
+                  A different kind of field study.
                 </span>
-                LIVE ODDS ENGINE · CLASSROOM SPORTSBOOK SIMULATOR
               </div>
 
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-                See How Sports Markets <span className="text-gradient-emerald">Really Work</span>
+              <h1 className="max-w-[900px] font-display text-[clamp(3.55rem,8.2vw,8.4rem)] font-semibold leading-[0.95] tracking-[-0.065em] text-foreground">
+                Don’t just pick<br />
+                a winner. Read<br />
+                the <span className="font-editorial font-normal italic tracking-[-0.045em] text-primary">market.</span>
               </h1>
 
-              <p className="text-base sm:text-lg text-muted-foreground max-w-xl leading-relaxed">
-                A classroom simulation for studying how sportsbook prices are set, testing
-                forecasts against live odds feeds, and discovering why the house edge wins over time.
-                Zero real money wagered.
+              <div className="mt-9 grid max-w-2xl gap-7 sm:grid-cols-[1fr_auto] sm:items-end">
+                <p className="max-w-xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+                  A course-in-a-box for studying sportsbook prices, testing forecasts against real odds, and discovering why the house edge endures.
+                  <strong className="font-medium text-foreground"> Real markets. Virtual money. Better questions.</strong>
+                </p>
+                <ArrowDownRight className="hidden h-12 w-12 text-accent sm:block" strokeWidth={1.25} />
+              </div>
+
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link
+                  to="/auth?tab=signup"
+                  className="group inline-flex h-13 items-center justify-center gap-5 rounded-full bg-primary px-7 py-4 text-sm font-semibold text-primary-foreground shadow-[0_10px_25px_-16px_hsl(var(--foreground)/0.7)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  Start learning
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-accent-foreground transition-transform group-hover:translate-x-0.5">
+                    <ArrowRight className="h-4 w-4" />
+                  </span>
+                </Link>
+                <Link
+                  to="/instructors"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground/25 bg-transparent px-7 py-4 text-sm font-semibold text-foreground transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  Explore the instructor kit
+                  <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-foreground/15 pt-5 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground sm:text-[11px]">
+                <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> 15-week curriculum</span>
+                <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> Instructor controls</span>
+                <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" /> No real-money wagering</span>
+              </div>
+            </div>
+
+            <div className="relative mx-auto w-full max-w-[480px] lg:col-span-5 lg:mx-0 lg:ml-auto">
+              <div className="absolute -left-3 -top-5 z-20 -rotate-6 border border-primary bg-accent px-4 py-2 font-mono text-[10px] font-bold uppercase tracking-[0.13em] text-accent-foreground shadow-[3px_4px_0_hsl(var(--primary))] sm:-left-8">
+                Interactive field note
+              </div>
+              <div className="absolute -bottom-5 -right-2 z-20 rotate-3 rounded-full border border-foreground/20 bg-card px-4 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] shadow-md sm:-right-5 sm:text-[10px]">
+                $100 virtual stake
+              </div>
+
+              <div className="landing-paper-card relative rotate-[1.5deg] border border-foreground/25 bg-card p-5 shadow-[0_30px_70px_-42px_hsl(var(--foreground)/0.65),6px_7px_0_hsl(var(--foreground)/0.08)] sm:p-7">
+                <div className="flex items-start justify-between border-b border-foreground/20 pb-5">
+                  <div>
+                    <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Market study / No. 001</div>
+                    <h2 className="mt-2 font-display text-2xl font-semibold tracking-[-0.035em]">What is the price saying?</h2>
+                  </div>
+                  <FlaskConical className="h-6 w-6 shrink-0 text-accent" strokeWidth={1.5} />
+                </div>
+
+                <div className="py-5">
+                  <div className="mb-4 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.13em] text-muted-foreground sm:text-[10px]">
+                    <span>NBA · Moneyline</span>
+                    <span>Interactive example</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      aria-pressed={selectedDemoOutcome === "away"}
+                      onClick={() => setSelectedDemoOutcome("away")}
+                      className={`group border p-4 text-left transition-all ${
+                        selectedDemoOutcome === "away"
+                          ? "border-primary bg-primary text-primary-foreground shadow-[3px_4px_0_hsl(var(--accent))]"
+                          : "border-foreground/20 bg-background hover:border-primary"
+                      }`}
+                    >
+                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Boston</span>
+                      <span className="mt-2 block font-display text-4xl font-semibold tracking-[-0.05em]">−140</span>
+                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "away" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Select away</span>
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={selectedDemoOutcome === "home"}
+                      onClick={() => setSelectedDemoOutcome("home")}
+                      className={`group border p-4 text-left transition-all ${
+                        selectedDemoOutcome === "home"
+                          ? "border-primary bg-primary text-primary-foreground shadow-[3px_4px_0_hsl(var(--accent))]"
+                          : "border-foreground/20 bg-background hover:border-primary"
+                      }`}
+                    >
+                      <span className={`block text-xs font-medium ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>New York</span>
+                      <span className="mt-2 block font-display text-4xl font-semibold tracking-[-0.05em]">+120</span>
+                      <span className={`mt-2 block font-mono text-[9px] uppercase tracking-wider ${selectedDemoOutcome === "home" ? "text-primary-foreground/70" : "text-muted-foreground"}`}>Select home</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="border-y border-foreground/20 py-4">
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="font-editorial text-xl italic">Read between the lines</span>
+                    <span className="font-mono text-[10px] text-muted-foreground">{demoOdds > 0 ? "+" : ""}{demoOdds}</span>
+                  </div>
+                  <dl className="space-y-3 font-mono text-[11px]">
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="text-muted-foreground">Market implied probability</dt>
+                      <dd className="font-semibold text-foreground">{demoImplied}%</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="text-muted-foreground">No-vig probability</dt>
+                      <dd className="font-semibold text-foreground">{demoNoVig}%</dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <dt className="text-muted-foreground">Potential profit</dt>
+                      <dd className="font-semibold text-foreground">+${demoProfit}.00</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div className="flex items-end justify-between gap-4 pt-5">
+                  <div>
+                    <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">Built into both prices</div>
+                    <div className="mt-1 font-display text-3xl font-semibold tracking-[-0.04em]">{demoVig}% <span className="font-editorial text-xl font-normal italic">vig</span></div>
+                  </div>
+                  <Link to="/how-it-works" className="group inline-flex items-center gap-1.5 border-b border-accent pb-1 text-xs font-semibold text-primary">
+                    Unpack the math <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                </div>
+              </div>
+              <p className="mt-9 text-center font-editorial text-xl italic text-muted-foreground sm:translate-x-8">
+                “The price is never just a price.”
               </p>
-
-              <div className="flex flex-wrap gap-3 pt-2">
-                <Button variant="hero" size="lg" asChild className="h-11 px-6">
-                  <Link to="/auth?tab=signup" className="flex items-center gap-2">
-                    Start Learning <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="outline" size="lg" asChild className="h-11 px-6 font-medium">
-                  <Link to="/how-it-works">How Betting Works</Link>
-                </Button>
-                <Button variant="ghost" size="lg" asChild className="h-11 px-4 text-muted-foreground hover:text-foreground">
-                  <Link to="/instructors">For Instructors →</Link>
-                </Button>
-              </div>
-
-              {/* Trust & Proof points */}
-              <div className="grid grid-cols-3 gap-4 pt-4 border-t border-border/60 text-xs font-mono">
-                <div>
-                  <div className="text-base sm:text-lg font-bold text-foreground">100%</div>
-                  <div className="text-muted-foreground">Virtual Funds</div>
-                </div>
-                <div>
-                  <div className="text-base sm:text-lg font-bold text-emerald-500 dark:text-emerald-400">LIVE</div>
-                  <div className="text-muted-foreground">The Odds API Feed</div>
-                </div>
-                <div>
-                  <div className="text-base sm:text-lg font-bold text-foreground">4–8%</div>
-                  <div className="text-muted-foreground">Real-World Vig / Hold</div>
-                </div>
-              </div>
             </div>
-
-            {/* Right: Interactive Terminal Preview Widget */}
-            <div className="lg:col-span-5">
-              <div className="relative rounded-xl border border-border/80 bg-card p-5 shadow-terminal-hover transition-all duration-300">
-                
-                {/* Terminal Title Bar */}
-                <div className="flex items-center justify-between pb-3 mb-4 border-b border-border/80 text-xs">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-rose-500/80 inline-block" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-amber-500/80 inline-block" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-500/80 inline-block" />
-                    <span className="ml-2 font-mono text-[11px] text-muted-foreground font-medium">TERMINAL PREVIEW // SIM-01</span>
-                  </div>
-                  <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-mono text-emerald-500 dark:text-emerald-400 font-semibold">
-                    <Activity className="h-3 w-3" /> FEED SYNCED
-                  </span>
-                </div>
-
-                {/* Matchup Header */}
-                <div className="space-y-1 mb-4">
-                  <div className="flex items-center justify-between text-xs text-muted-foreground font-mono">
-                    <span>NBA REGULAR SEASON</span>
-                    <span>TODAY · 7:30 PM EST</span>
-                  </div>
-                  <div className="text-base font-semibold text-foreground flex items-center justify-between">
-                    <span>Boston Celtics @ New York Knicks</span>
-                    <Badge variant="outline" className="text-[10px] font-mono">MONEYLINE</Badge>
-                  </div>
-                </div>
-
-                {/* Interactive Odds Cells */}
-                <div className="grid grid-cols-2 gap-2.5 mb-4">
-                  <button
-                    onClick={() => setSelectedDemoOutcome("away")}
-                    className={`rounded-lg border p-3 text-left transition-all duration-150 ${
-                      selectedDemoOutcome === "away"
-                        ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
-                        : "border-border/80 bg-muted/40 hover:border-border hover:bg-muted/70"
-                    }`}
-                  >
-                    <div className="text-xs text-muted-foreground font-medium">Boston (Away)</div>
-                    <div className="text-xl font-bold font-mono tracking-tight text-foreground mt-0.5">-140</div>
-                    <div className="text-[11px] text-muted-foreground font-mono mt-1">58.3% implied</div>
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedDemoOutcome("home")}
-                    className={`rounded-lg border p-3 text-left transition-all duration-150 ${
-                      selectedDemoOutcome === "home"
-                        ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
-                        : "border-border/80 bg-muted/40 hover:border-border hover:bg-muted/70"
-                    }`}
-                  >
-                    <div className="text-xs text-muted-foreground font-medium">New York (Home)</div>
-                    <div className="text-xl font-bold font-mono tracking-tight text-foreground mt-0.5">+120</div>
-                    <div className="text-[11px] text-muted-foreground font-mono mt-1">45.5% implied</div>
-                  </button>
-                </div>
-
-                {/* Live Math / Payout Simulator Box */}
-                <div className="rounded-lg border border-border/80 bg-background/80 p-3.5 space-y-2.5 text-xs font-mono">
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>Virtual Stake:</span>
-                    <span className="font-semibold text-foreground">${demoStake}.00</span>
-                  </div>
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>Selection:</span>
-                    <span className="font-semibold text-foreground">
-                      {selectedDemoOutcome === "away" ? "BOS Celtics (-140)" : "NY Knicks (+120)"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>Potential Profit:</span>
-                    <span className="font-semibold text-emerald-500 dark:text-emerald-400 font-bold text-sm">
-                      +${demoProfit}.00
-                    </span>
-                  </div>
-                  <div className="pt-2 border-t border-border/60 flex justify-between items-center text-[11px]">
-                    <span className="text-muted-foreground">Market Overround (Vig):</span>
-                    <span className="font-semibold text-amber-500 dark:text-amber-400">3.8% House Advantage</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-border/60 flex items-center justify-between text-[11px] text-muted-foreground font-mono">
-                  <span>TAP CELLS TO COMPARE ODDS</span>
-                  <Link to="/markets" className="text-emerald-500 dark:text-emerald-400 hover:underline flex items-center gap-1 font-sans">
-                    View Live Board <ChevronRight className="h-3 w-3" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
 
-      {/* Three Market Models (Precision Grid) */}
-      <section className="container max-w-6xl py-16 md:py-20">
-        <div className="text-left md:text-center max-w-2xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground">
-            <Layers className="h-3.5 w-3.5 text-emerald-500" /> SIMULATION ENGINES
-          </div>
-          <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-foreground">
-            Study How a Book Operates in Real Time
-          </h2>
-          <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-            Instructors publish games, configure betting windows, and hold the book&apos;s risk.
-            Students wager virtual stakes and analyze why the math guarantees the house edge.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-5">
-          {visibleModels.map((m) => (
-            <div
-              key={m.badge}
-              className={`relative overflow-hidden rounded-xl border ${m.accent} p-6 space-y-4 shadow-terminal-card hover:shadow-terminal-hover transition-all duration-200`}
-            >
-              <div className="flex items-center justify-between">
-                <div className={`h-9 w-9 rounded-md flex items-center justify-center ${m.iconBg}`}>
-                  <m.icon className="h-4 w-4" />
-                </div>
-                <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground/80">
-                  {m.code}
-                </span>
+      <section className="border-b border-border bg-card">
+        <div className="container max-w-[1440px] px-5 py-20 sm:px-8 lg:py-28">
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end">
+            <div className="lg:col-span-8">
+              <div className="mb-5 flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">
+                <Circle className="h-2 w-2 fill-accent text-accent" /> A better scorecard
               </div>
-
-              <div className="space-y-1.5">
-                <h3 className="text-lg font-bold tracking-tight text-foreground">{m.title}</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{m.description}</p>
-              </div>
-
-              <div className="pt-2 border-t border-border/60">
-                <ul className="space-y-2 text-xs font-mono text-muted-foreground">
-                  {m.bullets.map((b) => (
-                    <li key={b} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500/80" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <h2 className="max-w-4xl font-display text-[clamp(2.7rem,5.2vw,5.4rem)] font-semibold leading-[0.98] tracking-[-0.055em]">
+                Reward the analysis.<br />
+                <span className="font-editorial font-normal italic text-primary">Not the lucky bounce.</span>
+              </h2>
             </div>
-          ))}
-        </div>
-      </section>
+            <p className="max-w-md text-base leading-7 text-muted-foreground lg:col-span-4 lg:pb-2">
+              A winning pick can still be a bad decision. Sports Market Lab gives students the tools to explain their thinking—and instructors the evidence to grade it.
+            </p>
+          </div>
 
-      {/* Platform Features Grid */}
-      <section className="border-y border-border/60 bg-muted/20 py-16 md:py-20">
-        <div className="container max-w-6xl">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map((f) => (
-              <div key={f.title} className="stat-card space-y-3">
+          <div className="mt-14 grid border-y border-foreground/20 md:grid-cols-3">
+            {coursePrinciples.map((principle, index) => (
+              <article
+                key={principle.number}
+                className={`group relative py-8 md:px-7 md:py-10 lg:px-10 ${index > 0 ? "border-t border-foreground/20 md:border-l md:border-t-0" : ""} ${index === 0 ? "md:pl-0" : ""}`}
+              >
                 <div className="flex items-center justify-between">
-                  <div className="h-9 w-9 rounded-md bg-muted/80 border border-border/80 flex items-center justify-center text-foreground">
-                    <f.icon className="h-4 w-4 text-emerald-500" />
-                  </div>
-                  <span className="text-[10px] font-mono font-medium text-muted-foreground uppercase px-1.5 py-0.5 rounded border border-border/60 bg-background">
-                    {f.tag}
-                  </span>
+                  <span className="font-editorial text-3xl italic text-accent">{principle.number}</span>
+                  <principle.icon className="h-5 w-5 text-primary transition-transform group-hover:-rotate-6" strokeWidth={1.5} />
                 </div>
-                <div>
-                  <h3 className="font-semibold text-sm sm:text-base text-foreground">{f.title}</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed mt-1">{f.description}</p>
-                </div>
-              </div>
+                <h3 className="mt-10 max-w-xs font-display text-2xl font-semibold leading-tight tracking-[-0.035em]">{principle.title}</h3>
+                <p className="mt-4 text-sm leading-6 text-muted-foreground">{principle.text}</p>
+                <div className="mt-8 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-primary">{principle.note}</div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Teaching & Debrief Flow */}
-      <section className="container max-w-6xl py-16 md:py-20">
-        <div className="rounded-xl border border-border/80 p-6 md:p-10 bg-card shadow-terminal-card">
-          <div className="mb-8">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">
-              EXECUTION PIPELINE
-            </span>
-            <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground mt-1">
-              From Opening Line to Settled P&L
-            </h3>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 text-sm">
-            <div className="space-y-2.5 p-4 rounded-lg bg-muted/30 border border-border/60">
-              <div className="flex items-center gap-2">
-                <span className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-mono font-bold text-xs">
-                  01
-                </span>
-                <h4 className="font-semibold text-foreground text-sm">Instructor Opens the Board</h4>
+      <section className="bg-background">
+        <div className="container max-w-[1440px] px-5 py-20 sm:px-8 lg:py-28">
+          <div className="grid gap-5 lg:grid-cols-12">
+            <article className="relative overflow-hidden border border-primary bg-primary p-7 text-primary-foreground sm:p-10 lg:col-span-7 lg:min-h-[510px] lg:p-12">
+              <div className="absolute -bottom-24 -right-16 h-72 w-72 rounded-full border border-primary-foreground/10" />
+              <div className="absolute -bottom-10 -right-2 h-48 w-48 rounded-full border border-primary-foreground/10" />
+              <div className="relative flex h-full flex-col">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.17em] text-primary-foreground/70">For instructors</span>
+                  <GraduationCap className="h-6 w-6 text-accent" strokeWidth={1.5} />
+                </div>
+                <h2 className="mt-16 max-w-xl font-display text-[clamp(2.5rem,4.6vw,4.8rem)] font-semibold leading-[0.98] tracking-[-0.05em] text-primary-foreground">
+                  Your class.<br />Your sportsbook.<br /><span className="font-editorial font-normal italic text-accent">Your lesson plan.</span>
+                </h2>
+                <p className="mt-7 max-w-lg text-sm leading-7 text-primary-foreground/75 sm:text-base">
+                  Run a weekend market study or a full fifteen-week course. Publish leagues, control betting windows, assign lessons, and see both student reasoning and the book’s economics.
+                </p>
+                <div className="mt-auto pt-10">
+                  <Link to="/instructors" className="group inline-flex items-center gap-3 border-b border-accent pb-2 text-sm font-semibold text-primary-foreground">
+                    See the ready-to-teach course kit <ArrowRight className="h-4 w-4 text-accent transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Select target leagues, ingest real-time lines from The Odds API, set wagering windows, and enforce bankroll limits.
-              </p>
-            </div>
+            </article>
 
-            <div className="space-y-2.5 p-4 rounded-lg bg-muted/30 border border-border/60">
-              <div className="flex items-center gap-2">
-                <span className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-mono font-bold text-xs">
-                  02
-                </span>
-                <h4 className="font-semibold text-foreground text-sm">Students Place Stakes</h4>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Students allocate virtual currency on moneyline, spread, and totals. Odds lock at acceptance to expose implied probabilities.
-              </p>
-            </div>
+            <div className="grid gap-5 lg:col-span-5">
+              <article className="relative border border-foreground/25 bg-accent p-7 shadow-[5px_6px_0_hsl(var(--foreground)/0.09)] sm:p-9 lg:flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-accent-foreground/70">Course-in-a-box</span>
+                  <BookOpen className="h-5 w-5 text-accent-foreground" strokeWidth={1.5} />
+                </div>
+                <div className="mt-8 flex items-end gap-3">
+                  <span className="font-display text-7xl font-semibold leading-none tracking-[-0.07em] text-accent-foreground sm:text-8xl">15</span>
+                  <span className="pb-1 font-editorial text-2xl italic text-accent-foreground">weeks,<br />ready to teach.</span>
+                </div>
+                <p className="mt-6 max-w-md text-sm leading-6 text-accent-foreground/80">
+                  Objectives, lessons, app tasks, quizzes, reflections, slide outlines, rubrics, and answer keys—all organized into seven teachable modules.
+                </p>
+              </article>
 
-            <div className="space-y-2.5 p-4 rounded-lg bg-muted/30 border border-border/60">
-              <div className="flex items-center gap-2">
-                <span className="h-6 w-6 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-mono font-bold text-xs">
-                  03
-                </span>
-                <h4 className="font-semibold text-foreground text-sm">Settle and Debrief</h4>
-              </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Games settle automatically or by instructor action. The platform pays winners and displays book handle, hold %, and behavioral stats.
-              </p>
+              <article className="border border-foreground/25 bg-card p-7 shadow-[5px_6px_0_hsl(var(--foreground)/0.07)] sm:p-9 lg:flex-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Less admin, more teaching</span>
+                  <FileSpreadsheet className="h-5 w-5 text-primary" strokeWidth={1.5} />
+                </div>
+                <ul className="mt-7 space-y-4">
+                  {["Quick class setup with a custom join code", "Gradebook export for Moodle, Canvas, or D2L", "Responsible-play lessons before the first position"].map((item) => (
+                    <li key={item} className="flex gap-3 border-b border-foreground/10 pb-4 text-sm leading-6 last:border-0 last:pb-0">
+                      <Check className="mt-1 h-4 w-4 shrink-0 text-accent" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
             </div>
           </div>
         </div>
       </section>
 
-      {/* High-Impact Institutional CTA */}
-      <section className="container max-w-6xl pb-20">
-        <div className="rounded-xl border border-emerald-500/30 bg-card p-8 md:p-12 text-center space-y-5 shadow-terminal-hover relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-transparent pointer-events-none" />
-          
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-500">
-            <Sparkles className="h-3.5 w-3.5" /> READY FOR CLASSROOM SIMULATION
+      <section className="border-y border-border bg-card">
+        <div className="container max-w-[1440px] px-5 py-20 sm:px-8 lg:py-28">
+          <div className="grid gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <div className="lg:sticky lg:top-28">
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-primary">From line to learning</span>
+                <h2 className="mt-5 font-display text-[clamp(2.8rem,4.5vw,4.8rem)] font-semibold leading-[0.98] tracking-[-0.05em]">
+                  One market.<br />Three acts of<br /><span className="font-editorial font-normal italic text-primary">discovery.</span>
+                </h2>
+                <p className="mt-6 max-w-sm text-sm leading-7 text-muted-foreground">
+                  The simulation is the laboratory. The real learning happens when students make their reasoning visible and revisit it.
+                </p>
+              </div>
+            </div>
+            <div className="lg:col-span-8">
+              {workflow.map((step) => (
+                <article key={step.number} className="grid gap-5 border-t border-foreground/20 py-8 first:pt-0 sm:grid-cols-[70px_1fr] sm:py-10 lg:grid-cols-[90px_1fr]">
+                  <span className="font-editorial text-4xl italic text-accent">{step.number}</span>
+                  <div>
+                    <span className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">{step.label}</span>
+                    <h3 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">{step.title}</h3>
+                    <p className="mt-4 max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">{step.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
+        </div>
+      </section>
 
-          <h2 className="text-2xl md:text-4xl font-bold tracking-tight text-foreground max-w-xl mx-auto">
-            Ready to Open the Classroom Book?
-          </h2>
-          <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Join your class, test your predictive forecasting against live market prices, and examine how sportsbook economics play out in practice.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Button variant="hero" size="lg" asChild className="h-11 px-8">
-              <Link to="/auth?tab=signup">Create Student Account</Link>
-            </Button>
-            <Button variant="outline" size="lg" asChild className="h-11 px-6">
-              <Link to="/how-it-works">See How Betting Works</Link>
-            </Button>
+      <section className="paper-grain relative bg-background">
+        <div className="container relative max-w-[1440px] px-5 py-20 sm:px-8 lg:py-28">
+          <div className="relative border border-foreground/25 bg-card px-6 py-12 shadow-[8px_9px_0_hsl(var(--foreground)/0.08)] sm:px-10 lg:px-16 lg:py-16">
+            <div className="absolute -right-3 -top-4 rotate-3 bg-accent px-4 py-2 font-mono text-[9px] font-bold uppercase tracking-[0.14em] text-accent-foreground shadow-[3px_3px_0_hsl(var(--primary))] sm:-right-5">
+              Office hours optional. Curiosity required.
+            </div>
+            <div className="grid items-end gap-10 lg:grid-cols-12">
+              <div className="lg:col-span-8">
+                <div className="mb-6 flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-primary">
+                  <ShieldCheck className="h-4 w-4 text-accent" /> Educational by design
+                </div>
+                <h2 className="font-display text-[clamp(2.8rem,5.8vw,6.2rem)] font-semibold leading-[0.95] tracking-[-0.055em]">
+                  Bring the market<br />into your <span className="font-editorial font-normal italic text-primary">classroom.</span>
+                </h2>
+              </div>
+              <div className="lg:col-span-4">
+                <p className="max-w-md text-sm leading-7 text-muted-foreground sm:text-base">
+                  Join a class with your instructor’s code, or build a complete course around real prices and virtual stakes.
+                </p>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+                  <Link to="/auth?tab=signup" className="group inline-flex items-center justify-center gap-3 rounded-full bg-primary px-6 py-3.5 text-sm font-semibold text-primary-foreground transition-transform hover:-translate-y-0.5">
+                    Start learning <ArrowRight className="h-4 w-4 text-accent transition-transform group-hover:translate-x-0.5" />
+                  </Link>
+                  <Link to="/how-it-works" className="inline-flex items-center justify-center gap-2 rounded-full border border-foreground/25 px-6 py-3.5 text-sm font-semibold transition-colors hover:bg-background">
+                    How it works
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
