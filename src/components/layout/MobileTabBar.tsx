@@ -55,13 +55,13 @@ export function MobileTabBar() {
                 to={t.href}
                 className={cn(
                   "relative flex flex-col items-center justify-center gap-1 py-2 min-h-[56px] text-[11px] font-medium transition-all duration-150",
-                  active ? "text-emerald-500 font-semibold dark:text-emerald-400" : "text-muted-foreground hover:text-foreground",
+                  active ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 {active && (
-                  <span className="absolute top-0 w-8 h-0.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                  <span className="absolute top-0 h-1 w-9 bg-accent" />
                 )}
-                <t.icon className={cn("h-4 w-4", active && "text-emerald-500 dark:text-emerald-400")} />
+                <t.icon className={cn("h-4 w-4", active && "text-primary")} />
                 <span>{t.label}</span>
               </Link>
             </li>

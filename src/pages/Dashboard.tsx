@@ -48,8 +48,9 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-border/80 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+          <div className="section-kicker mb-3">Your field notes</div>
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-4xl font-semibold tracking-[-0.05em] text-foreground md:text-5xl">
               Student Dashboard
             </h1>
             {mode && (
@@ -99,7 +100,7 @@ export default function Dashboard() {
           <CardHeader className="pb-3 border-b border-border/60">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-bold">Recent Wagers</CardTitle>
-              <Link to="/portfolio" className="text-xs font-mono text-emerald-500 dark:text-emerald-400 hover:underline">
+              <Link to="/portfolio" className="text-xs font-mono text-primary hover:underline">
                 View All →
               </Link>
             </div>
@@ -107,7 +108,7 @@ export default function Dashboard() {
           <CardContent className="pt-3">
             {book.bets.length === 0 ? (
               <p className="text-xs text-muted-foreground py-6 text-center font-mono">
-                No active wagers. <Link to="/markets" className="text-emerald-500 dark:text-emerald-400 underline">Check the board</Link> to make your first selection.
+                No active wagers. <Link to="/markets" className="text-primary underline">Check the board</Link> to make your first selection.
               </p>
             ) : (
               <div className="divide-y divide-border/60 font-mono text-xs">

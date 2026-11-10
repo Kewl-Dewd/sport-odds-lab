@@ -58,8 +58,6 @@ export function Navbar() {
   const navigate = useNavigate();
   const { user, isInstructor, isPlatformAdmin, signOut, viewAs } = useAuth();
   const { mode, clearMode } = useMode();
-  const isLanding = location.pathname === "/";
-
   const switchMode = () => {
     clearMode();
     setMobileOpen(false);
@@ -72,22 +70,22 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/80 glass">
-      <div className="container flex h-16 items-center justify-between py-2">
-        <Link to="/" className="flex items-center gap-2.5 font-bold text-base tracking-tight" onClick={() => setMobileOpen(false)}>
-          <div className={`relative flex h-9 w-9 items-center justify-center ${isLanding ? "-rotate-3 border border-primary/20 bg-primary/5" : "rounded-lg border border-emerald-500/20 bg-emerald-500/10"}`}>
-            <img src={logoBeaker} alt="" className="h-7 w-7 object-contain" />
+    <header className="glass sticky top-0 z-50 border-b border-foreground/15">
+      <div className="container flex h-[4.5rem] items-center justify-between py-2">
+        <Link to="/" className="flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight" onClick={() => setMobileOpen(false)}>
+          <div className="relative flex h-10 w-10 -rotate-3 items-center justify-center border border-primary/20 bg-card shadow-[2px_2px_0_hsl(var(--accent))]">
+            <img src={logoBeaker} alt="" className="h-8 w-8 object-contain" />
           </div>
           <div className="flex items-center gap-1.5">
-            <span className={`${isLanding ? "font-display text-lg font-semibold tracking-[-0.035em]" : "font-semibold tracking-tight"} text-foreground`}>Sports Market Lab</span>
-            <span className="hidden sm:inline-flex items-center rounded border border-border/80 bg-muted/50 px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground uppercase">
-              {isLanding ? "Field Lab" : "Terminal"}
+            <span className="whitespace-nowrap font-display text-lg font-semibold tracking-[-0.035em] text-foreground">Sports Market Lab</span>
+            <span className="hidden items-center whitespace-nowrap rounded-sm border border-foreground/15 bg-card px-1.5 py-0.5 font-mono text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:inline-flex">
+              Field Lab
             </span>
           </div>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className={`hidden items-center gap-1 ${user ? "2xl:flex" : "md:flex"}`}>
           {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => {
             const isActive = location.pathname === link.href;
             return (
@@ -95,9 +93,9 @@ export function Navbar() {
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150",
                   isActive
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -110,9 +108,9 @@ export function Navbar() {
               <Link
                 to="/instructor/classes"
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/classes")
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -122,9 +120,9 @@ export function Navbar() {
               <Link
                 to="/instructor/gradebook"
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/gradebook")
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -134,9 +132,9 @@ export function Navbar() {
               <Link
                 to="/instructor/kit"
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/kit")
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -146,9 +144,9 @@ export function Navbar() {
               <Link
                 to="/instructor/quick-setup"
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/instructor/quick-setup")
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -159,9 +157,9 @@ export function Navbar() {
               <Link
                 to="/admin/users"
                 className={cn(
-                  "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                   location.pathname.startsWith("/admin")
-                    ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                    ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 )}
               >
@@ -174,9 +172,9 @@ export function Navbar() {
             <Link
               to="/admin/platform"
               className={cn(
-                "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                 location.pathname === "/admin/platform"
-                  ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                  ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
@@ -188,9 +186,9 @@ export function Navbar() {
             <Link
               to="/admin/users"
               className={cn(
-                "px-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
+                "px-2.5 py-1.5 rounded-sm text-xs font-medium transition-all duration-150 flex items-center gap-1.5",
                 location.pathname === "/admin/users"
-                  ? "bg-muted text-foreground border border-border/80 shadow-xs font-semibold"
+                  ? "border border-primary bg-primary text-primary-foreground shadow-xs font-semibold"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
@@ -200,14 +198,14 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className="hidden md:flex items-center gap-2">
+        <div className={`hidden items-center gap-2 ${user ? "2xl:flex" : "md:flex"}`}>
           {user && mode && !SINGLE_MODE && (
             <button
               onClick={switchMode}
-              className="inline-flex items-center gap-1.5 rounded-md border border-border/80 bg-muted/40 px-2.5 py-1 text-xs font-mono font-medium text-foreground hover:bg-muted transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-sm border border-border/80 bg-muted/40 px-2.5 py-1 text-xs font-mono font-medium text-foreground hover:bg-muted transition-colors"
               title="Switch market mode"
             >
-              <Zap className="h-3 w-3 text-emerald-500" />
+              <Zap className="h-3 w-3 text-accent" />
               {MODE_LABELS[mode]}
               <Repeat className="h-3 w-3 opacity-60 ml-0.5" />
             </button>
@@ -232,10 +230,10 @@ export function Navbar() {
         </div>
 
         {/* Mobile controls */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className={`flex items-center gap-2 ${user ? "2xl:hidden" : "md:hidden"}`}>
           <ThemeToggle />
           <button
-            className="p-2 rounded-md border border-border/60 hover:bg-muted transition-colors"
+            className="p-2 rounded-sm border border-border/60 hover:bg-muted transition-colors"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Toggle menu"
           >
@@ -246,7 +244,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border/80 bg-background/95 backdrop-blur animate-slide-up max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
+        <div className={`max-h-[calc(100dvh-4.5rem)] animate-slide-up overflow-y-auto overscroll-contain border-t border-foreground/15 bg-background ${user ? "2xl:hidden" : "md:hidden"}`}>
           <nav className="container flex flex-col gap-1 py-3 pb-6">
             {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link
@@ -254,9 +252,9 @@ export function Navbar() {
                 to={link.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium transition-colors",
                   location.pathname === link.href
-                    ? "bg-muted text-foreground font-semibold border border-border/60"
+                    ? "border border-primary bg-primary font-semibold text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted/50"
                 )}
               >
@@ -266,30 +264,30 @@ export function Navbar() {
             ))}
             {isInstructor && (
               <>
-                <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+                <Link to="/instructor/classes" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <School className="h-4 w-4" /> Classes
                 </Link>
-                <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+                <Link to="/instructor/gradebook" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <FileSpreadsheet className="h-4 w-4" /> Gradebook
                 </Link>
-                <Link to="/instructor/kit" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+                <Link to="/instructor/kit" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <BookOpenCheck className="h-4 w-4" /> Course kit
                 </Link>
-                <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+                <Link to="/instructor/quick-setup" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <Rocket className="h-4 w-4" /> Quick class setup
                 </Link>
-                <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+                <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                   <Users className="h-4 w-4" /> My Students
                 </Link>
               </>
             )}
             {isPlatformAdmin && (
-              <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+              <Link to="/admin/platform" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                 <Building2 className="h-4 w-4" /> Platform
               </Link>
             )}
             {isPlatformAdmin && (
-              <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-muted-foreground hover:bg-muted/50">
+              <Link to="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-3 py-2.5 rounded-sm text-sm font-medium text-muted-foreground hover:bg-muted/50">
                 <Users className="h-4 w-4" /> Users
               </Link>
             )}
@@ -297,7 +295,7 @@ export function Navbar() {
               <div className="px-3 py-2">
                 <Button variant="outline" size="sm" onClick={switchMode} className="w-full justify-between font-mono text-xs">
                   <span className="inline-flex items-center gap-1.5">
-                    <Zap className="h-4 w-4 text-emerald-500" /> Mode: {MODE_LABELS[mode]}
+                    <Zap className="h-4 w-4 text-accent" /> Mode: {MODE_LABELS[mode]}
                   </span>
                   <Repeat className="h-3.5 w-3.5 opacity-60" />
                 </Button>

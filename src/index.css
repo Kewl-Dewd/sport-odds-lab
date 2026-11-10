@@ -4,95 +4,95 @@
 
 @layer base {
   :root {
-    --background: 220 20% 98%;
-    --foreground: 224 35% 10%;
+    --background: 42 38% 94%;
+    --foreground: 218 50% 16%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 35% 10%;
+    --card: 40 44% 97%;
+    --card-foreground: 218 50% 16%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 35% 10%;
+    --popover: 40 44% 97%;
+    --popover-foreground: 218 50% 16%;
 
-    --primary: 152 76% 36%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 216 60% 26%;
+    --primary-foreground: 42 45% 96%;
 
-    --secondary: 220 14% 94%;
-    --secondary-foreground: 224 35% 15%;
+    --secondary: 39 27% 88%;
+    --secondary-foreground: 218 50% 16%;
 
-    --muted: 220 14% 94%;
-    --muted-foreground: 220 10% 44%;
+    --muted: 39 25% 89%;
+    --muted-foreground: 217 15% 40%;
 
-    --accent: 220 14% 92%;
-    --accent-foreground: 224 35% 10%;
+    --accent: 33 92% 53%;
+    --accent-foreground: 218 55% 14%;
 
-    --destructive: 350 89% 50%;
+    --destructive: 350 72% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 152 76% 36%;
+    --success: 152 65% 32%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 44%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 92% 40%;
+    --warning-foreground: 218 55% 14%;
 
-    --border: 220 13% 88%;
-    --input: 220 13% 88%;
-    --ring: 152 76% 36%;
+    --border: 32 18% 76%;
+    --input: 32 18% 70%;
+    --ring: 33 92% 53%;
 
-    --radius: 0.5rem;
+    --radius: 0.25rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 152 76% 36%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 152 76% 36%;
+    --sidebar-background: 42 38% 94%;
+    --sidebar-foreground: 218 50% 16%;
+    --sidebar-primary: 216 60% 26%;
+    --sidebar-primary-foreground: 42 45% 96%;
+    --sidebar-accent: 39 27% 88%;
+    --sidebar-accent-foreground: 218 50% 16%;
+    --sidebar-border: 32 18% 76%;
+    --sidebar-ring: 33 92% 53%;
   }
 
   .dark {
-    --background: 225 18% 5%;
-    --foreground: 210 20% 98%;
+    --background: 218 45% 10%;
+    --foreground: 42 38% 92%;
 
-    --card: 225 14% 8%;
-    --card-foreground: 210 20% 98%;
+    --card: 218 39% 13%;
+    --card-foreground: 42 38% 92%;
 
-    --popover: 225 14% 9%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 218 39% 13%;
+    --popover-foreground: 42 38% 92%;
 
-    --primary: 152 76% 46%;
-    --primary-foreground: 225 25% 6%;
+    --primary: 42 38% 92%;
+    --primary-foreground: 218 50% 14%;
 
-    --secondary: 225 12% 13%;
-    --secondary-foreground: 210 20% 90%;
+    --secondary: 217 30% 18%;
+    --secondary-foreground: 42 38% 92%;
 
-    --muted: 225 12% 11%;
-    --muted-foreground: 218 11% 60%;
+    --muted: 217 30% 17%;
+    --muted-foreground: 38 15% 67%;
 
-    --accent: 225 12% 16%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 33 92% 53%;
+    --accent-foreground: 218 55% 14%;
 
-    --destructive: 350 89% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 350 72% 60%;
+    --destructive-foreground: 218 55% 14%;
 
-    --success: 152 76% 46%;
-    --success-foreground: 225 25% 6%;
+    --success: 152 55% 48%;
+    --success-foreground: 218 55% 14%;
 
-    --warning: 38 92% 52%;
-    --warning-foreground: 225 25% 6%;
+    --warning: 38 92% 55%;
+    --warning-foreground: 218 55% 14%;
 
-    --border: 225 12% 15%;
-    --input: 225 12% 15%;
-    --ring: 152 76% 46%;
+    --border: 217 24% 26%;
+    --input: 217 24% 32%;
+    --ring: 33 92% 53%;
 
-    --sidebar-background: 225 15% 7%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 152 76% 46%;
-    --sidebar-primary-foreground: 225 25% 6%;
-    --sidebar-accent: 225 12% 14%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 225 12% 15%;
-    --sidebar-ring: 152 76% 46%;
+    --sidebar-background: 218 45% 10%;
+    --sidebar-foreground: 42 38% 92%;
+    --sidebar-primary: 42 38% 92%;
+    --sidebar-primary-foreground: 218 50% 14%;
+    --sidebar-accent: 217 30% 18%;
+    --sidebar-accent-foreground: 42 38% 92%;
+    --sidebar-border: 217 24% 26%;
+    --sidebar-ring: 33 92% 53%;
   }
 }
 
@@ -107,23 +107,44 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background font-sans text-foreground antialiased selection:bg-accent/30 selection:text-foreground;
     overflow-x: hidden;
     -webkit-tap-highlight-color: transparent;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Monospace figures alignment for odds, handles, and timers */
-  .font-mono, [data-tabular-nums] {
+  .font-mono,
+  [data-tabular-nums] {
     font-feature-settings: "tnum" 1, "zero" 1;
     font-variant-numeric: tabular-nums;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-foreground;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold tracking-[-0.035em] text-foreground;
   }
 
-  /* Avoid iOS auto-zoom when focusing form fields on small screens */
+  h1 {
+    line-height: 0.98;
+  }
+
+  h2,
+  h3 {
+    line-height: 1.08;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   @media (max-width: 767px) {
     input,
     select,
@@ -132,7 +153,6 @@
     }
   }
 
-  /* Radix compensations */
   body[data-scroll-locked] {
     margin-right: 0 !important;
     padding-right: 0 !important;
@@ -140,7 +160,33 @@
 }
 
 @layer components {
-  /* Warm editorial public homepage, scoped so classroom screens keep their own theme. */
+  .studio-shell {
+    @apply bg-background text-foreground selection:bg-accent/30 selection:text-foreground;
+  }
+
+  .studio-main {
+    background-image: linear-gradient(hsl(var(--foreground) / 0.022) 1px, transparent 1px);
+    background-size: 100% 9rem;
+  }
+
+  .studio-shell:not(.landing-shell) main h1:not([class*="clamp"]) {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+  }
+
+  .section-kicker {
+    @apply inline-flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground;
+  }
+
+  .section-kicker::before {
+    content: "";
+    @apply block h-2 w-2 rounded-full bg-accent;
+  }
+
+  .editorial-note {
+    @apply font-editorial italic text-muted-foreground;
+  }
+
   .landing-shell,
   .dark .landing-shell {
     --background: 42 38% 94%;
@@ -158,18 +204,9 @@
     --accent: 33 92% 53%;
     --accent-foreground: 218 55% 14%;
     --border: 32 18% 76%;
-    --input: 32 18% 76%;
+    --input: 32 18% 70%;
     --ring: 33 92% 53%;
     --radius: 0.25rem;
-  }
-
-  .landing-shell .glass {
-    background: hsl(var(--background));
-    @apply border-border;
-  }
-
-  .landing-shell header {
-    @apply backdrop-blur-none;
   }
 
   .landing-shell footer {
@@ -196,6 +233,10 @@
     mix-blend-mode: multiply;
   }
 
+  .dark .paper-grain::after {
+    mix-blend-mode: soft-light;
+  }
+
   .paper-grain > * {
     position: relative;
     z-index: 1;
@@ -205,33 +246,32 @@
     animation: landing-ticker 34s linear infinite;
   }
 
-  /* Modern Terminal Card */
   .stat-card {
-    @apply relative overflow-hidden rounded-lg border border-border/80 bg-card p-4 sm:p-5 transition-all duration-200 hover:border-border;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+    @apply relative overflow-hidden rounded-md border border-foreground/15 bg-card p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/35 sm:p-5;
+    box-shadow: 0 14px 32px -28px hsl(var(--foreground) / 0.65);
   }
 
-  .stat-card::after {
-    content: '';
+  .stat-card::before {
+    content: "";
     position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    left: 0;
+    top: 0;
+    height: 3px;
+    width: 2.5rem;
+    background: hsl(var(--accent));
   }
 
   .price-up {
-    @apply text-emerald-500 font-semibold dark:text-emerald-400;
+    @apply font-semibold text-success;
   }
 
   .price-down {
-    @apply text-rose-500 font-semibold dark:text-rose-400;
+    @apply font-semibold text-destructive;
   }
 
-  /* Sleek contemporary sports market card */
   .market-card {
-    @apply relative overflow-hidden rounded-lg border border-border/70 bg-card transition-all duration-200 hover:border-border hover:shadow-terminal-hover;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
+    @apply relative overflow-hidden rounded-md border border-foreground/15 bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40;
+    box-shadow: 0 16px 34px -30px hsl(var(--foreground) / 0.7);
   }
 
   .nav-link {
@@ -239,25 +279,23 @@
   }
 
   .nav-link-active {
-    @apply text-foreground font-semibold;
+    @apply font-semibold text-foreground;
   }
 
-  /* Precision status badges */
   .badge-live {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success/10 px-2.5 py-0.5 font-mono text-xs font-medium text-success;
   }
 
   .badge-upcoming {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-xs font-mono font-medium text-amber-600 dark:text-amber-400;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-warning/30 bg-warning/10 px-2.5 py-0.5 font-mono text-xs font-medium text-warning;
   }
 
   .badge-closed {
-    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 text-xs font-mono font-medium text-muted-foreground;
+    @apply inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/60 px-2.5 py-0.5 font-mono text-xs font-medium text-muted-foreground;
   }
 
-  /* Modern terminal odds cell */
   .odds-button-cell {
-    @apply flex flex-col items-center justify-center rounded-md border border-border/80 bg-muted/40 p-2.5 transition-all duration-150 hover:border-primary/50 hover:bg-primary/10 active:scale-[0.98];
+    @apply flex flex-col items-center justify-center rounded-sm border border-foreground/15 bg-card p-2.5 transition-all duration-150 hover:border-primary hover:bg-primary hover:text-primary-foreground active:scale-[0.98];
   }
 }
 
@@ -269,31 +307,23 @@
 
   .text-gradient-emerald {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #10B981 0%, #34D399 50%, #6EE7B7 100%);
+    background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
   }
 
   .glass {
-    @apply backdrop-blur-md border-b border-border/80;
-    background: hsl(var(--background) / 0.85);
+    @apply border-b border-border bg-background;
+    background: hsl(var(--background) / 0.97);
   }
 
-  /* Contemporary fine technical grid */
   .bg-grid-pattern {
     background-size: 32px 32px;
-    background-image: 
-      linear-gradient(to right, rgba(120, 130, 150, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(120, 130, 150, 0.06) 1px, transparent 1px);
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
   }
 
-  .dark .bg-grid-pattern {
-    background-image: 
-      linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  }
-
-  /* Subtle radar/glow radial */
   .hero-glow {
-    background: radial-gradient(ellipse 60% 40% at 50% -10%, rgba(16, 185, 129, 0.15), transparent 70%);
+    background: linear-gradient(115deg, hsl(var(--accent) / 0.06), transparent 48%);
   }
 }
 
@@ -315,7 +345,6 @@
   }
 }
 
-/* Polished Scrollbar */
 ::-webkit-scrollbar {
   width: 7px;
   height: 7px;
@@ -326,10 +355,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--muted-foreground) / 0.25);
+  background: hsl(var(--muted-foreground) / 0.3);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.45);
+  background: hsl(var(--muted-foreground) / 0.5);
 }

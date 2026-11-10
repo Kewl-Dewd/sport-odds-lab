@@ -14,15 +14,13 @@ export default function HowItWorks() {
   return (
     <div className="container py-8 md:py-14 space-y-12 animate-slide-up max-w-4xl mx-auto">
       {/* Header */}
-      <div className="text-center space-y-3 border-b border-border/70 pb-8">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-medium text-emerald-600 dark:text-emerald-400">
-          <BookOpen className="h-3.5 w-3.5" /> CURRICULUM GUIDE
-        </div>
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-foreground">
-          How Sports Market Lab Works
+      <div className="space-y-5 border-b border-foreground/20 pb-9 text-left">
+        <div className="section-kicker"><BookOpen className="h-3.5 w-3.5" /> Curriculum guide</div>
+        <h1 className="max-w-3xl font-display text-[clamp(3rem,7vw,5.8rem)] font-semibold leading-[0.95] tracking-[-0.055em] text-foreground">
+          Learn to read<br />the <span className="font-editorial font-normal italic text-primary">whole board.</span>
         </h1>
-        <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          A classroom sportsbook simulation powered by live market odds. Your instructor acts as the house — here is how the wagering mathematics, odds pricing, and hold economics operate.
+        <p className="max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+          A classroom sportsbook simulation powered by live market odds. Your instructor acts as the house—here is how the wagering mathematics, odds pricing, and hold economics operate.
         </p>
       </div>
 
@@ -53,7 +51,7 @@ export default function HowItWorks() {
               ].map((s) => (
                 <Card key={s.step} className="shadow-subtle-card dark:shadow-terminal-card">
                   <CardContent className="p-5 flex gap-4">
-                    <div className="h-10 w-10 shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500 font-mono text-xs font-bold">
+                    <div className="h-10 w-10 shrink-0 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-primary font-mono text-xs font-bold">
                       {s.step}
                     </div>
                     <div>
@@ -72,13 +70,13 @@ export default function HowItWorks() {
           {/* Bet Types */}
           <section className="space-y-4">
             <div className="text-center space-y-1">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">MARKET STRUCTURE</span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">MARKET STRUCTURE</span>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Understanding the Three Wager Types</h3>
             </div>
             <div className="grid md:grid-cols-3 gap-4 pt-2">
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-emerald-500">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-primary">
                     <Trophy className="h-4 w-4" />
                   </div>
                   <h4 className="font-bold text-base text-foreground">Moneyline</h4>
@@ -87,14 +85,14 @@ export default function HowItWorks() {
                   </p>
                   <div className="rounded-md border border-border/80 bg-background/60 p-2.5 text-xs font-mono space-y-1.5">
                     <div className="flex justify-between"><span>Lakers ML</span><span className="font-bold text-foreground">−150</span></div>
-                    <div className="flex justify-between"><span>Celtics ML</span><span className="font-bold text-emerald-500">+130</span></div>
+                    <div className="flex justify-between"><span>Celtics ML</span><span className="font-bold text-primary">+130</span></div>
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-amber-500">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-warning">
                     <Scale className="h-4 w-4" />
                   </div>
                   <h4 className="font-bold text-base text-foreground">Point Spread</h4>
@@ -110,7 +108,7 @@ export default function HowItWorks() {
 
               <Card>
                 <CardContent className="p-5 space-y-3">
-                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-sky-500">
+                  <div className="h-9 w-9 rounded-md bg-muted/60 border border-border/80 flex items-center justify-center text-accent">
                     <BarChart3 className="h-4 w-4" />
                   </div>
                   <h4 className="font-bold text-base text-foreground">Totals (Over/Under)</h4>
@@ -129,7 +127,7 @@ export default function HowItWorks() {
           {/* American vs Decimal Odds Box */}
           <section className="rounded-xl border border-border/80 bg-card p-6 md:p-8 space-y-4 shadow-terminal-card">
             <div className="flex items-center gap-2.5 border-b border-border/60 pb-3">
-              <Calculator className="h-5 w-5 text-emerald-500" />
+              <Calculator className="h-5 w-5 text-primary" />
               <h3 className="text-lg font-bold text-foreground">American vs. Decimal Odds Formatting</h3>
             </div>
             <div className="grid md:grid-cols-2 gap-5 pt-1">
@@ -140,7 +138,7 @@ export default function HowItWorks() {
                 </p>
                 <div className="rounded-md border border-border/80 bg-muted/30 p-3 font-mono text-xs space-y-1 text-muted-foreground">
                   <div><span className="text-foreground font-bold">−150</span> → Stake $150 to win $100 profit</div>
-                  <div><span className="text-emerald-500 font-bold">+130</span> → Stake $100 to win $130 profit</div>
+                  <div><span className="text-primary font-bold">+130</span> → Stake $100 to win $130 profit</div>
                 </div>
               </div>
               <div className="space-y-2">
@@ -150,7 +148,7 @@ export default function HowItWorks() {
                 </p>
                 <div className="rounded-md border border-border/80 bg-muted/30 p-3 font-mono text-xs space-y-1 text-muted-foreground">
                   <div><span className="text-foreground font-bold">1.67</span> → $10 stake yields $16.70 total return</div>
-                  <div><span className="text-emerald-500 font-bold">2.30</span> → $10 stake yields $23.00 total return</div>
+                  <div><span className="text-primary font-bold">2.30</span> → $10 stake yields $23.00 total return</div>
                 </div>
               </div>
             </div>
@@ -159,7 +157,7 @@ export default function HowItWorks() {
           {/* Settlement Walkthrough */}
           <section className="space-y-4">
             <div className="text-center space-y-1">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">MATH OF SETTLEMENT</span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">MATH OF SETTLEMENT</span>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">Settlement Mechanics</h3>
             </div>
             <Card>
@@ -172,12 +170,12 @@ export default function HowItWorks() {
                   Suppose you wager $50.00 on Lakers −4.5 point spread:
                 </p>
                 <div className="grid sm:grid-cols-2 gap-4 text-xs font-mono">
-                  <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-4 space-y-2">
-                    <p className="font-bold text-emerald-600 dark:text-emerald-400 font-sans text-sm">Outcome: Lakers win by 5+ points ✓</p>
+                  <div className="space-y-2 rounded-md border border-success/30 bg-success/10 p-4">
+                    <p className="font-sans text-sm font-bold text-success">Outcome: Lakers win by 5+ points ✓</p>
                     <div className="space-y-1 text-muted-foreground">
                       <p>Initial Stake: <span className="text-foreground font-bold">$50.00</span></p>
                       <p>Payout Return: 50 × 1.91 = <span className="text-foreground font-bold">$95.50</span></p>
-                      <p className="text-emerald-500 font-bold text-sm pt-1 border-t border-emerald-500/20">Net Profit: +$45.50</p>
+                      <p className="border-t border-success/20 pt-1 text-sm font-bold text-success">Net Profit: +$45.50</p>
                     </div>
                   </div>
                   <div className="rounded-lg bg-rose-500/10 border border-rose-500/30 p-4 space-y-2">
@@ -199,13 +197,13 @@ export default function HowItWorks() {
           {/* House Economics (Handle, Liability, Hold) */}
           <section className="space-y-4">
             <div className="text-center space-y-1">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-500 font-semibold">THE INSTRUCTOR IS THE HOUSE</span>
+              <span className="text-[11px] font-mono uppercase tracking-wider text-primary font-semibold">THE INSTRUCTOR IS THE HOUSE</span>
               <h3 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">The Economics of "The Book"</h3>
             </div>
             <div className="grid md:grid-cols-3 gap-4">
               <Card>
                 <CardContent className="p-5 space-y-2">
-                  <Coins className="h-6 w-6 text-emerald-500 mb-1" />
+                  <Coins className="h-6 w-6 text-primary mb-1" />
                   <h4 className="font-bold text-sm text-foreground">Total Handle</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Gross volume wagered into the book. High handle does not equal profit — unhedged lopsided handle creates massive liability for the house.
@@ -214,7 +212,7 @@ export default function HowItWorks() {
               </Card>
               <Card>
                 <CardContent className="p-5 space-y-2">
-                  <ShieldAlert className="h-6 w-6 text-amber-500 mb-1" />
+                  <ShieldAlert className="h-6 w-6 text-warning mb-1" />
                   <h4 className="font-bold text-sm text-foreground">Open Liability</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     The maximum payout the instructor's book owes if unsettled student bets cash. Risk management requires tracking this ratio continuously.
@@ -223,7 +221,7 @@ export default function HowItWorks() {
               </Card>
               <Card>
                 <CardContent className="p-5 space-y-2">
-                  <Scale className="h-6 w-6 text-sky-500 mb-1" />
+                  <Scale className="h-6 w-6 text-accent mb-1" />
                   <h4 className="font-bold text-sm text-foreground">Hold Percentage</h4>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     Percentage of settled handle retained as profit by the bookmaker. Institutional sportsbooks average 4–8% hold over volume via the vig.
@@ -242,7 +240,7 @@ export default function HowItWorks() {
                   <div>Total Book Handle: <span className="font-bold text-foreground">$200.00</span></div>
                   <div>Winning Ticket Return: 100 × 1.91 = <span className="font-bold text-foreground">$191.00</span></div>
                   <div>Losing Ticket Stake Retained: <span className="font-bold text-foreground">$100.00</span></div>
-                  <div className="pt-1.5 border-t border-border/60 font-bold text-emerald-500 text-sm">
+                  <div className="border-t border-border/60 pt-1.5 text-sm font-bold text-success">
                     Guaranteed Book Hold: $200.00 − $191.00 = $9.00 (4.5% Hold Percentage)
                   </div>
                 </div>

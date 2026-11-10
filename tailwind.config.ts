@@ -73,10 +73,12 @@ export default {
         },
       },
       boxShadow: {
-        "subtle-card": "0 1px 2px 0 rgba(0, 0, 0, 0.05), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)",
-        "terminal-card": "0 1px 3px 0 rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.06)",
-        "terminal-hover": "0 8px 30px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.1)",
-        "glow-emerald": "0 0 20px -4px rgba(16, 185, 129, 0.25)",
+        "subtle-card": "0 14px 32px -28px hsl(var(--foreground) / 0.65)",
+        "terminal-card": "0 14px 32px -28px hsl(var(--foreground) / 0.65)",
+        "terminal-hover": "0 24px 48px -30px hsl(var(--foreground) / 0.65)",
+        "paper-card": "0 30px 70px -42px hsl(var(--foreground) / 0.65), 6px 7px 0 hsl(var(--foreground) / 0.08)",
+        "offset-accent": "3px 4px 0 hsl(var(--accent))",
+        "glow-emerald": "0 14px 32px -28px hsl(var(--foreground) / 0.65)",
       },
       borderRadius: {
         lg: "var(--radius)",
