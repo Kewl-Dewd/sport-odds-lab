@@ -637,6 +637,7 @@ export type Database = {
       feedback: {
         Row: {
           category: string
+          contact_email: string | null
           created_at: string
           id: string
           message: string
@@ -644,6 +645,7 @@ export type Database = {
         }
         Insert: {
           category: string
+          contact_email?: string | null
           created_at?: string
           id?: string
           message: string
@@ -651,6 +653,7 @@ export type Database = {
         }
         Update: {
           category?: string
+          contact_email?: string | null
           created_at?: string
           id?: string
           message?: string

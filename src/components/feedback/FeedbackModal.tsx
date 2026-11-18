@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -36,12 +37,14 @@ export function FeedbackModal({
 }) {
   const [category, setCategory] = useState("bug");
   const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const reset = () => {
     setCategory("bug");
     setMessage("");
+    setEmail("");
     setSubmitted(false);
   };
 
@@ -57,7 +60,7 @@ export function FeedbackModal({
     setSubmitting(true);
     try {
       const { error } = await supabase.functions.invoke("send-feedback", {
-        body: { message: message.trim(), category },
+        body: { message: message.trim(), category, ...(email.trim() ? { email: email.trim() } : {}) },
       });
       if (error) throw error;
       setSubmitted(true);
@@ -121,6 +124,22 @@ export function FeedbackModal({
                 minLength={3}
                 maxLength={5000}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="feedback-email">Your email (optional)</Label>
+              <Input
+                id="feedback-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@college.edu"
+                maxLength={254}
+                autoComplete="email"
+              />
+              <p className="text-xs text-muted-foreground">
+                Leave it blank to stay anonymous. Add it only if you're happy for us to follow up.
+              </p>
             </div>
 
             <div className="flex justify-end gap-2">

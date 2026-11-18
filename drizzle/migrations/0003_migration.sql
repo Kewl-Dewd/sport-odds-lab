@@ -1,0 +1,1 @@
+ALTER TABLE public.feedback ADD COLUMN contact_email text;

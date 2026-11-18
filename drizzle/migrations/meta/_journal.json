@@ -22,6 +22,13 @@
       "when": 1794501471803,
       "tag": "0002_tighten_feedback_insert_policy",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1795037471911,
+      "tag": "0003_migration",
+      "breakpoints": true
     }
   ]
 }

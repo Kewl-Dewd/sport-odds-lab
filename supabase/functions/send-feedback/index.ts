@@ -6,6 +6,7 @@ import { sendTemplateEmail } from "../_shared/transactional-email-templates/send
 const FeedbackSchema = z.object({
   message: z.string().min(3).max(5000),
   category: z.enum(["bug", "suggestion", "missing", "other"]),
+  email: z.string().trim().email().max(254).optional(),
 });
 
 Deno.serve(async (req) => {
@@ -29,7 +30,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const { message, category } = parsed.data;
+    const { message, category, email } = parsed.data;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -38,7 +39,7 @@ Deno.serve(async (req) => {
 
     const { data: inserted, error } = await supabase
       .from("feedback")
-      .insert({ message, category, user_id: null })
+      .insert({ message, category, user_id: null, contact_email: email ?? null })
       .select("id")
       .single();
 
@@ -50,6 +51,7 @@ Deno.serve(async (req) => {
         templateData: {
           category,
           message,
+          email,
           submittedAt: new Date().toUTCString(),
         },
         idempotencyKey: `feedback-notification-${inserted?.id ?? crypto.randomUUID()}`,

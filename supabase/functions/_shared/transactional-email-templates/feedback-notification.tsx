@@ -16,6 +16,7 @@ import type { TemplateEntry } from './registry.ts'
 interface FeedbackNotificationProps {
   category?: string
   message?: string
+  email?: string
   submittedAt?: string
 }
 
@@ -29,6 +30,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 export const FeedbackNotification = ({
   category = 'other',
   message = 'No message provided.',
+  email,
   submittedAt = '',
 }: FeedbackNotificationProps) => (
   <Html lang="en" dir="ltr">
@@ -36,12 +38,19 @@ export const FeedbackNotification = ({
     <Preview>New feedback from Sports Market Lab</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>New anonymous feedback</Heading>
+        <Heading style={h1}>{email ? 'New feedback' : 'New anonymous feedback'}</Heading>
         <Text style={label}>Category</Text>
         <Text style={text}>{CATEGORY_LABELS[category] || category}</Text>
         <Hr style={hr} />
         <Text style={label}>Message</Text>
         <Text style={{ ...text, whiteSpace: 'pre-wrap' as const }}>{message}</Text>
+        {email ? (
+          <>
+            <Hr style={hr} />
+            <Text style={label}>Reply to</Text>
+            <Text style={text}>{email}</Text>
+          </>
+        ) : null}
         {submittedAt ? (
           <>
             <Hr style={hr} />
@@ -49,7 +58,7 @@ export const FeedbackNotification = ({
           </>
         ) : null}
         <Text style={footer}>
-          Sent from Sports Market Lab. Feedback is anonymous — do not reply.
+          Sent from Sports Market Lab. No email means the sender chose to stay anonymous.
         </Text>
       </Container>
     </Body>
