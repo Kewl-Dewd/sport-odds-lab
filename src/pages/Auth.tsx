@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import logoBeaker from "@/assets/logo-beaker.png";
+import { trackInstructorSignup } from "@/lib/metaPixel";
 
 type UserRole = "student" | "instructor";
 
@@ -41,7 +42,7 @@ export default function Auth() {
 
   const signUp = async () => {
     setSubmitting(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -51,6 +52,8 @@ export default function Auth() {
     });
     setSubmitting(false);
     if (error) return toast.error(error.message);
+    // An already-registered email comes back without identities; only a genuinely new account counts.
+    if (role === "instructor" && (data.user?.identities?.length ?? 0) > 0) void trackInstructorSignup();
     toast.success("Check your email to confirm your account");
   };
 

@@ -51,6 +51,9 @@ import ForInstructors from "./pages/ForInstructors";
 import ForAdministrators from "./pages/ForAdministrators";
 import CheckoutReturn from "./pages/CheckoutReturn.tsx";
 import { RequireAccess } from "@/components/access/RequireAccess";
+import Privacy from "./pages/Privacy";
+import { CookieConsentProvider } from "@/components/consent/CookieConsent";
+import { MetaPixelTracker } from "@/components/consent/MetaPixelTracker";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +63,8 @@ const App = () => (
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
         <TooltipProvider>
           <BrowserRouter>
+          <CookieConsentProvider>
+          <MetaPixelTracker />
             <AuthProvider>
               <ClassProvider>
                 <ModeProvider>
@@ -107,6 +112,7 @@ const App = () => (
                           <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />
                           <Route path="/instructor/classes/:id" element={<ProtectedRoute requireInstructor><ClassDetailPage /></ProtectedRoute>} />
                           <Route path="/auth" element={<Auth />} />
+                          <Route path="/privacy" element={<Privacy />} />
                           <Route path="/reset-password" element={<ResetPassword />} />
                         </Route>
                         {/* Presentation mode — no navbar/footer */}
@@ -118,6 +124,7 @@ const App = () => (
                 </ModeProvider>
               </ClassProvider>
             </AuthProvider>
+          </CookieConsentProvider>
           </BrowserRouter>
         </TooltipProvider>
       </ThemeProvider>

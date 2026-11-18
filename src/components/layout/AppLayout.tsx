@@ -5,9 +5,11 @@ import { MobileTabBar } from "./MobileTabBar";
 import { AccessBanner } from "@/components/access/AccessGate";
 import { FeedbackButton } from "@/components/feedback/FeedbackButton";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
+import { useOpenCookieSettings } from "@/components/consent/CookieConsent";
 
 export function AppLayout() {
   useActivityTracker();
+  const openCookieSettings = useOpenCookieSettings();
   const location = useLocation();
 
   // A dropdown that unmounts mid-navigation can leave the page scroll-locked
@@ -64,6 +66,11 @@ export function AppLayout() {
             <Link to="/for-administrators" className="hover:text-foreground transition-colors">For Administrators</Link>
             <span className="text-border">·</span>
             <Link to="/support" className="hover:text-foreground transition-colors">Support & Ethics</Link>
+          </div>
+          <div className="flex items-center justify-center gap-4 font-medium">
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+            <span className="text-border">·</span>
+            <button type="button" onClick={openCookieSettings} className="hover:text-foreground transition-colors">Cookie settings</button>
           </div>
           <p className="pt-3 font-editorial text-lg italic text-muted-foreground">
             Read the market. Reward the reasoning.
