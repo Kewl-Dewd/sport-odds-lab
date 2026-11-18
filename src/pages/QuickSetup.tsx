@@ -69,7 +69,7 @@ export default function QuickSetup() {
 
       <Card><CardHeader><CardTitle className="text-base">1. Your class</CardTitle></CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div><Label>Class name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="SPM 2210" /></div>
+          <div><Label>Class name</Label><Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Sports Betting Markets" /></div>
           <div><Label>Term (optional)</Label><Input value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Winter 2027" /></div>
           <div><Label>Start date</Label><Input type="date" value={start} onChange={(e) => setStart(e.target.value)} /></div>
         </CardContent>

@@ -46,7 +46,7 @@ export const M1_M2: Record<string, LessonDesign> = {
   "intro-welcome": {
     objectives: ["Explain what Sports Market Lab simulates and what it does not.", "Describe how the class is graded on analysis, not winnings."],
     task: "Open your Dashboard and find your starting bankroll and class name.",
-    taskAnswer: "SPM2020 uses a $1,000 starting bankroll; other classes show their configured amount.",
+    taskAnswer: "Your class shows the starting bankroll your instructor configured (for example, $1,000).",
     reflection: "What do you expect to learn from running bets against a real-price book, and what are you sceptical about?",
     quiz: [
       q("Money in the app is:", ["Real and withdrawable", "Simulated and has no cash value", "Converted to grades", "Paid by the instructor"], 1, "All funds are virtual; it is a teaching simulation."),
