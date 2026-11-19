@@ -113,7 +113,7 @@ export function Navbar() {
 
   return (
     <header className="glass sticky top-0 z-50 border-b border-foreground/15">
-      <div className="container flex h-[4.5rem] items-center justify-between py-2">
+      <div className={cn("container flex h-[4.5rem] items-center justify-between py-2", user && "min-[1920px]:max-w-none")}>
         <Link to="/" className="flex shrink-0 items-center gap-2.5 text-base font-bold tracking-tight" onClick={() => setMobileOpen(false)}>
           <div className="relative flex h-10 w-10 -rotate-3 items-center justify-center border border-primary/20 bg-card shadow-[2px_2px_0_hsl(var(--accent))]">
             <img src={logoBeaker} alt="" className="h-8 w-8 object-contain" />
@@ -127,7 +127,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className={`hidden items-center gap-1 ${user ? "2xl:flex" : "md:flex"}`}>
+        <nav className={`hidden items-center gap-1 ${user ? "min-[1920px]:flex" : "md:flex"}`}>
           {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => {
             const isActive = location.pathname === link.href;
             return (
@@ -240,7 +240,7 @@ export function Navbar() {
           )}
         </nav>
 
-        <div className={`hidden items-center gap-2 ${user ? "2xl:flex" : "md:flex"}`}>
+        <div className={`hidden items-center gap-2 ${user ? "min-[1920px]:flex" : "md:flex"}`}>
           {user && mode && !SINGLE_MODE && (
             <button
               onClick={switchMode}
@@ -274,7 +274,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile controls */}
-        <div className={`flex items-center gap-2 ${user ? "2xl:hidden" : "md:hidden"}`}>
+        <div className={`flex items-center gap-2 ${user ? "min-[1920px]:hidden" : "md:hidden"}`}>
           {user && viewAs === "student" && <StudentAccessBadge compact />}
           <ThemeToggle />
           <button
@@ -289,7 +289,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className={`max-h-[calc(100dvh-4.5rem)] animate-slide-up overflow-y-auto overscroll-contain border-t border-foreground/15 bg-background ${user ? "2xl:hidden" : "md:hidden"}`}>
+        <div className={`max-h-[calc(100dvh-4.5rem)] animate-slide-up overflow-y-auto overscroll-contain border-t border-foreground/15 bg-background ${user ? "min-[1920px]:hidden" : "md:hidden"}`}>
           <nav className="container flex flex-col gap-1 py-3 pb-6">
             {(user ? [...getAuthedLinks(viewAs), ...publicLinks] : publicLinks).map((link) => (
               <Link

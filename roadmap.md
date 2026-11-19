@@ -7,7 +7,7 @@
 
 # Student account access
 
-- [ ] Add a student trial/access badge to desktop and mobile navigation.
-- [ ] Add “My Account & Access” above sign out in the mobile menu.
-- [ ] Align the account page and payment setup with $35 USD student access.
-- [ ] Verify the student account flow on desktop and mobile.
+- [x] Add a student trial/access badge to desktop and mobile navigation.
+- [x] Add “My Account & Access” above sign out in the mobile menu.
+- [x] Align the account page and payment setup with $35 USD student access.
+- [x] Verify the student account flow on desktop and mobile.
