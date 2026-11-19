@@ -10,6 +10,7 @@ import {
   Calculator,
   FileSpreadsheet,
   Rocket,
+  CircleUserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useMode, MODE_LABELS, SINGLE_MODE } from "@/context/ModeContext";
 import { cn } from "@/lib/utils";
+import { useAccess } from "@/hooks/useAccess";
 
 const authedLinks = [
   { label: "Responsible Play", href: "/responsible-play", icon: ShieldCheck },
@@ -51,6 +53,46 @@ function getAuthedLinks(viewAs?: string) {
 const publicLinks = [
   { label: "How It Works", href: "/how-it-works", icon: BookOpen },
 ];
+
+function StudentAccessBadge({ compact = false }: { compact?: boolean }) {
+  const { entitled, inTrial, trialDaysLeft, isPaywalled, loading } = useAccess();
+
+  const label = loading
+    ? "Account"
+    : entitled
+      ? "Active · Account"
+      : inTrial
+        ? `Trial: ${trialDaysLeft}d left · Account`
+        : isPaywalled
+          ? "Renew access"
+          : "Account";
+  const compactLabel = loading
+    ? "Account"
+    : entitled
+      ? "Active"
+      : inTrial
+        ? `${trialDaysLeft}d`
+        : isPaywalled
+          ? "Renew"
+          : "Account";
+
+  return (
+    <Link
+      to="/access"
+      aria-label={`My Account & Access — ${label}`}
+      title="My Account & Access"
+      className="shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Badge
+        variant={isPaywalled ? "amber" : entitled ? "default" : "secondary"}
+        className={cn("h-8 gap-1.5 whitespace-nowrap hover:border-primary/40", compact ? "px-2" : "px-2.5")}
+      >
+        <CircleUserRound className="h-3.5 w-3.5" />
+        <span>{compact ? compactLabel : label}</span>
+      </Badge>
+    </Link>
+  );
+}
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -215,6 +257,8 @@ export function Navbar() {
 
           <ThemeToggle />
 
+          {user && viewAs === "student" && <StudentAccessBadge />}
+
           {user ? (
             <>
               <span className="text-xs font-mono text-muted-foreground max-w-[130px] truncate">{user.email}</span>
@@ -231,6 +275,7 @@ export function Navbar() {
 
         {/* Mobile controls */}
         <div className={`flex items-center gap-2 ${user ? "2xl:hidden" : "md:hidden"}`}>
+          {user && viewAs === "student" && <StudentAccessBadge compact />}
           <ThemeToggle />
           <button
             className="p-2 rounded-sm border border-border/60 hover:bg-muted transition-colors"
@@ -305,6 +350,22 @@ export function Navbar() {
             <div className="px-3 py-2">
               <ViewSwitcher onNavigate={() => setMobileOpen(false)} />
             </div>
+
+            {user && viewAs === "student" && (
+              <Link
+                to="/access"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors",
+                  location.pathname === "/access"
+                    ? "border border-primary bg-primary font-semibold text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted/50",
+                )}
+              >
+                <CircleUserRound className="h-4 w-4" />
+                My Account &amp; Access
+              </Link>
+            )}
 
             <div className="px-3 py-2">
               {user ? (

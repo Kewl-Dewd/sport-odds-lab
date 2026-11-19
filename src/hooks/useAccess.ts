@@ -61,6 +61,7 @@ export function useAccess() {
     loading: query.isLoading,
     hasAccess: staffBypass || entitled || inTrial,
     isPaywalled: !staffBypass && !entitled && !inTrial,
+    staffBypass,
     inTrial,
     trialDaysLeft: daysLeft,
     expiresAt: row?.expires_at ?? null,

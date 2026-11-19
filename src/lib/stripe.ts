@@ -25,5 +25,3 @@ export function getStripe(): Promise<Stripe | null> {
 export function getStripeEnvironment(): StripeEnv {
   return paymentsEnvironment();
 }
-
-export const STUDENT_ACCESS_PRICE_ID = "student_annual_access_10";

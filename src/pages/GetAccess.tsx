@@ -8,7 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { TRIAL_DAYS, useAccess, useRedeemCode } from "@/hooks/useAccess";
 import { StripeEmbeddedCheckout } from "@/components/StripeEmbeddedCheckout";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
-import { STUDENT_ACCESS_PRICE_ID } from "@/lib/stripe";
+import { STUDENT_ACCESS_PRICE_ID, STUDENT_ACCESS_PRICE_USD } from "@/lib/accessPricing";
 
 const INCLUDED = [
   "Full access to the sportsbook simulator for one year",
@@ -18,7 +18,7 @@ const INCLUDED = [
 ];
 
 export default function GetAccess() {
-  const { entitled, access, expiresAt, loading, inTrial, trialDaysLeft } = useAccess();
+  const { entitled, access, expiresAt, loading, inTrial, trialDaysLeft, staffBypass } = useAccess();
   const redeem = useRedeemCode();
   const [code, setCode] = useState("");
   const [checkout, setCheckout] = useState(false);
@@ -39,11 +39,23 @@ export default function GetAccess() {
       <PaymentTestModeBanner />
       <div className="container max-w-2xl py-10 space-y-8">
         <header className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">Get access to Sports Market Lab</h1>
-          <p className="text-muted-foreground">$10 for one year, or enter the course code from your instructor.</p>
+          <h1 className="font-display text-3xl font-semibold tracking-tight">My Account &amp; Access</h1>
+          <p className="text-muted-foreground">{`$${STUDENT_ACCESS_PRICE_USD} USD for one year, or enter the course code from your instructor.`}</p>
         </header>
 
-        {!loading && entitled && (
+        {!loading && staffBypass && (
+          <Card className="border-primary/40 bg-primary/5">
+            <CardContent className="flex items-center gap-3 py-4">
+              <ShieldCheck className="h-5 w-5 shrink-0 text-primary" />
+              <div className="text-sm">
+                <p className="font-medium">Instructor account — complimentary access.</p>
+                <p className="text-muted-foreground">Students see their trial countdown, payment options, and course-code redemption here.</p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {!loading && entitled && !staffBypass && (
           <Card className="border-primary/40 bg-primary/5">
             <CardContent className="flex items-center gap-3 py-4">
               <ShieldCheck className="h-5 w-5 text-primary" />
@@ -61,7 +73,7 @@ export default function GetAccess() {
           </Card>
         )}
 
-        {!loading && !entitled && (
+        {!loading && !entitled && !staffBypass && (
           <p className="text-center text-sm text-muted-foreground">
             {inTrial
               ? `You're on a free ${TRIAL_DAYS}-day trial — ${trialDaysLeft} day${trialDaysLeft === 1 ? "" : "s"} left.`
@@ -69,7 +81,7 @@ export default function GetAccess() {
           </p>
         )}
 
-        {!entitled && (
+        {!entitled && !staffBypass && (
           <>
             <Card>
               <CardContent className="py-6 space-y-3">
@@ -92,7 +104,7 @@ export default function GetAccess() {
               <CardContent className="py-6 space-y-4">
                 <div className="flex items-baseline justify-between">
                   <h2 className="font-semibold">One-year access</h2>
-                  <span className="text-2xl font-bold">$10</span>
+                  <span className="text-2xl font-bold">{`$${STUDENT_ACCESS_PRICE_USD} USD`}</span>
                 </div>
                 <ul className="space-y-2 text-sm">
                   {INCLUDED.map((item) => (
@@ -106,7 +118,7 @@ export default function GetAccess() {
                   <StripeEmbeddedCheckout priceId={STUDENT_ACCESS_PRICE_ID} />
                 ) : (
                   <Button variant="hero" className="w-full" onClick={() => setCheckout(true)}>
-                    Pay $10 for one year
+                    {`Pay $${STUDENT_ACCESS_PRICE_USD} USD for one year`}
                   </Button>
                 )}
               </CardContent>

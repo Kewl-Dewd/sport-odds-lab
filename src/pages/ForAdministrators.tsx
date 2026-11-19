@@ -24,7 +24,7 @@ const sections = [
   ]},
   { title: "Privacy and cost", items: [
     "Only a name and email are collected. No payment details are stored in the app; payments are handled by Stripe.",
-    "Students pay $10 for one year, or the instructor provides a course code. No purchase order is needed from the institution.",
+    "Students pay $35 USD for one year, or the instructor provides a course code. No purchase order is needed from the institution.",
   ]},
 ];
 

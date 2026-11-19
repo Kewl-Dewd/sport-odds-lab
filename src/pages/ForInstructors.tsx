@@ -32,7 +32,7 @@ export default function ForInstructors() {
             </div>
             <div className="mt-9 flex flex-wrap gap-x-6 gap-y-3 border-t border-foreground/15 pt-5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
               <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" />Free for instructors</span>
-              <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" />$10 per student / year</span>
+              <span className="inline-flex items-center gap-2"><Check className="h-3.5 w-3.5 text-accent" />$35 USD per student / year</span>
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export default function ForInstructors() {
         <section className="grid overflow-hidden border border-foreground/20 bg-primary text-primary-foreground shadow-paper-card md:grid-cols-[0.65fr_1.35fr]">
           <div className="border-b border-primary-foreground/20 p-7 md:border-b-0 md:border-r sm:p-9">
             <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-primary-foreground/65">Simple course pricing</p>
-            <p className="mt-4 font-display text-6xl tracking-[-0.06em]">$10</p>
+            <p className="mt-4 font-display text-6xl tracking-[-0.06em]">$35 USD</p>
             <p className="mt-1 font-editorial text-xl italic text-accent">per student, per year</p>
           </div>
           <div className="p-7 sm:p-9">

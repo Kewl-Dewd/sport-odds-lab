@@ -19,7 +19,7 @@ export function AccessBanner() {
             {trialDaysLeft} day{trialDaysLeft === 1 ? "" : "s"} left in your free trial.
           </span>
           <a href="/access" className="ml-auto font-medium text-primary underline">
-            Get access ($10/yr or course code)
+            Get access ($35 USD/year or course code)
           </a>
         </div>
       </div>
