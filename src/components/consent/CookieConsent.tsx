@@ -90,8 +90,8 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
             <DialogTitle>Cookie settings</DialogTitle>
             <DialogDescription>
               {gpc
-                ? "Your browser's privacy signal is on, so measurement and advertising stay off."
-                : "Choose what we may use. You can change this any time from the footer."}
+                ? "Your browser's privacy signal is on, so optional analytics and ad campaign measurement stay off."
+                : "Choose optional measurement. No ads are shown inside Sports Market Lab, and you can change this any time from the footer."}
             </DialogDescription>
           </DialogHeader>
           <div className="divide-y divide-border border-y border-border">
@@ -104,17 +104,21 @@ export function CookieConsentProvider({ children }: { children: ReactNode }) {
             </div>
             <label className="flex items-start justify-between gap-4 py-3">
               <span>
-                <span className="block text-sm font-semibold">Analytics, provided by Lovable</span>
-                <span className="block text-xs text-muted-foreground">Clicks and other actions on the site.</span>
+                <span className="block text-sm font-semibold">Website analytics</span>
+                <span className="block text-xs text-muted-foreground">
+                  Helps us understand how the site is used. Provided by Lovable, our website platform.
+                </span>
               </span>
-              <Switch checked={!gpc && analytics} disabled={gpc} onCheckedChange={setAnalytics} aria-label="Analytics" />
+              <Switch checked={!gpc && analytics} disabled={gpc} onCheckedChange={setAnalytics} aria-label="Website analytics" />
             </label>
             <label className="flex items-start justify-between gap-4 py-3">
               <span>
-                <span className="block text-sm font-semibold">Advertising, provided by Meta</span>
-                <span className="block text-xs text-muted-foreground">Shows which Facebook and Instagram ads lead to new instructor accounts.</span>
+                <span className="block text-sm font-semibold">Ad campaign measurement</span>
+                <span className="block text-xs text-muted-foreground">
+                  Measures visits and instructor sign-ups from our Facebook and Instagram ads. Provided by Meta; no ads appear inside Sports Market Lab.
+                </span>
               </span>
-              <Switch checked={!gpc && advertising} disabled={gpc} onCheckedChange={setAdvertising} aria-label="Advertising" />
+              <Switch checked={!gpc && advertising} disabled={gpc} onCheckedChange={setAdvertising} aria-label="Ad campaign measurement" />
             </label>
           </div>
           <DialogFooter>
