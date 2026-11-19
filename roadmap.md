@@ -15,7 +15,8 @@
 # Editable student course library
 
 - [ ] Confirm how assigned lessons differ from the full 15-week course kit.
-- [ ] Give students access to the full instructor-published course for their class.
-- [ ] Let instructors edit student-facing lesson text and move lessons between the course and library.
+- [ ] Give every student the full 15-week course by default, including students who have not joined a class.
+- [ ] Give every instructor the full 15-week setup by default, including future sign-ups and Kurt's instructor view.
+- [ ] Let instructors move unchanged lessons between the student course and a restore library; no lesson-text editing.
 - [ ] Keep instructor-only teaching notes and answer keys out of the student view.
 - [ ] Verify instructor editing, hide/restore, and student visibility on desktop and mobile.
