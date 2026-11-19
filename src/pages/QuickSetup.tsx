@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { missingCourseEntries } from "@/lib/defaultCourse";
 
 export default function QuickSetup() {
   const nav = useNavigate();
@@ -46,6 +47,11 @@ export default function QuickSetup() {
         await assign.mutateAsync({ classId: klass.id, modules: items, dueAt: new Date(due).toISOString(), startSortOrder: order });
         order += items.length;
       }
+      // Shorter plans change due dates, not the default full-course availability.
+      const unscheduled = missingCourseEntries(schedule.map((lesson) => ({ curriculum_key: lesson.module.key })));
+      if (unscheduled.length) {
+        await assign.mutateAsync({ classId: klass.id, modules: unscheduled, dueAt: null, startSortOrder: order });
+      }
       const contestStart = length === "weekend" ? startDate : new Date(end.getTime() - 14 * 864e5);
       await supabase.from("class_rounds").insert({
         class_id: klass.id, name: length === "weekend" ? "Weekend contest" : "Final contest",
@@ -64,7 +70,7 @@ export default function QuickSetup() {
     <div className="container py-6 space-y-6 max-w-3xl">
       <div>
         <h1 className="text-2xl font-bold">Quick class setup</h1>
-        <p className="text-muted-foreground text-sm">Pick a course plan and length. Lessons, due dates, a contest and all six leagues are set up for you — change anything later.</p>
+          <p className="text-muted-foreground text-sm">The full 15-week course is included by default. Pick a plan and length for due dates; a contest and all six leagues are set up too.</p>
       </div>
 
       <Card><CardHeader><CardTitle className="text-base">1. Your class</CardTitle></CardHeader>
@@ -99,8 +105,8 @@ export default function QuickSetup() {
         </CardContent>
       </Card>
 
-      <Card><CardHeader><CardTitle className="text-base">What students will get</CardTitle>
-        <CardDescription>{schedule.length} lessons · the two risk lessons must be finished before a first bet · contest scored on forecast accuracy · $1,000 simulated bankroll</CardDescription></CardHeader>
+      <Card><CardHeader><CardTitle className="text-base">Due-date schedule</CardTitle>
+        <CardDescription>{schedule.length} lessons receive due dates · the full 15-week course remains available · the two risk lessons must be finished before a first bet · contest scored on forecast accuracy · $1,000 simulated bankroll</CardDescription></CardHeader>
         <CardContent>
           <ol className="text-sm space-y-1 list-decimal pl-5 max-h-64 overflow-y-auto">
             {schedule.map((l) => <li key={l.module.key}>{l.module.title} <span className="text-muted-foreground">— due {l.dueAt.toLocaleDateString()}</span></li>)}

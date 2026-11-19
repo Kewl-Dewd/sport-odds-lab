@@ -72,6 +72,7 @@ export function QuizCard({ classId, quizKey, title, questions, best }: {
       ) : (
         <Button size="sm" disabled={answers.some((a) => a == null) || submit.isPending} onClick={onSubmit}>Submit quiz</Button>
       )}
+      {!classId && <p className="text-xs text-muted-foreground">Join a class to save your quiz score.</p>}
     </div>
   );
 }

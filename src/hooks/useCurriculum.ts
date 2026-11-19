@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { CURRICULUM, LEGACY_TOPICS, type CurriculumModule } from "@/data/curriculum";
+import { FULL_COURSE_ENTRIES } from "@/lib/defaultCourse";
 
 export interface AssignedLesson {
   id: string;
@@ -23,6 +24,25 @@ export interface AssignedLesson {
 
 const SELECT =
   "id, class_id, kind, title, body_md, url, topic, estimated_minutes, curriculum_key, requires_ack, due_at, sort_order, is_published";
+
+/** Read-only default course for signed-in students before they join a class. */
+export function getDefaultCourseLessons(): AssignedLesson[] {
+  return FULL_COURSE_ENTRIES.map(({ module, topicKey }, index) => ({
+    id: `default:${module.key}`,
+    class_id: "",
+    kind: module.kind,
+    title: module.title,
+    body_md: module.body,
+    url: null,
+    topic: topicKey,
+    estimated_minutes: module.minutes,
+    curriculum_key: module.key,
+    requires_ack: !!module.requiresAck,
+    due_at: null,
+    sort_order: index,
+    is_published: true,
+  }));
+}
 
 export function useAssignedLessons(classId?: string, opts?: { publishedOnly?: boolean }) {
   return useQuery({
@@ -69,6 +89,61 @@ export function useAssignCurriculum() {
       const { error } = await supabase.from("class_lessons").insert(rows as never);
       if (error) throw new Error(error.message);
       return rows.length;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["coursework"] }),
+  });
+}
+
+export interface CurriculumVisibilityInput {
+  classId: string;
+  modules: { module: CurriculumModule; topicKey: string }[];
+  visible: boolean;
+  dueAt?: string | null;
+  startSortOrder?: number;
+}
+
+/** Hide built-in lessons into the library or restore them without deleting progress. */
+export function useSetCurriculumVisibility() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ classId, modules, visible, dueAt, startSortOrder = 0 }: CurriculumVisibilityInput) => {
+      const keys = modules.map(({ module }) => module.key);
+      const { data: existing, error: readError } = await supabase
+        .from("class_lessons")
+        .select("id, curriculum_key")
+        .eq("class_id", classId)
+        .in("curriculum_key", keys);
+      if (readError) throw new Error(readError.message);
+
+      const existingKeys = new Set((existing ?? []).map((lesson) => lesson.curriculum_key));
+      for (const lesson of existing ?? []) {
+        const updates: { is_published: boolean; due_at?: string } = { is_published: visible };
+        if (visible && dueAt) updates.due_at = new Date(dueAt).toISOString();
+        const { error } = await supabase.from("class_lessons").update(updates).eq("id", lesson.id);
+        if (error) throw new Error(error.message);
+      }
+
+      const fresh = modules.filter(({ module }) => !existingKeys.has(module.key));
+      if (fresh.length) {
+        const rows = fresh.map(({ module, topicKey }, index) => ({
+          class_id: classId,
+          kind: module.kind,
+          title: module.title,
+          body_md: module.body,
+          topic: topicKey,
+          curriculum_key: module.key,
+          estimated_minutes: module.minutes,
+          requires_ack: !!module.requiresAck,
+          due_at: visible && dueAt ? new Date(dueAt).toISOString() : null,
+          sort_order: startSortOrder + index,
+          is_published: visible,
+          created_by: user?.id ?? null,
+        }));
+        const { error } = await supabase.from("class_lessons").insert(rows as never);
+        if (error) throw new Error(error.message);
+      }
+      return modules.length;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["coursework"] }),
   });

@@ -16,9 +16,10 @@ export function LessonObjectives({ design }: { design: LessonDesign }) {
   );
 }
 
-export function LessonActivities({ design, classId, quizKey, best, savedReflection, onSaveReflection }: {
+export function LessonActivities({ design, classId, quizKey, best, savedReflection, onSaveReflection, saveDisabled = false }: {
   design: LessonDesign; classId?: string; quizKey: string; best?: number;
   savedReflection?: string | null; onSaveReflection: (text: string) => Promise<void>;
+  saveDisabled?: boolean;
 }) {
   const [text, setText] = useState(savedReflection ?? "");
   const [saving, setSaving] = useState(false);
@@ -33,7 +34,8 @@ export function LessonActivities({ design, classId, quizKey, best, savedReflecti
         <p className="flex items-center gap-1.5 text-sm font-semibold"><MessageSquareText className="h-4 w-4" /> Reflect</p>
         <p className="text-sm text-muted-foreground">{design.reflection}</p>
         <Textarea rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="Your answer (your instructor can read this)" />
-        <Button size="sm" variant="outline" disabled={!text.trim() || saving} onClick={async () => {
+        {saveDisabled && <p className="text-xs text-muted-foreground">Join a class to save your reflection.</p>}
+        <Button size="sm" variant="outline" disabled={saveDisabled || !text.trim() || saving} onClick={async () => {
           setSaving(true);
           try { await onSaveReflection(text.trim()); toast.success("Reflection saved and lesson marked complete"); }
           catch (e) { toast.error(e instanceof Error ? e.message : "Could not save"); }

@@ -39,10 +39,11 @@ import JournalPage from "@/features/journal/JournalPage";
 import Learn from "@/pages/Learn";
 import ResponsibleGamblingPage from "@/features/rg/ResponsibleGamblingPage";
 import InstructorClassesPage from "@/features/classes/InstructorClassesPage";
-import ClassDetailPage from "@/features/classes/ClassDetailPage";
+import InstructorClass from "@/pages/InstructorClass";
 import ClassBoardPage from "@/features/classes/ClassBoardPage";
 import PlatformAdminPage from "@/features/admin/PlatformAdminPage";
 import { PersistenceBridge } from "@/features/persistence/PersistenceBridge";
+import DefaultCourseBootstrap from "@/components/learn/DefaultCourseBootstrap";
 import GetAccess from "./pages/GetAccess.tsx";
 import Gradebook from "./pages/Gradebook";
 import QuickSetup from "./pages/QuickSetup";
@@ -73,6 +74,7 @@ const App = () => (
                       <Toaster />
                       <Sonner />
                       <PersistenceBridge />
+                      <DefaultCourseBootstrap />
                       <LearningNudgeBar />
                       <Routes>
                         <Route element={<AppLayout />}>
@@ -110,7 +112,7 @@ const App = () => (
                           <Route path="/journal" element={<ProtectedRoute><JournalPage /></ProtectedRoute>} />
                           <Route path="/responsible-play" element={<ProtectedRoute><ResponsibleGamblingPage /></ProtectedRoute>} />
                           <Route path="/instructor/classes" element={<ProtectedRoute requireInstructor><InstructorClassesPage /></ProtectedRoute>} />
-                          <Route path="/instructor/classes/:id" element={<ProtectedRoute requireInstructor><ClassDetailPage /></ProtectedRoute>} />
+                          <Route path="/instructor/classes/:id" element={<ProtectedRoute requireInstructor><InstructorClass /></ProtectedRoute>} />
                           <Route path="/auth" element={<Auth />} />
                           <Route path="/privacy" element={<Privacy />} />
                           <Route path="/reset-password" element={<ResetPassword />} />

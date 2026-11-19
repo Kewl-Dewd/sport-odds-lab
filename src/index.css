@@ -128,6 +128,18 @@
     @apply font-display font-semibold tracking-[-0.035em] text-foreground;
   }
 
+  .instructor-class-page > .container > div > [role="tablist"] {
+    max-width: 100%;
+    height: auto;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .instructor-class-page [role="tabpanel"],
+  .instructor-class-page [role="tabpanel"] .grid > * {
+    min-width: 0;
+  }
+
   h1 {
     line-height: 0.98;
   }
