@@ -19,6 +19,7 @@ import { useMyQuizBest } from "@/hooks/useQuizzes";
 import { LessonActivities, LessonObjectives } from "@/components/learn/LessonDesignBlocks";
 import { QuizCard } from "@/components/learn/QuizCard";
 import { courseTopicForLesson, courseWeekForLesson } from "@/lib/defaultCourse";
+import { COURSE_WEEKS } from "@/data/courseKit";
 
 function dueLabel(due: string | null) {
   if (!due) return null;
@@ -65,6 +66,34 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
         return [key, ordered] as [string, AssignedLesson[]];
       });
   }, [lessons]);
+
+  // LMS view: lessons grouped into the 15 scheduled weeks; module quizzes sit in
+  // the last week that covers their topic. Unscheduled lessons go to "Additional".
+  const weeks = useMemo(() => {
+    const byWeek = new Map<number, AssignedLesson[]>();
+    const extra: AssignedLesson[] = [];
+    const lastWeekForTopic = new Map<string, number>();
+    lessons.forEach((lesson) => {
+      const week = courseWeekForLesson(lesson.curriculum_key);
+      const topic = courseTopicForLesson(lesson.curriculum_key) ?? LEGACY_TOPICS[lesson.topic] ?? lesson.topic;
+      if (!week) { extra.push(lesson); return; }
+      byWeek.set(week, [...(byWeek.get(week) ?? []), lesson]);
+      if (topic) lastWeekForTopic.set(topic, Math.max(week, lastWeekForTopic.get(topic) ?? 0));
+    });
+    const groups = COURSE_WEEKS.filter((w) => byWeek.has(w.week)).map((w) => {
+      const order = new Map(w.lessons.map((k, i) => [k, i]));
+      const items = [...byWeek.get(w.week)!].sort((a, b) =>
+        (order.get(a.curriculum_key ?? "") ?? 99) - (order.get(b.curriculum_key ?? "") ?? 99));
+      const quizTopics = [...lastWeekForTopic.entries()].filter(([, wk]) => wk === w.week).map(([t]) => t);
+      return { key: `week-${w.week}`, week: w, items, quizTopics };
+    });
+    if (extra.length) groups.push({ key: "extra", week: undefined as never, items: extra.sort((a, b) => a.sort_order - b.sort_order), quizTopics: [] });
+    return groups;
+  }, [lessons]);
+
+  const groups = compact
+    ? topics.map(([key, items]) => ({ key, week: undefined, items, quizTopics: [key], label: topicTitle(key) }))
+    : weeks.map((g) => ({ ...g, label: g.week ? g.week.title : "Additional lessons" }));
 
   const done = classId ? lessons.filter((lesson) => progress.has(lesson.id)).length : 0;
   const pct = lessons.length ? Math.round((done / lessons.length) * 100) : 0;
@@ -124,20 +153,26 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
               </p>
             )}
             <Accordion type="multiple" className="w-full">
-              {topics.map(([topicKey, items]) => {
+              {groups.map(({ key: topicKey, items, week: wk, quizTopics, label }) => {
                 const tDone = classId ? items.filter((lesson) => progress.has(lesson.id)).length : 0;
                 return (
                   <AccordionItem key={topicKey} value={topicKey}>
                     <AccordionTrigger className="text-left">
                       <span className="flex flex-1 items-center gap-2 pr-3">
-                        <BookOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
-                        <span className="text-sm font-medium">{topicTitle(topicKey)}</span>
+                        {wk ? <Badge variant="secondary" className="shrink-0 text-xs">Week {wk.week}</Badge> : <BookOpen className="h-4 w-4 shrink-0 text-muted-foreground" />}
+                        <span className="text-sm font-medium">{label}</span>
                         <Badge variant={classId && tDone === items.length ? "default" : "outline"} className="ml-auto text-xs">
                           {classId ? `${tDone}/${items.length}` : `${items.length} lessons`}
                         </Badge>
                       </span>
                     </AccordionTrigger>
                     <AccordionContent className="space-y-2">
+                      {wk && (
+                        <div className="rounded-lg bg-muted/40 p-3 text-sm">
+                          <p><span className="font-semibold">In-class activity:</span> {wk.activity}</p>
+                          {wk.assessment && <p className="mt-1"><span className="font-semibold">Due this week:</span> {wk.assessment}</p>}
+                        </div>
+                      )}
                       {items.map((lesson, itemIndex) => {
                         const isDone = progress.has(lesson.id);
                         const due = dueLabel(lesson.due_at);
@@ -147,7 +182,7 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
                             <summary className="cursor-pointer list-none">
                               <span className="flex flex-wrap items-center gap-2">
                                 <span className="text-sm font-medium">{lesson.title}</span>
-                                {!compact && week && <Badge variant="secondary" className="text-xs">Week {week}</Badge>}
+                                {compact && week && <Badge variant="secondary" className="text-xs">Week {week}</Badge>}
                                 {isDone && <Check className="h-4 w-4 text-success" />}
                                 {lesson.requires_ack && !isDone && <Badge variant="outline" className="text-xs">Required</Badge>}
                                 {lesson.estimated_minutes ? (
@@ -195,13 +230,13 @@ export function AssignedLearning({ compact = false }: { compact?: boolean }) {
                           </details>
                         );
                       })}
-                      {!compact && (() => {
-                        const topic = LEGACY_TOPICS[topicKey] ?? topicKey;
+                      {!compact && quizTopics.map((qt) => {
+                        const topic = LEGACY_TOPICS[qt] ?? qt;
                         const questions = moduleQuiz(topic);
                         if (!questions.length) return null;
                         const key = moduleQuizKey(topic);
-                        return <QuizCard classId={classId} quizKey={key} title="Module quiz" questions={questions} best={best.get(key)} />;
-                      })()}
+                        return <QuizCard key={key} classId={classId} quizKey={key} title={`Module quiz: ${topicTitle(qt)}`} questions={questions} best={best.get(key)} />;
+                      })}
                     </AccordionContent>
                   </AccordionItem>
                 );

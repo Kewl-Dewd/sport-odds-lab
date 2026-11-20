@@ -20,3 +20,4 @@
 - [x] Let instructors move unchanged lessons between the student course and a restore library; no lesson-text editing.
 - [x] Keep instructor-only teaching notes and answer keys out of the student view.
 - [x] Verify instructor visibility controls, hide/restore, and student visibility on desktop and mobile.
+- [x] Learning page as one 15-week LMS shell (weeks hold lessons, quizzes, due work; syllabus panel)

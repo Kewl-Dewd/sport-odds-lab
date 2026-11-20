@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { COURSE_OUTCOMES, COURSE_WEEKS, RUBRICS, RUBRIC_LEVELS, SYLLABUS_WEIGHTS } from "@/data/courseKit";
 import { findCurriculumModule } from "@/data/curriculum";
 
-export function StudentCourseOverview() {
+export function StudentCourseOverview({ showSchedule = true }: { showSchedule?: boolean }) {
   return (
     <div className="space-y-6">
       <Card>
@@ -29,7 +29,7 @@ export function StudentCourseOverview() {
         </CardContent>
       </Card>
 
-      <section className="space-y-3">
+      {showSchedule && <section className="space-y-3">
         <div className="flex items-center gap-2">
           <CalendarDays className="h-5 w-5 text-primary" />
           <h2 className="font-display text-2xl font-semibold">Weekly schedule</h2>
@@ -56,7 +56,7 @@ export function StudentCourseOverview() {
             </AccordionItem>
           ))}
         </Accordion>
-      </section>
+      </section>}
 
       <Card>
         <CardHeader>
